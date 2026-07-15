@@ -1,0 +1,7 @@
+task: copy
+
+train_length: 20
+
+vocab_size: 100
+
+pad_token: null

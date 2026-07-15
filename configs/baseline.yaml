@@ -1,0 +1,45 @@
+# ----------------------------
+# Task
+# ----------------------------
+
+task: addition        # copy | addition
+
+train_length: 2
+
+test_lengths:
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+
+vocab_size: 12
+
+pad_token: 11
+
+
+# ----------------------------
+# Model
+# ----------------------------
+
+embedding_dim: 128
+
+num_heads: 4
+
+num_layers: 2
+
+feedforward_dim: 256
+
+dropout: 0.1
+
+
+# ----------------------------
+# Training
+# ----------------------------
+
+batch_size: 32
+
+epochs: 10
+
+learning_rate: 0.001
+
