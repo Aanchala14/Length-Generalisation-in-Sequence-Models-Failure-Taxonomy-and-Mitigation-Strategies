@@ -1,0 +1,30 @@
+task: reverse
+
+train_length: 128
+
+test_lengths:
+  - 128
+  - 256
+  - 512
+  - 1024
+
+train_samples: 10000
+validation_samples: 1000
+test_samples: 1000
+
+vocab_size: 100
+pad_token: null
+
+embedding_dim: 128
+num_heads: 4
+num_layers: 2
+feedforward_dim: 256
+dropout: 0.1
+max_length: 1024
+
+batch_size: 1
+epochs: 10
+learning_rate: 0.001
+
+seed: 42
+positional_encoding: learned

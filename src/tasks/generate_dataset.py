@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+from src.tasks.reverse import ReverseTask
 
 from src.tasks.addition import AdditionTask
 from src.tasks.copy import CopyTask
@@ -23,6 +24,12 @@ def create_task(config, length):
             sequence_length=length,
             plus_token=config.get("plus_token", 10),
             pad_token=config.get("pad_token", 11)
+            )
+
+    if task == "reverse":
+        return ReverseTask(
+            vocab_size=config["vocab_size"],
+            sequence_length=length
             )
 
     raise ValueError(f"Unknown task: {task}")

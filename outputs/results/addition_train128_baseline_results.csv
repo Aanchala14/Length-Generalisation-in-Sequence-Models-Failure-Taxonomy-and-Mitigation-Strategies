@@ -1,0 +1,5 @@
+Task,Train Length,Test Length,Token Accuracy,Exact Match Accuracy
+addition,128,128,10.506798516687269,0.0
+addition,128,256,10.215485329072985,0.0
+addition,128,512,10.080899235875798,0.0
+addition,128,1024,10.080431466359034,0.0
