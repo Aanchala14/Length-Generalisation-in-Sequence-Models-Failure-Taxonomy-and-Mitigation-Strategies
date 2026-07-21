@@ -13,8 +13,10 @@ def create_task(config, length):
     if task == "copy":
         return CopyTask(
             vocab_size=config["vocab_size"],
-            sequence_length=length
-        )
+            sequence_length=length,
+            separator_token=config.get("separator_token"),
+            pad_token=config.get("pad_token")
+            )
 
     if task == "addition":
         return AdditionTask(

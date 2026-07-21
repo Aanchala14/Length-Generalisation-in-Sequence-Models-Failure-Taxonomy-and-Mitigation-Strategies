@@ -7,8 +7,11 @@ class CopyTask(BaseTask):
     """
     Delayed copy task.
 
-    The model sees a sequence followed by a separator and blank tokens.
-    It must reproduce the original sequence after the separator.
+    Input:
+        sequence + SEP + PADs
+
+    Target:
+        PADs + PAD + sequence
     """
 
     def __init__(
@@ -19,17 +22,17 @@ class CopyTask(BaseTask):
         pad_token=None
     ):
         self.separator_token = (
-            vocab_size if separator_token is None
+            vocab_size - 2 if separator_token is None
             else separator_token
         )
 
         self.pad_token = (
-            vocab_size + 1 if pad_token is None
+            vocab_size - 1 if pad_token is None
             else pad_token
         )
 
         super().__init__(
-            vocab_size=vocab_size + 2,
+            vocab_size=vocab_size,
             sequence_length=sequence_length
         )
 
