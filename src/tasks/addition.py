@@ -4,103 +4,93 @@ from .base_task import BaseTask
 
 
 class AdditionTask(BaseTask):
+    """
+    Long digit-wise addition task.
+
+    Input:
+        digits_a + PLUS + digits_b
+
+    Target:
+        PAD tokens followed by the sum digits, aligned to input length.
+    """
 
     PLUS_TOKEN = 10
-
     PAD_TOKEN = 11
 
     def __init__(
         self,
-        sequence_length
+        sequence_length,
+        plus_token=PLUS_TOKEN,
+        pad_token=PAD_TOKEN
     ):
+        self.plus_token = plus_token
+        self.pad_token = pad_token
 
         super().__init__(
             vocab_size=12,
             sequence_length=sequence_length
         )
 
-    def number_to_digits(
-        self,
-        number
-    ):
-
-        return [
-            int(digit)
-            for digit in str(number)
+    def generate_digits(self):
+        digits = [
+            random.randint(0, 9)
+            for _ in range(self.sequence_length)
         ]
-    def generate_numbers(self):
 
-        minimum = 10 ** (self.sequence_length - 1)
+        # Avoid leading zero so the logical length is always fixed.
+        digits[0] = random.randint(1, 9)
 
-        maximum = (10 ** self.sequence_length) - 1
+        return digits
 
-        a = random.randint(
-            minimum,
-            maximum
+    def add_digits(self, a_digits, b_digits):
+        carry = 0
+        result = []
+
+        for a, b in zip(
+            reversed(a_digits),
+            reversed(b_digits)
+        ):
+            total = a + b + carry
+            result.append(total % 10)
+            carry = total // 10
+
+        if carry:
+            result.append(carry)
+
+        return list(reversed(result))
+
+    def encode_input(self, a_digits, b_digits):
+        return (
+            a_digits
+            + [self.plus_token]
+            + b_digits
         )
 
-        b = random.randint(
-            minimum,
-            maximum
-        )
+    def encode_target(self, sum_digits):
+        input_length = (2 * self.sequence_length) + 1
 
-        return a, b
-
-    def encode_input(
-        self,
-        a,
-        b
-    ):
+        padding_length = input_length - len(sum_digits)
 
         return (
-
-            self.number_to_digits(a)
-
-            +
-
-            [self.PLUS_TOKEN]
-
-            +
-
-            self.number_to_digits(b)
-
+            [self.pad_token] * padding_length
+            + sum_digits
         )
 
-    def encode_target(
-            self,
-            answer):
-            """
-            Encode the answer and pad it so that the
-            target length matches the input length.
-            """
-
-            digits = self.number_to_digits(answer)
-
-            input_length = (
-                 2 * self.sequence_length
-            ) + 1
-
-            padding = [self.PAD_TOKEN] * (
-                 input_length - len(digits)
-            )
-
-            return padding + digits
-            
-
     def generate_example(self):
-        """
-        Generate one addition example.
-        """
+        a_digits = self.generate_digits()
+        b_digits = self.generate_digits()
 
-        # Generate two random numbers
-        a, b = self.generate_numbers()
+        sum_digits = self.add_digits(
+            a_digits,
+            b_digits
+        )
 
-        # Compute the correct answer
-        answer = a + b
+        input_sequence = self.encode_input(
+            a_digits,
+            b_digits
+        )
 
-        # Encode input and target
-        input_sequence = self.encode_input(a, b)
-        target_sequence = self.encode_target(answer)
+        target_sequence = self.encode_target(sum_digits)
 
         return self.create_sample(
             input_sequence=input_sequence,

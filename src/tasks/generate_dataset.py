@@ -20,8 +20,10 @@ def create_task(config, length):
 
     if task == "addition":
         return AdditionTask(
-            sequence_length=length
-        )
+            sequence_length=length,
+            plus_token=config.get("plus_token", 10),
+            pad_token=config.get("pad_token", 11)
+            )
 
     raise ValueError(f"Unknown task: {task}")
 
