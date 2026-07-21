@@ -1,112 +1,83 @@
+import argparse
 from pathlib import Path
 
-from .copy import CopyTask
-from .addition import AdditionTask
+from src.tasks.addition import AdditionTask
+from src.tasks.copy import CopyTask
+from src.utils.config import load_config
+from src.utils.seed import set_seed
 
 
-# --------------------------------------------------
-# Task Configuration
-# --------------------------------------------------
+def create_task(config, length):
+    task = config["task"]
 
-TASK = "addition"      # Change to "copy" or "addition"
-
-TRAIN_SAMPLES = 10000
-VALIDATION_SAMPLES = 1000
-TEST_SAMPLES = 1000
-
-VOCAB_SIZE = 100
-
-if TASK == "copy":
-    TRAIN_LENGTH = 20
-    TEST_LENGTHS = [20, 40, 60, 80, 100, 160]
-
-elif TASK == "addition":
-    TRAIN_LENGTH = 2          # Number of digits
-    TEST_LENGTHS = [2, 3, 4, 5, 6]
-
-else:
-    raise ValueError(f"Unknown task: {TASK}")
-
-
-# --------------------------------------------------
-# Task Factory
-# --------------------------------------------------
-
-def create_task(length):
-    """
-    Create the appropriate task object.
-    """
-
-    if TASK == "copy":
+    if task == "copy":
         return CopyTask(
-            vocab_size=VOCAB_SIZE,
+            vocab_size=config["vocab_size"],
             sequence_length=length
         )
 
-    elif TASK == "addition":
+    if task == "addition":
         return AdditionTask(
             sequence_length=length
         )
 
+    raise ValueError(f"Unknown task: {task}")
 
-# --------------------------------------------------
-# Dataset Generation
-# --------------------------------------------------
 
 def generate_split(task, samples, output_file):
     dataset = task.generate_dataset(samples)
     task.save_jsonl(dataset, output_file)
 
 
-# --------------------------------------------------
-# Main
-# --------------------------------------------------
-
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        default="configs/baseline.yaml"
+    )
+    args = parser.parse_args()
 
-    output_dir = Path(f"data/synthetic/{TASK}")
+    config = load_config(args.config)
 
+    set_seed(config.get("seed", 42))
+
+    task_name = config["task"]
+
+    output_dir = Path(f"data/synthetic/{task_name}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # -----------------------
-    # Training
-    # -----------------------
-
-    train_task = create_task(TRAIN_LENGTH)
+    train_task = create_task(
+        config,
+        config["train_length"]
+    )
 
     generate_split(
         train_task,
-        TRAIN_SAMPLES,
+        config["train_samples"],
         output_dir / "train.jsonl"
     )
 
-    # -----------------------
-    # Validation
-    # -----------------------
-
-    validation_task = create_task(TRAIN_LENGTH)
+    validation_task = create_task(
+        config,
+        config["train_length"]
+    )
 
     generate_split(
         validation_task,
-        VALIDATION_SAMPLES,
+        config["validation_samples"],
         output_dir / "validation.jsonl"
     )
 
-    # -----------------------
-    # Testing
-    # -----------------------
-
-    for length in TEST_LENGTHS:
-
-        test_task = create_task(length)
+    for length in config["test_lengths"]:
+        test_task = create_task(config, length)
 
         generate_split(
             test_task,
-            TEST_SAMPLES,
+            config["test_samples"],
             output_dir / f"test_{length}.jsonl"
         )
 
-    print(f"\nFinished generating {TASK} datasets!")
+    print(f"Finished generating {task_name} datasets.")
 
 
 if __name__ == "__main__":
