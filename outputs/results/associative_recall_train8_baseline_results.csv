@@ -1,0 +1,5 @@
+Task,Train Length,Test Length,Token Accuracy,Exact Match Accuracy
+associative_recall,8,8,13.55,9.3
+associative_recall,8,16,6.35,1.4
+associative_recall,8,32,3.9,0.7
+associative_recall,8,64,2.2,0.4

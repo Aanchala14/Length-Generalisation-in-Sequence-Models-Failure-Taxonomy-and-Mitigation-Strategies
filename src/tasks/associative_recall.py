@@ -11,7 +11,7 @@ class AssociativeRecallTask(BaseTask):
         key/value pairs + QUERY token + query key
 
     Target:
-        PAD tokens everywhere except the final position,
+        PAD tokens everywhere except the final two positions,
         where the model must output the value associated with the query key.
     """
 
@@ -69,8 +69,8 @@ class AssociativeRecallTask(BaseTask):
         ])
 
         target_sequence = (
-            [self.pad_token] * (len(input_sequence) - 1)
-            + [correct_value]
+            [self.pad_token] * (len(input_sequence) - 2)
+            + [correct_value, correct_value]
         )
 
         return self.create_sample(
