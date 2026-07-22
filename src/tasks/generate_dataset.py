@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 from src.tasks.reverse import ReverseTask
+from src.tasks.associative_recall import AssociativeRecallTask
 
 from src.tasks.addition import AdditionTask
 from src.tasks.copy import CopyTask
@@ -31,6 +32,14 @@ def create_task(config, length):
             vocab_size=config["vocab_size"],
             sequence_length=length
             )
+
+    if task == "associative_recall":
+        return AssociativeRecallTask(
+            vocab_size=config["vocab_size"],
+            sequence_length=length,
+            query_token=config.get("query_token"),
+            pad_token=config.get("pad_token")
+           )
 
     raise ValueError(f"Unknown task: {task}")
 
