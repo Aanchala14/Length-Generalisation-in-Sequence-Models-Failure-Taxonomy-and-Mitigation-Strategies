@@ -1,0 +1,5 @@
+Task,Train length 128,Test length 1024,Gap
+Delayed Copy,100.0,0.0,100.0
+Reverse,100.0,0.0,100.0
+Addition,0.0,0.0,0.0
+Associative Recall,0.0,0.1,-0.1

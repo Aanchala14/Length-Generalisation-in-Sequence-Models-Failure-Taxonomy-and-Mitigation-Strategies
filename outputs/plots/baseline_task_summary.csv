@@ -1,0 +1,5 @@
+Task,Exact@128,Exact@1024,Token@128,Token@1024,Interpretation
+Delayed Copy,100.0,0.0,100.0,1.0119140625,Learns training length; fails extrapolation
+Reverse,100.0,0.0,100.0,1.0736328125,Learns training length; fails extrapolation
+Addition,0.0,0.0,10.506798516687269,10.080431466359034,Does not learn training length
+Associative Recall,0.0,0.1,0.0,0.1,Does not learn training length
