@@ -68,6 +68,10 @@ def main():
 
     task = config["task"]
     train_length = config["train_length"]
+    positional_encoding = config.get(
+    "positional_encoding",
+    "learned"
+    )
     test_lengths = config["test_lengths"]
 
     max_train_sequence_length = get_sequence_length(
@@ -92,12 +96,13 @@ def main():
         num_layers=config["num_layers"],
         feedforward_dim=config["feedforward_dim"],
         dropout=config["dropout"],
-        max_length=max_length
+        max_length=max_length,
+        positional_encoding=positional_encoding
     )
 
     checkpoint_path = (
         f"outputs/checkpoints/"
-        f"{task}_train{train_length}_baseline.pt"
+        f"{task}_train{train_length}_{positional_encoding}.pt"
     )
 
     model.load_state_dict(
@@ -181,7 +186,7 @@ def main():
 
     results_path = (
         f"outputs/results/"
-        f"{task}_train{train_length}_baseline_results.csv"
+        f"{task}_train{train_length}_{positional_encoding}_results.csv"
     )
 
     with open(results_path, "w", newline="") as file:

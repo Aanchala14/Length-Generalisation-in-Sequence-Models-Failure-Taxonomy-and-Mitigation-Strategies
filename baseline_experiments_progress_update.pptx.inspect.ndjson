@@ -1,0 +1,243 @@
+{"kind":"deck","id":"pr/oxczc3","name":"Deck"}
+{"kind":"layout","layoutId":"8c76dc2a-74b0-4e0e-b3be-2d393b93b463","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"a3bd7deb-6466-420b-8e4e-a1c9a59562db","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/uhh6wx","slide":1,"title":"Baseline Experiments and Initial Failure Analysis","textShapes":3}
+{"kind":"textbox","id":"sh/qlo7u18r","slide":1,"text":"Baseline Experiments and Initial Failure Analysis","textPreview":"Baseline Experiments and Initial Failure Analysis","textChars":49,"textLines":1,"bbox":[78,130,980,140]}
+{"kind":"textbox","id":"sh/doz65wr2","slide":1,"text":"Progress update toward Week 7: synthetic task baselines, validation results, and next steps","textPreview":"Progress update toward Week 7: synthetic task baselines, validation results, and next steps","textChars":91,"textLines":1,"bbox":[82,290,980,60]}
+{"kind":"textbox","id":"sh/cnqpwrqh","slide":1,"text":"Length generalisation in Transformer sequence models","textPreview":"Length generalisation in Transformer sequence models","textChars":52,"textLines":1,"bbox":[82,560,700,34]}
+{"kind":"notes","id":"nt/uhh6wx","slide":1,"text":""}
+{"kind":"slide","id":"sl/zzd08x","slide":2,"title":"We have completed the first baseline pass","textShapes":10}
+{"kind":"textbox","id":"sh/a9gzm54z","slide":2,"text":"We have completed the first baseline pass","textPreview":"We have completed the first baseline pass","textChars":41,"textLines":1,"bbox":[70,42,1140,52]}
+{"kind":"textbox","id":"sh/xc7yx0nq","slide":2,"text":"The project is now between baseline experiments and failure analysis","textPreview":"The project is now between baseline experiments and failure analysis","textChars":68,"textLines":1,"bbox":[70,94,1140,34]}
+{"kind":"shape","id":"sh/cbyhovm5","slide":2,"bbox":[80,170,335,210]}
+{"kind":"shape","id":"sh/zypgza5w","slide":2,"bbox":[80,170,8,210]}
+{"kind":"textbox","id":"sh/ydgzq54b","slide":2,"text":"What is done","textPreview":"What is done","textChars":12,"textLines":1,"bbox":[102,188,291,34]}
+{"kind":"textbox","id":"sh/l07i1k3m","slide":2,"text":"Four synthetic tasks are implemented, generated, trained, and evaluated with a learned-position baseline.","textPreview":"Four synthetic tasks are implemented, generated, trained, and evaluated with a learned-position baseline.","textChars":105,"textLines":1,"bbox":[102,232,291,134]}
+{"kind":"shape","id":"sh/kzyhsfmh","slide":2,"bbox":[472,170,335,210]}
+{"kind":"shape","id":"sh/f25gnq5c","slide":2,"bbox":[472,170,8,210]}
+{"kind":"textbox","id":"sh/ehczel4r","slide":2,"text":"What is learned","textPreview":"What is learned","textChars":15,"textLines":1,"bbox":[494,188,291,34]}
+{"kind":"textbox","id":"sh/ov2lcjit","slide":2,"text":"Delayed copy and reverse show clean train-short/test-long failure. Addition needs shorter training length.","textPreview":"Delayed copy and reverse show clean train-short/test-long failure. Addition needs shorter training length.","textChars":106,"textLines":1,"bbox":[494,232,291,134]}
+{"kind":"shape","id":"sh/pwbm5oze","slide":2,"bbox":[864,170,335,210]}
+{"kind":"shape","id":"sh/29k3a903","slide":2,"bbox":[864,170,8,210]}
+{"kind":"textbox","id":"sh/3utk3eh8","slide":2,"text":"What is not ready","textPreview":"What is not ready","textChars":17,"textLines":1,"bbox":[886,188,291,34]}
+{"kind":"textbox","id":"sh/czmlgjy5","slide":2,"text":"Associative recall remains weak even after easier diagnostics, so it should not be scaled yet.","textPreview":"Associative recall remains weak even after easier diagnostics, so it should not be scaled yet.","textChars":94,"textLines":1,"bbox":[886,232,291,134]}
+{"kind":"textbox","id":"sh/d0vm9ozq","slide":2,"text":"• This is progress toward Week 7, not the final Week 7 experiment matrix.\n• The next stage is positional encoding comparison on validated tasks.","textPreview":"• This is progress toward Week 7, not the final Week 7 experiment matrix. | • The next stage is positional encoding comparison on validat...","textChars":144,"textLines":2,"bbox":[122,448,1030,120]}
+{"kind":"shape","id":"sh/qx43et0z","slide":2,"bbox":[70,674,1140,2]}
+{"kind":"textbox","id":"sh/byd47ehk","slide":2,"text":"2 / 8","textPreview":"2 / 8","textChars":5,"textLines":1,"bbox":[1120,682,90,22]}
+{"kind":"notes","id":"nt/zzd08x","slide":2,"text":""}
+{"kind":"slide","id":"sl/yjan8l","slide":3,"title":"The current task set covers memory, order, arithmetic, and retrieval","textShapes":13}
+{"kind":"textbox","id":"sh/m1gfe1k7","slide":3,"text":"The current task set covers memory, order, arithmetic, and retrieval","textPreview":"The current task set covers memory, order, arithmetic, and retrieval","textChars":68,"textLines":1,"bbox":[70,42,1140,52]}
+{"kind":"textbox","id":"sh/947ypwjy","slide":3,"text":"All tasks follow the train-short/test-long protocol up to 1024","textPreview":"All tasks follow the train-short/test-long protocol up to 1024","textChars":62,"textLines":1,"bbox":[70,94,1140,34]}
+{"kind":"shape","id":"sh/83yxgr2d","slide":3,"bbox":[76,150,250,170]}
+{"kind":"shape","id":"sh/zy5wjmlw","slide":3,"bbox":[76,150,8,170]}
+{"kind":"textbox","id":"sh/ydwfahkb","slide":3,"text":"Delayed copy","textPreview":"Delayed copy","textChars":12,"textLines":1,"bbox":[98,168,206,34]}
+{"kind":"textbox","id":"sh/l0nelwjm","slide":3,"text":"Recall an earlier sequence after a separator.","textPreview":"Recall an earlier sequence after a separator.","textChars":45,"textLines":1,"bbox":[98,212,206,94]}
+{"kind":"shape","id":"sh/kzexcr21","slide":3,"bbox":[365,150,250,170]}
+{"kind":"shape","id":"sh/ju9gv610","slide":3,"bbox":[365,150,8,170]}
+{"kind":"textbox","id":"sh/i90fmlkf","slide":3,"text":"Reverse","textPreview":"Reverse","textChars":7,"textLines":1,"bbox":[387,168,206,34]}
+{"kind":"textbox","id":"sh/kjadc7yx","slide":3,"text":"Output tokens in the opposite order.","textPreview":"Output tokens in the opposite order.","textChars":36,"textLines":1,"bbox":[387,212,206,94]}
+{"kind":"shape","id":"sh/54julcfi","slide":3,"bbox":[654,150,250,170]}
+{"kind":"shape","id":"sh/ihsvaxg7","slide":3,"bbox":[654,150,8,170]}
+{"kind":"textbox","id":"sh/ji1cj2xc","slide":3,"text":"Addition","textPreview":"Addition","textChars":8,"textLines":1,"bbox":[676,168,206,34]}
+{"kind":"textbox","id":"sh/wfat87y1","slide":3,"text":"Digit-wise arithmetic with carry propagation.","textPreview":"Digit-wise arithmetic with carry propagation.","textChars":45,"textLines":1,"bbox":[676,212,206,94]}
+{"kind":"shape","id":"sh/xgjuhsfm","slide":3,"bbox":[943,150,250,170]}
+{"kind":"shape","id":"sh/ad8b6xgv","slide":3,"bbox":[943,150,8,170]}
+{"kind":"textbox","id":"sh/behcf2xg","slide":3,"text":"Associative recall","textPreview":"Associative recall","textChars":18,"textLines":1,"bbox":[965,168,206,34]}
+{"kind":"textbox","id":"sh/obqt4nyp","slide":3,"text":"Retrieve a value paired with a queried key.","textPreview":"Retrieve a value paired with a queried key.","textChars":43,"textLines":1,"bbox":[965,212,206,94]}
+{"kind":"textbox","id":"sh/9czudsza","slide":3,"text":"Baseline setup","textPreview":"Baseline setup","textChars":14,"textLines":1,"bbox":[100,410,260,38]}
+{"kind":"textbox","id":"sh/p8ra1ore","slide":3,"text":"• Transformer encoder baseline with learned absolute positional embeddings\n• Primary maximum test length: 1024\n• Metrics: token accuracy and exact-match accuracy","textPreview":"• Transformer encoder baseline with learned absolute positional embeddings | • Primary maximum test length: 1024 | • Metrics: token accur...","textChars":161,"textLines":3,"bbox":[100,460,960,120]}
+{"kind":"shape","id":"sh/o7i98jqt","slide":3,"bbox":[70,674,1140,2]}
+{"kind":"textbox","id":"sh/369sze98","slide":3,"text":"3 / 8","textPreview":"3 / 8","textChars":5,"textLines":1,"bbox":[1120,682,90,22]}
+{"kind":"notes","id":"nt/yjan8l","slide":3,"text":""}
+{"kind":"slide","id":"sl/1m6yob","slide":4,"title":"Two tasks show clean length-generalisation failure","textShapes":23}
+{"kind":"textbox","id":"sh/wj65cvy9","slide":4,"text":"Two tasks show clean length-generalisation failure","textPreview":"Two tasks show clean length-generalisation failure","textChars":50,"textLines":1,"bbox":[70,42,1140,52]}
+{"kind":"textbox","id":"sh/vixojqx4","slide":4,"text":"The model solves the training length, then collapses on longer unseen lengths","textPreview":"The model solves the training length, then collapses on longer unseen lengths","textChars":77,"textLines":1,"bbox":[70,94,1140,34]}
+{"kind":"shape","id":"sh/uh4na5gj","slide":4,"bbox":[100,160,1100,174]}
+{"kind":"shape","id":"sh/58f6pkf6","slide":4,"bbox":[100,160,230,58]}
+{"kind":"textbox","id":"sh/4765gfyl","slide":4,"text":"Task","textPreview":"Task","textChars":4,"textLines":1,"bbox":[108,170,214,46]}
+{"kind":"shape","id":"sh/jmxonax0","slide":4,"bbox":[330,160,150,58]}
+{"kind":"textbox","id":"sh/ilone5gf","slide":4,"text":"Train","textPreview":"Train","textChars":5,"textLines":1,"bbox":[338,170,134,46]}
+{"kind":"shape","id":"sh/lcvmdgzm","slide":4,"bbox":[480,160,150,58]}
+{"kind":"textbox","id":"sh/kbm54by1","slide":4,"text":"Test 128","textPreview":"Test 128","textChars":8,"textLines":1,"bbox":[488,170,134,46]}
+{"kind":"shape","id":"sh/aho72hon","slide":4,"bbox":[630,160,150,58]}
+{"kind":"textbox","id":"sh/bix8vmp8","slide":4,"text":"Test 256","textPreview":"Test 256","textChars":8,"textLines":1,"bbox":[638,170,134,46]}
+{"kind":"shape","id":"sh/wj6por6d","slide":4,"bbox":[780,160,150,58]}
+{"kind":"textbox","id":"sh/xkfqxw7y","slide":4,"text":"Test 1024","textPreview":"Test 1024","textChars":9,"textLines":1,"bbox":[788,170,134,46]}
+{"kind":"shape","id":"sh/ylo7q1oj","slide":4,"bbox":[930,160,270,58]}
+{"kind":"textbox","id":"sh/jmx8z6p4","slide":4,"text":"Interpretation","textPreview":"Interpretation","textChars":14,"textLines":1,"bbox":[938,170,254,46]}
+{"kind":"shape","id":"sh/k7qpsr6p","slide":4,"bbox":[100,218,230,58]}
+{"kind":"textbox","id":"sh/l8zq1w7a","slide":4,"text":"Delayed copy","textPreview":"Delayed copy","textChars":12,"textLines":1,"bbox":[108,228,214,46]}
+{"kind":"shape","id":"sh/698ru1ov","slide":4,"bbox":[330,218,150,58]}
+{"kind":"textbox","id":"sh/7ah8365g","slide":4,"text":"128","textPreview":"128","textChars":3,"textLines":1,"bbox":[338,228,134,46]}
+{"kind":"shape","id":"sh/3e1or6l8","slide":4,"bbox":[480,218,150,58]}
+{"kind":"textbox","id":"sh/id87i14n","slide":4,"text":"100% exact","textPreview":"100% exact","textChars":10,"textLines":1,"bbox":[488,228,134,46]}
+{"kind":"shape","id":"sh/5gj6tg3e","slide":4,"bbox":[630,218,150,58]}
+{"kind":"textbox","id":"sh/4fapkbmt","slide":4,"text":"0% exact","textPreview":"0% exact","textChars":8,"textLines":1,"bbox":[638,228,134,46]}
+{"kind":"shape","id":"sh/vahon6lc","slide":4,"bbox":[780,218,150,58]}
+{"kind":"textbox","id":"sh/u987e14r","slide":4,"text":"0% exact","textPreview":"0% exact","textChars":8,"textLines":1,"bbox":[788,228,134,46]}
+{"kind":"shape","id":"sh/hcz6pg3i","slide":4,"bbox":[930,218,270,58]}
+{"kind":"textbox","id":"sh/gbqpgbmx","slide":4,"text":"Learns short length; fails extrapolation","textPreview":"Learns short length; fails extrapolation","textChars":40,"textLines":1,"bbox":[938,228,254,46]}
+{"kind":"shape","id":"sh/7mxojml0","slide":4,"bbox":[100,276,230,58]}
+{"kind":"textbox","id":"sh/6lo7ah4v","slide":4,"text":"Reverse","textPreview":"Reverse","textChars":7,"textLines":1,"bbox":[108,286,214,46]}
+{"kind":"shape","id":"sh/wrmlkn2d","slide":4,"bbox":[330,276,150,58]}
+{"kind":"textbox","id":"sh/xsvmtsjy","slide":4,"text":"128","textPreview":"128","textChars":3,"textLines":1,"bbox":[338,286,134,46]}
+{"kind":"shape","id":"sh/ap43idkn","slide":4,"bbox":[480,276,150,58]}
+{"kind":"textbox","id":"sh/bqd4ri1s","slide":4,"text":"100% exact","textPreview":"100% exact","textChars":10,"textLines":1,"bbox":[488,286,134,46]}
+{"kind":"shape","id":"sh/kf65o72p","slide":4,"bbox":[630,276,150,58]}
+{"kind":"textbox","id":"sh/lgfmxcja","slide":4,"text":"0% exact","textPreview":"0% exact","textChars":8,"textLines":1,"bbox":[638,286,134,46]}
+{"kind":"shape","id":"sh/yt43mxkj","slide":4,"bbox":[780,276,150,58]}
+{"kind":"textbox","id":"sh/jed4v214","slide":4,"text":"0% exact","textPreview":"0% exact","textChars":8,"textLines":1,"bbox":[788,286,134,46]}
+{"kind":"shape","id":"sh/0j2lc325","slide":4,"bbox":[930,276,270,58]}
+{"kind":"textbox","id":"sh/1kbml8jq","slide":4,"text":"Learns short length; fails extrapolation","textPreview":"Learns short length; fails extrapolation","textChars":40,"textLines":1,"bbox":[938,286,254,46]}
+{"kind":"shape","id":"sh/tgnel8ja","slide":4,"bbox":[100,400,1030,116]}
+{"kind":"shape","id":"sh/sfeds32p","slide":4,"bbox":[100,400,8,116]}
+{"kind":"textbox","id":"sh/7e5wjy14","slide":4,"text":"Main takeaway","textPreview":"Main takeaway","textChars":13,"textLines":1,"bbox":[122,418,986,34]}
+{"kind":"textbox","id":"sh/6dwvqtkj","slide":4,"text":"Delayed copy and reverse are ready for positional-encoding comparison because the baseline has learned the training distribution but fails beyond it.","textPreview":"Delayed copy and reverse are ready for positional-encoding comparison because the baseline has learned the training distribution but fail...","textChars":149,"textLines":1,"bbox":[122,462,986,40]}
+{"kind":"shape","id":"sh/5cneh8jy","slide":4,"bbox":[70,674,1140,2]}
+{"kind":"textbox","id":"sh/kbudo32d","slide":4,"text":"4 / 8","textPreview":"4 / 8","textChars":5,"textLines":1,"bbox":[1120,682,90,22]}
+{"kind":"notes","id":"nt/1m6yob","slide":4,"text":""}
+{"kind":"slide","id":"sl/e09tte","slide":5,"title":"Addition works only after reducing the training length","textShapes":22}
+{"kind":"textbox","id":"sh/nmt4vmlo","slide":5,"text":"Addition works only after reducing the training length","textPreview":"Addition works only after reducing the training length","textChars":54,"textLines":1,"bbox":[70,42,1140,52]}
+{"kind":"textbox","id":"sh/on254r29","slide":5,"text":"This separates task learnability from length extrapolation","textPreview":"This separates task learnability from length extrapolation","textChars":58,"textLines":1,"bbox":[70,94,1140,34]}
+{"kind":"shape","id":"sh/p8bmxw3u","slide":5,"bbox":[92,155,1140,168]}
+{"kind":"shape","id":"sh/eh0nyhk7","slide":5,"bbox":[92,155,230,56]}
+{"kind":"textbox","id":"sh/fi94rmlc","slide":5,"text":"Setup","textPreview":"Setup","textChars":5,"textLines":1,"bbox":[100,165,214,44]}
+{"kind":"shape","id":"sh/0ji50r2x","slide":5,"bbox":[322,155,170,56]}
+{"kind":"textbox","id":"sh/1krmtw3i","slide":5,"text":"Train length","textPreview":"Train length","textChars":12,"textLines":1,"bbox":[330,165,154,44]}
+{"kind":"shape","id":"sh/qdgnuhkv","slide":5,"bbox":[492,155,170,56]}
+{"kind":"textbox","id":"sh/re94n2lg","slide":5,"text":"Exact@train","textPreview":"Exact@train","textChars":11,"textLines":1,"bbox":[500,165,154,44]}
+{"kind":"shape","id":"sh/vexwjq1s","slide":5,"bbox":[662,155,170,56]}
+{"kind":"textbox","id":"sh/utofqlk7","slide":5,"text":"Exact@next","textPreview":"Exact@next","textChars":10,"textLines":1,"bbox":[670,165,154,44]}
+{"kind":"shape","id":"sh/hgzel0ji","slide":5,"bbox":[832,155,170,56]}
+{"kind":"textbox","id":"sh/wfqxsv2d","slide":5,"text":"Token@1024","textPreview":"Token@1024","textChars":10,"textLines":1,"bbox":[840,165,154,44]}
+{"kind":"shape","id":"sh/jihgna1o","slide":5,"bbox":[1002,155,230,56]}
+{"kind":"textbox","id":"sh/ih8fu5k3","slide":5,"text":"Meaning","textPreview":"Meaning","textChars":7,"textLines":1,"bbox":[1010,165,214,44]}
+{"kind":"shape","id":"sh/5kzyp0ju","slide":5,"bbox":[92,211,230,56]}
+{"kind":"textbox","id":"sh/4jqxwf29","slide":5,"text":"Initial","textPreview":"Initial","textChars":7,"textLines":1,"bbox":[100,221,214,44]}
+{"kind":"shape","id":"sh/zmdwb61k","slide":5,"bbox":[322,211,170,56]}
+{"kind":"textbox","id":"sh/yl4fi1kz","slide":5,"text":"128","textPreview":"128","textChars":3,"textLines":1,"bbox":[330,221,154,44]}
+{"kind":"shape","id":"sh/mtwr6d8z","slide":5,"bbox":[492,211,170,56]}
+{"kind":"textbox","id":"sh/nu58fip4","slide":5,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[500,221,154,44]}
+{"kind":"shape","id":"sh/ofe983qp","slide":5,"bbox":[662,211,170,56]}
+{"kind":"textbox","id":"sh/9gnqh87a","slide":5,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[670,221,154,44]}
+{"kind":"shape","id":"sh/epcr2t8n","slide":5,"bbox":[832,211,170,56]}
+{"kind":"textbox","id":"sh/zql8byp8","slide":5,"text":"10.1%","textPreview":"10.1%","textChars":5,"textLines":1,"bbox":[840,221,154,44]}
+{"kind":"shape","id":"sh/0ru943qt","slide":5,"bbox":[1002,211,230,56]}
+{"kind":"textbox","id":"sh/1snqd87e","slide":5,"text":"Too hard at 128","textPreview":"Too hard at 128","textChars":15,"textLines":1,"bbox":[1010,221,214,44]}
+{"kind":"shape","id":"sh/qlcryt8r","slide":5,"bbox":[92,267,230,56]}
+{"kind":"textbox","id":"sh/rml87ypw","slide":5,"text":"Validation","textPreview":"Validation","textChars":10,"textLines":1,"bbox":[100,277,214,44]}
+{"kind":"shape","id":"sh/tgrudwru","slide":5,"bbox":[322,267,170,56]}
+{"kind":"textbox","id":"sh/8fit4ra9","slide":5,"text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[330,277,154,44]}
+{"kind":"shape","id":"sh/7e9cbm9o","slide":5,"bbox":[492,267,170,56]}
+{"kind":"textbox","id":"sh/6d0b2hs3","slide":5,"text":"94.6%","textPreview":"94.6%","textChars":5,"textLines":1,"bbox":[500,277,154,44]}
+{"kind":"shape","id":"sh/lcru9cri","slide":5,"bbox":[662,267,170,56]}
+{"kind":"textbox","id":"sh/kbit07ax","slide":5,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[670,277,154,44]}
+{"kind":"shape","id":"sh/japc729c","slide":5,"bbox":[832,267,170,56]}
+{"kind":"textbox","id":"sh/y9gbyhs7","slide":5,"text":"10.1%","textPreview":"10.1%","textChars":5,"textLines":1,"bbox":[840,277,154,44]}
+{"kind":"shape","id":"sh/xo7u5crm","slide":5,"bbox":[1002,267,230,56]}
+{"kind":"textbox","id":"sh/wnytw7a1","slide":5,"text":"Learns short length; fails longer","textPreview":"Learns short length; fails longer","textChars":33,"textLines":1,"bbox":[1010,277,214,44]}
+{"kind":"textbox","id":"sh/cf6tw7ml","slide":5,"text":"• For addition, train length 16 is the validated baseline for PE comparison.\n• Train length 128 is useful evidence of training-length difficulty, not extrapolation.","textPreview":"• For addition, train length 16 is the validated baseline for PE comparison. | • Train length 128 is useful evidence of training-length d...","textChars":164,"textLines":2,"bbox":[116,420,1040,110]}
+{"kind":"shape","id":"sh/dgfupcn6","slide":5,"bbox":[70,674,1140,2]}
+{"kind":"textbox","id":"sh/qdobuhov","slide":5,"text":"5 / 8","textPreview":"5 / 8","textChars":5,"textLines":1,"bbox":[1120,682,90,22]}
+{"kind":"notes","id":"nt/e09tte","slide":5,"text":""}
+{"kind":"slide","id":"sl/fm117m","slide":6,"title":"Associative recall is still a task-design issue","textShapes":25}
+{"kind":"textbox","id":"sh/3mhkb6lk","slide":6,"text":"Associative recall is still a task-design issue","textPreview":"Associative recall is still a task-design issue","textChars":47,"textLines":1,"bbox":[70,42,1140,52]}
+{"kind":"textbox","id":"sh/4nqlkb25","slide":6,"text":"The model remains near random after small-vocabulary and shorter-length diagnostics","textPreview":"The model remains near random after small-vocabulary and shorter-length diagnostics","textChars":83,"textLines":1,"bbox":[70,94,1140,34]}
+{"kind":"shape","id":"sh/poz2dg3q","slide":6,"bbox":[94,145,1115,224]}
+{"kind":"shape","id":"sh/q9s3mlkv","slide":6,"bbox":[94,145,260,56]}
+{"kind":"textbox","id":"sh/ra1kfqlg","slide":6,"text":"Diagnostic","textPreview":"Diagnostic","textChars":10,"textLines":1,"bbox":[102,155,244,44]}
+{"kind":"shape","id":"sh/cbalov21","slide":6,"bbox":[354,145,190,56]}
+{"kind":"textbox","id":"sh/dcjmh03m","slide":6,"text":"Train length","textPreview":"Train length","textChars":12,"textLines":1,"bbox":[362,155,174,44]}
+{"kind":"shape","id":"sh/eds3qlk7","slide":6,"bbox":[544,145,190,56]}
+{"kind":"textbox","id":"sh/ze14jqls","slide":6,"text":"Exact@train","textPreview":"Exact@train","textChars":11,"textLines":1,"bbox":[552,155,174,44]}
+{"kind":"shape","id":"sh/fq9gnehw","slide":6,"bbox":[734,145,190,56]}
+{"kind":"textbox","id":"sh/up0ze90b","slide":6,"text":"Exact@longest","textPreview":"Exact@longest","textChars":13,"textLines":1,"bbox":[742,155,174,44]}
+{"kind":"shape","id":"sh/hcrypoz2","slide":6,"bbox":[924,145,285,56]}
+{"kind":"textbox","id":"sh/gbihgjih","slide":6,"text":"Conclusion","textPreview":"Conclusion","textChars":10,"textLines":1,"bbox":[932,155,269,44]}
+{"kind":"shape","id":"sh/7mpgjuh0","slide":6,"bbox":[94,201,260,56]}
+{"kind":"textbox","id":"sh/6lgza90f","slide":6,"text":"Original","textPreview":"Original","textChars":8,"textLines":1,"bbox":[102,211,244,44]}
+{"kind":"shape","id":"sh/toryl4zq","slide":6,"bbox":[354,201,190,56]}
+{"kind":"textbox","id":"sh/8nihczi5","slide":6,"text":"128","textPreview":"128","textChars":3,"textLines":1,"bbox":[362,211,174,44]}
+{"kind":"shape","id":"sh/rit0vyh4","slide":6,"bbox":[544,201,190,56]}
+{"kind":"textbox","id":"sh/qhkzmt0j","slide":6,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[552,211,174,44]}
+{"kind":"shape","id":"sh/md4juxkr","slide":6,"bbox":[734,201,190,56]}
+{"kind":"textbox","id":"sh/nexkn21c","slide":6,"text":"0.1%","textPreview":"0.1%","textChars":4,"textLines":1,"bbox":[742,211,174,44]}
+{"kind":"shape","id":"sh/of61w72x","slide":6,"bbox":[924,201,285,56]}
+{"kind":"textbox","id":"sh/9gf2pcji","slide":6,"text":"Not learned","textPreview":"Not learned","textChars":11,"textLines":1,"bbox":[932,211,269,44]}
+{"kind":"shape","id":"sh/a1o3yhkn","slide":6,"bbox":[94,257,260,56]}
+{"kind":"textbox","id":"sh/b2xkr218","slide":6,"text":"Small vocab","textPreview":"Small vocab","textChars":11,"textLines":1,"bbox":[102,267,244,44]}
+{"kind":"shape","id":"sh/w36l072t","slide":6,"bbox":[354,257,190,56]}
+{"kind":"textbox","id":"sh/x4f2tcje","slide":6,"text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[362,267,174,44]}
+{"kind":"shape","id":"sh/q5kjmdkj","slide":6,"bbox":[544,257,190,56]}
+{"kind":"textbox","id":"sh/r6dkfi14","slide":6,"text":"2.3%","textPreview":"2.3%","textChars":4,"textLines":1,"bbox":[552,267,174,44]}
+{"kind":"shape","id":"sh/t0jmlg3m","slide":6,"bbox":[734,257,190,56]}
+{"kind":"textbox","id":"sh/8za5sbm1","slide":6,"text":"0.3%","textPreview":"0.3%","textChars":4,"textLines":1,"bbox":[742,267,174,44]}
+{"kind":"shape","id":"sh/7y14j6lg","slide":6,"bbox":[924,257,285,56]}
+{"kind":"textbox","id":"sh/6xsnq14v","slide":6,"text":"Still near random","textPreview":"Still near random","textChars":17,"textLines":1,"bbox":[932,267,269,44]}
+{"kind":"shape","id":"sh/h436p03y","slide":6,"bbox":[94,313,260,56]}
+{"kind":"textbox","id":"sh/g3a5wv2d","slide":6,"text":"Debug","textPreview":"Debug","textChars":5,"textLines":1,"bbox":[102,323,244,44]}
+{"kind":"shape","id":"sh/v214nqls","slide":6,"bbox":[354,313,190,56]}
+{"kind":"textbox","id":"sh/u1snul47","slide":6,"text":"8","textPreview":"8","textChars":1,"textLines":1,"bbox":[362,323,174,44]}
+{"kind":"shape","id":"sh/x8zmdw3e","slide":6,"bbox":[544,313,190,56]}
+{"kind":"textbox","id":"sh/w7q5krmt","slide":6,"text":"9.3%","textPreview":"9.3%","textChars":4,"textLines":1,"bbox":[552,323,174,44]}
+{"kind":"shape","id":"sh/0nepszmh","slide":6,"bbox":[734,313,190,56]}
+{"kind":"textbox","id":"sh/1o7ql4n2","slide":6,"text":"0.4%","textPreview":"0.4%","textChars":4,"textLines":1,"bbox":[742,323,174,44]}
+{"kind":"shape","id":"sh/elw7qp4b","slide":6,"bbox":[924,313,285,56]}
+{"kind":"textbox","id":"sh/zm58ju5w","slide":6,"text":"Weak learning only","textPreview":"Weak learning only","textChars":18,"textLines":1,"bbox":[932,323,269,44]}
+{"kind":"shape","id":"sh/czepoz6l","slide":6,"bbox":[118,435,990,106]}
+{"kind":"shape","id":"sh/dknqhkn6","slide":6,"bbox":[118,435,8,106]}
+{"kind":"textbox","id":"sh/qxw7mpof","slide":6,"text":"Decision","textPreview":"Decision","textChars":8,"textLines":1,"bbox":[140,453,946,34]}
+{"kind":"textbox","id":"sh/ry58fu50","slide":6,"text":"Do not spend AWS budget scaling associative recall yet. Keep it as a diagnostic task while positional encoding comparisons start on validated tasks.","textPreview":"Do not spend AWS budget scaling associative recall yet. Keep it as a diagnostic task while positional encoding comparisons start on valid...","textChars":148,"textLines":1,"bbox":[140,497,946,30]}
+{"kind":"shape","id":"sh/4vupkf69","slide":6,"bbox":[70,674,1140,2]}
+{"kind":"textbox","id":"sh/pwnqdknu","slide":6,"text":"6 / 8","textPreview":"6 / 8","textChars":5,"textLines":1,"bbox":[1120,682,90,22]}
+{"kind":"notes","id":"nt/fm117m","slide":6,"text":""}
+{"kind":"slide","id":"sl/jbnqya","slide":7,"title":"The plots now support the first failure taxonomy","textShapes":4}
+{"kind":"textbox","id":"sh/z2143a9o","slide":7,"text":"The plots now support the first failure taxonomy","textPreview":"The plots now support the first failure taxonomy","textChars":48,"textLines":1,"bbox":[70,42,1140,52]}
+{"kind":"textbox","id":"sh/0nalwfq9","slide":7,"text":"Baseline results already split into distinct failure types","textPreview":"Baseline results already split into distinct failure types","textChars":58,"textLines":1,"bbox":[70,94,1140,34]}
+{"kind":"textbox","id":"sh/nql47u9k","slide":7,"text":"Pattern A: learned at train length, failed on longer lengths. Pattern B: did not reliably learn the training length.","textPreview":"Pattern A: learned at train length, failed on longer lengths. Pattern B: did not reliably learn the training length.","textChars":116,"textLines":1,"bbox":[100,590,1040,54]}
+{"kind":"shape","id":"sh/8rul0zq5","slide":7,"bbox":[70,674,1140,2]}
+{"kind":"textbox","id":"sh/9s3m9krq","slide":7,"text":"7 / 8","textPreview":"7 / 8","textChars":5,"textLines":1,"bbox":[1120,682,90,22]}
+{"kind":"image","id":"im/wb69oj61","slide":7,"name":"","alt":"Exact match accuracy by task","bbox":[70,130,560,420]}
+{"kind":"image","id":"im/7md8be5k","slide":7,"name":"","alt":"Token accuracy by task","bbox":[650,130,560,420]}
+{"kind":"notes","id":"nt/jbnqya","slide":7,"text":""}
+{"kind":"slide","id":"sl/kbgu6y","slide":8,"title":"Next step: positional encodings on validated tasks","textShapes":20}
+{"kind":"textbox","id":"sh/2lsb2hgv","slide":8,"text":"Next step: positional encodings on validated tasks","textPreview":"Next step: positional encodings on validated tasks","textChars":50,"textLines":1,"bbox":[70,42,1140,52]}
+{"kind":"textbox","id":"sh/p83udwf6","slide":8,"text":"The baseline is ready to extend, but only where the task is learnable","textPreview":"The baseline is ready to extend, but only where the task is learnable","textChars":69,"textLines":1,"bbox":[70,94,1140,34]}
+{"kind":"shape","id":"sh/o7ut4re1","slide":8,"bbox":[92,150,1070,290]}
+{"kind":"shape","id":"sh/balcf6xc","slide":8,"bbox":[92,150,220,58]}
+{"kind":"textbox","id":"sh/a9cv61wr","slide":8,"text":"Priority","textPreview":"Priority","textChars":8,"textLines":1,"bbox":[100,160,204,46]}
+{"kind":"shape","id":"sh/xc3uhwfi","slide":8,"bbox":[312,150,330,58]}
+{"kind":"textbox","id":"sh/cbud8bex","slide":8,"text":"Run next","textPreview":"Run next","textChars":8,"textLines":1,"bbox":[320,160,314,46]}
+{"kind":"shape","id":"sh/rehc32x8","slide":8,"bbox":[642,150,520,58]}
+{"kind":"textbox","id":"sh/qd8buxgn","slide":8,"text":"Reason","textPreview":"Reason","textChars":6,"textLines":1,"bbox":[650,160,504,46]}
+{"kind":"shape","id":"sh/83y5snyl","slide":8,"bbox":[92,208,220,58]}
+{"kind":"textbox","id":"sh/t4761sf6","slide":8,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[100,218,204,46]}
+{"kind":"shape","id":"sh/61gnqxgf","slide":8,"bbox":[312,208,330,58]}
+{"kind":"textbox","id":"sh/72pozix0","slide":8,"text":"Learned vs sinusoidal vs NoPE","textPreview":"Learned vs sinusoidal vs NoPE","textChars":29,"textLines":1,"bbox":[320,218,314,46]}
+{"kind":"shape","id":"sh/gry5w7yh","slide":8,"bbox":[642,208,520,58]}
+{"kind":"textbox","id":"sh/hs765cf2","slide":8,"text":"Simplest PE comparison; low implementation risk","textPreview":"Simplest PE comparison; low implementation risk","textChars":47,"textLines":1,"bbox":[650,218,504,46]}
+{"kind":"shape","id":"sh/u5gnuxgr","slide":8,"bbox":[92,266,220,58]}
+{"kind":"textbox","id":"sh/vqpo32xc","slide":8,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[100,276,204,46]}
+{"kind":"shape","id":"sh/wve5k3yd","slide":8,"bbox":[312,266,330,58]}
+{"kind":"textbox","id":"sh/xwn6t8zy","slide":8,"text":"Delayed copy, reverse, addition-16","textPreview":"Delayed copy, reverse, addition-16","textChars":34,"textLines":1,"bbox":[320,276,314,46]}
+{"kind":"shape","id":"sh/dgvu10nq","slide":8,"bbox":[642,266,520,58]}
+{"kind":"textbox","id":"sh/cfmd8fm5","slide":8,"text":"These tasks have validated baseline behaviour","textPreview":"These tasks have validated baseline behaviour","textChars":45,"textLines":1,"bbox":[650,276,504,46]}
+{"kind":"shape","id":"sh/redcza5k","slide":8,"bbox":[92,324,220,58]}
+{"kind":"textbox","id":"sh/qd4v654z","slide":8,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[100,334,204,46]}
+{"kind":"shape","id":"sh/1kfu5knm","slide":8,"bbox":[312,324,330,58]}
+{"kind":"textbox","id":"sh/0jmdcfm1","slide":8,"text":"Add ALiBi and RoPE","textPreview":"Add ALiBi and RoPE","textChars":18,"textLines":1,"bbox":[320,334,314,46]}
+{"kind":"shape","id":"sh/zidc3a5g","slide":8,"bbox":[642,324,520,58]}
+{"kind":"textbox","id":"sh/eh4va54v","slide":8,"text":"Core paper comparison once the model API is stable","textPreview":"Core paper comparison once the model API is stable","textChars":50,"textLines":1,"bbox":[650,334,504,46]}
+{"kind":"shape","id":"sh/98fu9kni","slide":8,"bbox":[92,382,220,58]}
+{"kind":"textbox","id":"sh/on6dgzmd","slide":8,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[100,392,204,46]}
+{"kind":"shape","id":"sh/6t0rahkv","slide":8,"bbox":[312,382,330,58]}
+{"kind":"textbox","id":"sh/7u9s3ml0","slide":8,"text":"Multiple seeds","textPreview":"Multiple seeds","textChars":14,"textLines":1,"bbox":[320,392,314,46]}
+{"kind":"shape","id":"sh/svi9cr2l","slide":8,"bbox":[642,382,520,58]}
+{"kind":"textbox","id":"sh/twra5w36","slide":8,"text":"Move toward Week 7 robustness after PE pilot","textPreview":"Move toward Week 7 robustness after PE pilot","textChars":44,"textLines":1,"bbox":[650,392,504,46]}
+{"kind":"shape","id":"sh/ux0re1kr","slide":8,"bbox":[110,500,980,96]}
+{"kind":"shape","id":"sh/fi9s76lc","slide":8,"bbox":[110,500,8,96]}
+{"kind":"textbox","id":"sh/gji9gb2x","slide":8,"text":"Supervisor feedback requested","textPreview":"Supervisor feedback requested","textChars":29,"textLines":1,"bbox":[132,518,936,34]}
+{"kind":"textbox","id":"sh/hkra9g3i","slide":8,"text":"Does this validation plan justify moving to positional encodings on the three validated tasks while associative recall remains under task-design review?","textPreview":"Does this validation plan justify moving to positional encodings on the three validated tasks while associative recall remains under task...","textChars":152,"textLines":1,"bbox":[132,562,936,20]}
+{"kind":"shape","id":"sh/2lkri1kn","slide":8,"bbox":[70,674,1140,2]}
+{"kind":"textbox","id":"sh/3mtsb6l8","slide":8,"text":"8 / 8","textPreview":"8 / 8","textChars":5,"textLines":1,"bbox":[1120,682,90,22]}
+{"kind":"notes","id":"nt/kbgu6y","slide":8,"text":""}

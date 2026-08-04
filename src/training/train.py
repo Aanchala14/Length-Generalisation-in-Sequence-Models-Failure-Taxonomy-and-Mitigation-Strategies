@@ -37,6 +37,10 @@ def main():
 
     task = config["task"]
     train_length = config["train_length"]
+    positional_encoding = config.get(
+    "positional_encoding",
+    "learned"
+    )
 
     max_train_sequence_length = get_sequence_length(
         task,
@@ -66,7 +70,8 @@ def main():
         num_layers=config["num_layers"],
         feedforward_dim=config["feedforward_dim"],
         dropout=config["dropout"],
-        max_length=max_length
+        max_length=max_length,
+        positional_encoding=positional_encoding
     ).to(device)
 
     pad_token = config.get("pad_token")
@@ -120,7 +125,7 @@ def main():
 
     checkpoint_path = (
         f"outputs/checkpoints/"
-        f"{task}_train{train_length}_baseline.pt"
+        f"{task}_train{train_length}_{positional_encoding}.pt"
     )
 
     torch.save(

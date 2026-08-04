@@ -1,8 +1,11 @@
 import torch
 import torch.nn as nn
 
-from .positional_encoding import LearnedPositionalEncoding
-
+from .positional_encoding import (
+    LearnedPositionalEncoding,
+    NoPositionalEncoding,
+    SinusoidalPositionalEncoding
+)
 
 class TransformerModel(nn.Module):
     """
@@ -17,7 +20,8 @@ class TransformerModel(nn.Module):
         num_layers=2,
         feedforward_dim=256,
         dropout=0.1,
-        max_length=20
+        max_length=20,
+        positional_encoding="learned"
     ):
 
         super().__init__()
@@ -29,10 +33,24 @@ class TransformerModel(nn.Module):
         )
 
         # Positional embeddings
-        self.position_embedding = LearnedPositionalEncoding(
-            max_length=max_length,
-            embedding_dim=embedding_dim
-        )
+        if positional_encoding == "learned":
+            self.position_embedding = LearnedPositionalEncoding(
+                max_length=max_length,
+                embedding_dim=embedding_dim
+                )
+
+        elif positional_encoding == "sinusoidal":
+            self.position_embedding = SinusoidalPositionalEncoding(
+                max_length=max_length,
+                embedding_dim=embedding_dim
+            )
+
+        elif positional_encoding in ["none", "nope"]:
+            self.position_embedding = NoPositionalEncoding()
+        else:
+            raise ValueError(
+                f"Unknown positional encoding: {positional_encoding}"
+                )
 
         # Transformer Encoder
         encoder_layer = nn.TransformerEncoderLayer(
