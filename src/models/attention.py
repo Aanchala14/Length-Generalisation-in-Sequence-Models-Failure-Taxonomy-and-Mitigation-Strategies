@@ -1,0 +1,262 @@
+import math
+
+import torch
+import torch.nn as nn
+
+
+def get_alibi_slopes(num_heads):
+    """
+    Create ALiBi slopes for each attention head.
+
+    This follows the standard ALiBi slope construction.
+    """
+
+    def get_slopes_power_of_2(n):
+        start = 2 ** (
+            -2 ** -(math.log2(n) - 3)
+        )
+
+        ratio = start
+
+        return [
+            start * ratio ** i
+            for i in range(n)
+        ]
+
+    if math.log2(num_heads).is_integer():
+        slopes = get_slopes_power_of_2(num_heads)
+
+    else:
+        closest_power_of_2 = 2 ** math.floor(
+            math.log2(num_heads)
+        )
+
+        slopes = get_slopes_power_of_2(
+            closest_power_of_2
+        )
+
+        extra_slopes = get_slopes_power_of_2(
+            2 * closest_power_of_2
+        )
+
+        slopes.extend(
+            extra_slopes[0::2][
+                : num_heads - closest_power_of_2
+            ]
+        )
+
+    return torch.tensor(
+        slopes,
+        dtype=torch.float32
+    )
+
+
+def build_alibi_bias(num_heads, sequence_length, device):
+    """
+    Build ALiBi bias tensor.
+
+    Shape:
+        (1, num_heads, sequence_length, sequence_length)
+
+    Larger negative values are assigned to distant positions.
+    """
+
+    slopes = get_alibi_slopes(num_heads).to(device)
+
+    positions = torch.arange(
+        sequence_length,
+        device=device
+    )
+
+    distances = (
+        positions[None, :]
+        - positions[:, None]
+    ).abs()
+
+    bias = -distances.float()
+
+    bias = bias.unsqueeze(0).unsqueeze(0)
+
+    slopes = slopes.view(
+        1,
+        num_heads,
+        1,
+        1
+    )
+
+    return slopes * bias
+
+
+class MultiHeadSelfAttention(nn.Module):
+    """
+    Multi-head self-attention with optional ALiBi bias.
+    """
+
+    def __init__(
+        self,
+        embedding_dim,
+        num_heads,
+        dropout=0.1,
+        use_alibi=False
+    ):
+        super().__init__()
+
+        if embedding_dim % num_heads != 0:
+            raise ValueError(
+                "embedding_dim must be divisible by num_heads"
+            )
+
+        self.embedding_dim = embedding_dim
+        self.num_heads = num_heads
+        self.head_dim = embedding_dim // num_heads
+        self.use_alibi = use_alibi
+
+        self.q_proj = nn.Linear(
+            embedding_dim,
+            embedding_dim
+        )
+
+        self.k_proj = nn.Linear(
+            embedding_dim,
+            embedding_dim
+        )
+
+        self.v_proj = nn.Linear(
+            embedding_dim,
+            embedding_dim
+        )
+
+        self.out_proj = nn.Linear(
+            embedding_dim,
+            embedding_dim
+        )
+
+        self.dropout = nn.Dropout(dropout)
+
+    def split_heads(self, x):
+        batch_size, sequence_length, _ = x.shape
+
+        x = x.view(
+            batch_size,
+            sequence_length,
+            self.num_heads,
+            self.head_dim
+        )
+
+        return x.transpose(1, 2)
+
+    def combine_heads(self, x):
+        batch_size, _, sequence_length, _ = x.shape
+
+        x = x.transpose(1, 2).contiguous()
+
+        return x.view(
+            batch_size,
+            sequence_length,
+            self.embedding_dim
+        )
+
+    def forward(self, x):
+        batch_size, sequence_length, _ = x.shape
+
+        q = self.split_heads(
+            self.q_proj(x)
+        )
+
+        k = self.split_heads(
+            self.k_proj(x)
+        )
+
+        v = self.split_heads(
+            self.v_proj(x)
+        )
+
+        attention_scores = torch.matmul(
+            q,
+            k.transpose(-2, -1)
+        )
+
+        attention_scores = attention_scores / math.sqrt(
+            self.head_dim
+        )
+
+        if self.use_alibi:
+            attention_scores = attention_scores + build_alibi_bias(
+                num_heads=self.num_heads,
+                sequence_length=sequence_length,
+                device=x.device
+            )
+
+        attention_weights = torch.softmax(
+            attention_scores,
+            dim=-1
+        )
+
+        attention_weights = self.dropout(
+            attention_weights
+        )
+
+        context = torch.matmul(
+            attention_weights,
+            v
+        )
+
+        context = self.combine_heads(context)
+
+        return self.out_proj(context)
+
+
+class TransformerBlock(nn.Module):
+    """
+    Transformer encoder block using custom self-attention.
+    """
+
+    def __init__(
+        self,
+        embedding_dim,
+        num_heads,
+        feedforward_dim,
+        dropout=0.1,
+        use_alibi=False
+    ):
+        super().__init__()
+
+        self.attention = MultiHeadSelfAttention(
+            embedding_dim=embedding_dim,
+            num_heads=num_heads,
+            dropout=dropout,
+            use_alibi=use_alibi
+        )
+
+        self.norm1 = nn.LayerNorm(embedding_dim)
+        self.norm2 = nn.LayerNorm(embedding_dim)
+
+        self.feedforward = nn.Sequential(
+            nn.Linear(
+                embedding_dim,
+                feedforward_dim
+            ),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(
+                feedforward_dim,
+                embedding_dim
+            )
+        )
+
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        attention_output = self.attention(x)
+
+        x = self.norm1(
+            x + self.dropout(attention_output)
+        )
+
+        feedforward_output = self.feedforward(x)
+
+        x = self.norm2(
+            x + self.dropout(feedforward_output)
+        )
+
+        return x

@@ -1,15 +1,16 @@
-import torch
 import torch.nn as nn
 
+from .attention import TransformerBlock
 from .positional_encoding import (
     LearnedPositionalEncoding,
     NoPositionalEncoding,
     SinusoidalPositionalEncoding
 )
 
+
 class TransformerModel(nn.Module):
     """
-    Baseline Transformer model for synthetic sequence tasks.
+    Transformer model for synthetic sequence tasks.
     """
 
     def __init__(
@@ -23,65 +24,65 @@ class TransformerModel(nn.Module):
         max_length=20,
         positional_encoding="learned"
     ):
-
         super().__init__()
 
-        # Token embeddings
+        self.positional_encoding_name = positional_encoding
+
         self.token_embedding = nn.Embedding(
             vocab_size,
             embedding_dim
         )
 
-        # Positional embeddings
         if positional_encoding == "learned":
             self.position_embedding = LearnedPositionalEncoding(
                 max_length=max_length,
                 embedding_dim=embedding_dim
-                )
+            )
+            use_alibi = False
 
         elif positional_encoding == "sinusoidal":
             self.position_embedding = SinusoidalPositionalEncoding(
                 max_length=max_length,
                 embedding_dim=embedding_dim
             )
+            use_alibi = False
 
         elif positional_encoding in ["none", "nope"]:
             self.position_embedding = NoPositionalEncoding()
+            use_alibi = False
+
+        elif positional_encoding == "alibi":
+            self.position_embedding = NoPositionalEncoding()
+            use_alibi = True
+
         else:
             raise ValueError(
                 f"Unknown positional encoding: {positional_encoding}"
-                )
+            )
 
-        # Transformer Encoder
-        encoder_layer = nn.TransformerEncoderLayer(
-            d_model=embedding_dim,
-            nhead=num_heads,
-            dim_feedforward=feedforward_dim,
-            dropout=dropout,
-            batch_first=True
-        )
+        self.layers = nn.ModuleList([
+            TransformerBlock(
+                embedding_dim=embedding_dim,
+                num_heads=num_heads,
+                feedforward_dim=feedforward_dim,
+                dropout=dropout,
+                use_alibi=use_alibi
+            )
+            for _ in range(num_layers)
+        ])
 
-        self.encoder = nn.TransformerEncoder(
-            encoder_layer,
-            num_layers=num_layers
-        )
-
-        # Output projection
         self.output_layer = nn.Linear(
             embedding_dim,
             vocab_size
         )
 
     def forward(self, x):
-
-        # x shape:
-        # (batch_size, sequence_length)
-
         x = self.token_embedding(x)
 
         x = self.position_embedding(x)
 
-        x = self.encoder(x)
+        for layer in self.layers:
+            x = layer(x)
 
         logits = self.output_layer(x)
 
