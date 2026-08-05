@@ -1,0 +1,8 @@
+Task,Train Length,Test Length,Positional Encoding,Seed,Token Accuracy,Exact Match Accuracy
+addition,16,16,none,123,17.211237038823246,0.0
+addition,16,32,none,123,14.120029455081001,0.0
+addition,16,64,none,123,12.558801683585045,0.0
+addition,16,128,none,123,11.466231190948326,0.0
+addition,16,256,none,123,10.559359618389927,0.0
+addition,16,512,none,123,10.30590567079392,0.0
+addition,16,1024,none,123,10.124783446795012,0.0
