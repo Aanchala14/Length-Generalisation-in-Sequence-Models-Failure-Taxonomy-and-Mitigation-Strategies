@@ -86,6 +86,54 @@ def build_alibi_bias(num_heads, sequence_length, device):
 
     return slopes * bias
 
+def apply_rope(x):
+    """
+    Apply rotary positional embeddings to query/key tensors.
+
+    Shape:
+        x: (batch_size, num_heads, sequence_length, head_dim)
+    """
+
+    batch_size, num_heads, sequence_length, head_dim = x.shape
+
+    if head_dim % 2 != 0:
+        raise ValueError("RoPE requires an even head_dim")
+
+    positions = torch.arange(
+        sequence_length,
+        device=x.device
+    ).float()
+
+    inv_freq = 1.0 / (
+        10000 ** (
+            torch.arange(
+                0,
+                head_dim,
+                2,
+                device=x.device
+            ).float() / head_dim
+        )
+    )
+
+    freqs = torch.outer(
+        positions,
+        inv_freq
+    )
+
+    sin = freqs.sin().unsqueeze(0).unsqueeze(0)
+    cos = freqs.cos().unsqueeze(0).unsqueeze(0)
+
+    x_even = x[..., 0::2]
+    x_odd = x[..., 1::2]
+
+    rotated_even = x_even * cos - x_odd * sin
+    rotated_odd = x_even * sin + x_odd * cos
+
+    return torch.stack(
+        (rotated_even, rotated_odd),
+        dim=-1
+    ).flatten(-2)
+
 
 class MultiHeadSelfAttention(nn.Module):
     """
@@ -97,7 +145,8 @@ class MultiHeadSelfAttention(nn.Module):
         embedding_dim,
         num_heads,
         dropout=0.1,
-        use_alibi=False
+        use_alibi=False,
+        use_rope=False
     ):
         super().__init__()
 
@@ -110,7 +159,7 @@ class MultiHeadSelfAttention(nn.Module):
         self.num_heads = num_heads
         self.head_dim = embedding_dim // num_heads
         self.use_alibi = use_alibi
-
+        self.use_rope = use_rope
         self.q_proj = nn.Linear(
             embedding_dim,
             embedding_dim
@@ -171,6 +220,10 @@ class MultiHeadSelfAttention(nn.Module):
             self.v_proj(x)
         )
 
+        if self.use_rope:
+            q = apply_rope(q)
+            k = apply_rope(k)
+
         attention_scores = torch.matmul(
             q,
             k.transpose(-2, -1)
@@ -217,7 +270,8 @@ class TransformerBlock(nn.Module):
         num_heads,
         feedforward_dim,
         dropout=0.1,
-        use_alibi=False
+        use_alibi=False,
+        use_rope=False
     ):
         super().__init__()
 
@@ -225,7 +279,8 @@ class TransformerBlock(nn.Module):
             embedding_dim=embedding_dim,
             num_heads=num_heads,
             dropout=dropout,
-            use_alibi=use_alibi
+            use_alibi=use_alibi,
+            use_rope=use_rope
         )
 
         self.norm1 = nn.LayerNorm(embedding_dim)

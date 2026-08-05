@@ -38,22 +38,31 @@ class TransformerModel(nn.Module):
                 max_length=max_length,
                 embedding_dim=embedding_dim
             )
-            use_alibi = False
+            use_alibi = False,
+            use_rope = False
 
         elif positional_encoding == "sinusoidal":
             self.position_embedding = SinusoidalPositionalEncoding(
                 max_length=max_length,
                 embedding_dim=embedding_dim
             )
-            use_alibi = False
+            use_alibi = False,
+            use_rope = False
 
         elif positional_encoding in ["none", "nope"]:
             self.position_embedding = NoPositionalEncoding()
             use_alibi = False
+            use_rope = False
 
         elif positional_encoding == "alibi":
             self.position_embedding = NoPositionalEncoding()
             use_alibi = True
+            use_rope = False
+
+        elif positional_encoding == "rope":
+            self.position_embedding = NoPositionalEncoding()
+            use_alibi = False
+            use_rope = True
 
         else:
             raise ValueError(
@@ -66,7 +75,8 @@ class TransformerModel(nn.Module):
                 num_heads=num_heads,
                 feedforward_dim=feedforward_dim,
                 dropout=dropout,
-                use_alibi=use_alibi
+                use_alibi=use_alibi,
+                use_rope=use_rope
             )
             for _ in range(num_layers)
         ])
