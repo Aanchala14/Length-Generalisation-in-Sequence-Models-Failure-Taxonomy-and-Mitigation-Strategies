@@ -63,7 +63,12 @@ def main():
 
     task_name = config["task"]
 
-    output_dir = Path(f"data/synthetic/{task_name}")
+    output_dir = Path(
+    config.get(
+        "data_dir",
+        f"data/synthetic/{task_name}"
+        )
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
 
     train_task = create_task(

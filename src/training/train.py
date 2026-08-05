@@ -5,6 +5,7 @@ import torch
 from src.data.dataloader import get_dataloader
 from src.models.transformer import TransformerModel
 from src.utils.config import load_config
+from src.utils.seed import set_seed
 
 
 DEFAULT_CONFIG_PATH = "configs/copy_baseline.yaml"
@@ -26,6 +27,8 @@ def main():
     args = parser.parse_args()
 
     config = load_config(args.config)
+    seed = config.get("seed", 42)
+    set_seed(seed)
 
     device = torch.device(
     "cuda" if torch.cuda.is_available()
@@ -38,8 +41,18 @@ def main():
     task = config["task"]
     train_length = config["train_length"]
     positional_encoding = config.get(
-    "positional_encoding",
-    "learned"
+        "positional_encoding",
+        "learned"
+    )
+
+    experiment_name = config.get(
+        "experiment_name",
+        f"{positional_encoding}_seed{seed}"
+    )
+
+    checkpoint_dir = config.get(
+        "checkpoint_dir",
+        "outputs/checkpoints"
     )
 
     max_train_sequence_length = get_sequence_length(
@@ -57,8 +70,12 @@ def main():
         max(max_train_sequence_length, max_test_sequence_length)
     )
 
+    data_dir = config.get(
+        "data_dir",
+        f"data/synthetic/{task}"
+    )
     train_loader = get_dataloader(
-        f"data/synthetic/{task}/train.jsonl",
+        f"{data_dir}/train.jsonl",
         batch_size=config["batch_size"],
         shuffle=True
     )
@@ -121,11 +138,11 @@ def main():
     print("Training losses:")
     print(train_losses)
 
-    os.makedirs("outputs/checkpoints", exist_ok=True)
+    os.makedirs(checkpoint_dir, exist_ok=True)
 
     checkpoint_path = (
-        f"outputs/checkpoints/"
-        f"{task}_train{train_length}_{positional_encoding}.pt"
+        f"{checkpoint_dir}/"
+        f"{task}_train{train_length}_{experiment_name}.pt"
     )
 
     torch.save(

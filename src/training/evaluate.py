@@ -72,7 +72,26 @@ def main():
     "positional_encoding",
     "learned"
     )
+    seed = config.get("seed", 42)
+    experiment_name = config.get(
+        "experiment_name",
+        f"{positional_encoding}_seed{seed}"
+    )
+
+    checkpoint_dir = config.get(
+        "checkpoint_dir",
+        "outputs/checkpoints"
+   )
+    results_dir = config.get(
+         "results_dir",
+         "outputs/results"
+        )
     test_lengths = config["test_lengths"]
+
+    data_dir = config.get(
+        "data_dir",
+        f"data/synthetic/{task}"
+    )
 
     max_train_sequence_length = get_sequence_length(
         task,
@@ -101,9 +120,9 @@ def main():
     )
 
     checkpoint_path = (
-        f"outputs/checkpoints/"
-        f"{task}_train{train_length}_{positional_encoding}.pt"
-    )
+    f"{checkpoint_dir}/"
+    f"{task}_train{train_length}_{experiment_name}.pt"
+)
 
     model.load_state_dict(
         torch.load(
@@ -125,7 +144,7 @@ def main():
         print(f"\nEvaluating {task} length {length}")
 
         test_loader = get_dataloader(
-            f"data/synthetic/{task}/test_{length}.jsonl",
+            f"{data_dir}/test_{length}.jsonl",
             batch_size=config["batch_size"],
             shuffle=False
         )
@@ -170,23 +189,24 @@ def main():
         exact_match_accuracy = 100 * exact_matches / total_sequences
 
         results.append(
-            (
-                task,
-                train_length,
-                length,
-                token_accuracy,
-                exact_match_accuracy
-            )
-        )
+    (
+        task,
+        train_length,
+        length,
+        positional_encoding,
+        seed,
+        token_accuracy,
+        exact_match_accuracy
+    )
+)
 
         print(f"Token accuracy: {token_accuracy:.2f}%")
         print(f"Exact match accuracy: {exact_match_accuracy:.2f}%")
 
-    os.makedirs("outputs/results", exist_ok=True)
-
+    os.makedirs(results_dir, exist_ok=True)
     results_path = (
-        f"outputs/results/"
-        f"{task}_train{train_length}_{positional_encoding}_results.csv"
+        f"{results_dir}/"
+        f"{task}_train{train_length}_{experiment_name}_results.csv"
     )
 
     with open(results_path, "w", newline="") as file:
@@ -196,6 +216,8 @@ def main():
             "Task",
             "Train Length",
             "Test Length",
+            "Positional Encoding",
+            "Seed",
             "Token Accuracy",
             "Exact Match Accuracy"
         ])
