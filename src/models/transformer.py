@@ -38,7 +38,7 @@ class TransformerModel(nn.Module):
                 max_length=max_length,
                 embedding_dim=embedding_dim
             )
-            use_alibi = False,
+            use_alibi = False
             use_rope = False
 
         elif positional_encoding == "sinusoidal":
@@ -46,7 +46,7 @@ class TransformerModel(nn.Module):
                 max_length=max_length,
                 embedding_dim=embedding_dim
             )
-            use_alibi = False,
+            use_alibi = False
             use_rope = False
 
         elif positional_encoding in ["none", "nope"]:

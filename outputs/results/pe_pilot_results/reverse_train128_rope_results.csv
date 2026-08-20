@@ -1,5 +1,0 @@
-Task,Train Length,Test Length,Token Accuracy,Exact Match Accuracy
-reverse,128,128,22.9953125,0.0
-reverse,128,256,1.592578125,0.0
-reverse,128,512,1.3240234375,0.0
-reverse,128,1024,1.086328125,0.0

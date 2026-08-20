@@ -51,6 +51,7 @@ POSITIONAL_ENCODINGS = [
 ]
 
 SEEDS = [
+    42,
     123,
     2024,
 ]
