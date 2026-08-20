@@ -1,3 +1,17 @@
 .venv/
 __pycache__/
 *.pyc
+
+.DS_Store
+.codex_pptx_build/
+*.inspect.ndjson
+
+outputs/results/
+outputs/plots/
+outputs/checkpoints/
+data/synthetic/
+*.pt
+
+august_5_progress_update.pptx
+august_5_progress_update/
+august_5_progress_update_montage.png
