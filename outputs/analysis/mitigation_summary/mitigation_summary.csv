@@ -1,0 +1,14 @@
+Experiment,Task,Train Length,Positional Encoding,Seed,Exact@Train,Exact@256,Exact@512,Exact@1024,Token@Train,Token@1024,Generalisation Gap,Conclusion
+Copy Baseline Sinusoidal,copy,128,sinusoidal,42,99.8,0.0,0.0,0.0,99.9984375,0.9919921875,99.8,Fits training length; fails extrapolation
+Copy Baseline RoPE,copy,128,rope,42,100.0,0.0,0.0,0.0,100.0,0.99072265625,100.0,Fits training length; fails extrapolation
+Copy Mixed Sinusoidal,copy,128,sinusoidal,42,0.0,0.0,0.0,0.0,15.6234375,1.0076171875,0.0,Underfits training length
+Copy Single Control Sinusoidal,copy,128,sinusoidal,42,99.8,0.0,0.0,0.0,99.9984375,1.00947265625,99.8,Fits training length; fails extrapolation
+Copy Curriculum Sinusoidal,copy,128,sinusoidal,42,100.0,0.0,0.0,0.0,100.0,0.99072265625,100.0,Fits training length; fails extrapolation
+Copy Curriculum RoPE,copy,128,rope,42,100.0,0.0,0.0,0.0,100.0,1.0048828125,100.0,Fits training length; fails extrapolation
+Copy Randomised Sinusoidal,copy,128,sinusoidal,42,100.0,0.0,0.0,0.0,100.0,1.00146484375,100.0,Fits training length; fails extrapolation
+Copy Randomised RoPE,copy,128,rope,42,100.0,0.0,0.0,0.0,100.0,1.00869140625,100.0,Fits training length; fails extrapolation
+Reverse Baseline Learned,reverse,128,learned,42,100.0,0.0,0.0,0.0,100.0,1.0849609375,100.0,Fits training length; fails extrapolation
+Reverse Curriculum Learned,reverse,128,learned,42,100.0,0.0,0.0,0.0,100.0,1.07294921875,100.0,Fits training length; fails extrapolation
+Addition Baseline Learned,addition,16,learned,42,94.1,0.0,0.0,0.0,99.61424868904828,10.033866544343702,94.1,Fits training length; fails extrapolation
+Addition Mixed Learned,addition,16,learned,42,0.0,0.0,0.0,0.0,56.76115802171291,10.085887175483116,0.0,Underfits training length
+Addition Mixed Learned V2,addition,16,learned,42,0.0,0.0,0.0,0.0,61.566265060240966,10.06568481050957,0.0,Underfits training length

@@ -1,0 +1,6 @@
+Failure Type,Tasks Affected,Evidence,Interpretation
+Extrapolation collapse,"Addition, delayed copy, reverse",High Exact@Train but 0% Exact@Long in baseline and PE experiments.,The model learns a length-specific solution rather than a length-general algorithm.
+Training-length underfitting,"Addition, delayed copy, reverse",Exact@Train remains near 0% for some positional encodings and mitigation variants.,Some configurations are not valid extrapolation tests because they do not learn the in-distribution task.
+Seed instability,"Delayed copy learned, reverse sinusoidal",Large standard deviation and standard error in the multi-seed summary.,"Some results depend strongly on optimisation path, so multi-seed reporting is necessary."
+Attention diffusion,"Addition, delayed copy, reverse",Normalised attention entropy increases and local attention ratio decreases at failure lengths.,The attention pattern used at training length does not transfer reliably to longer contexts.
+Mitigation-resistant failure,"Delayed copy, reverse",Curriculum and randomised padded training keep Exact@Train high but Exact@256+ remains 0%.,Exposure to multiple shorter lengths is insufficient to force algorithmic length generalisation.
