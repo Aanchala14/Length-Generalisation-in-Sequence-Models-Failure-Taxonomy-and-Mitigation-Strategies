@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/aanchala/Length-Generalisation-in-Sequence-Models-Failure-Taxonomy-and-Mitigation-Strategies/src/training/train.py", line 206, in <module>
+    main()
+  File "/Users/aanchala/Length-Generalisation-in-Sequence-Models-Failure-Taxonomy-and-Mitigation-Strategies/src/training/train.py", line 31, in main
+    config = load_config(args.config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/aanchala/Length-Generalisation-in-Sequence-Models-Failure-Taxonomy-and-Mitigation-Strategies/src/utils/config.py", line 6, in load_config
+    with open(config_path, "r") as file:
+         ^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'configs/mitigation/reverse_curriculum_learned_seed42_stage4.yaml'
