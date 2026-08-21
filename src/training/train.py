@@ -78,7 +78,9 @@ def main():
         f"data/synthetic/{task}"
     )
 
-    train_lengths = config.get("train_lengths")
+    train_lengths = None
+    if not config.get("mixed_train_file", False):
+        train_lengths = config.get("train_lengths")
 
     if train_lengths:
         train_loaders = [

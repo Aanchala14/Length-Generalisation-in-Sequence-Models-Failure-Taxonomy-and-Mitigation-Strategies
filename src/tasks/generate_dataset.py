@@ -48,6 +48,88 @@ def generate_split(task, samples, output_file):
     dataset = task.generate_dataset(samples)
     task.save_jsonl(dataset, output_file)
 
+def pad_sample(sample, max_sequence_length, pad_token):
+    input_padding = max_sequence_length - len(sample["input"])
+    target_padding = max_sequence_length - len(sample["target"])
+
+    if input_padding < 0 or target_padding < 0:
+        raise ValueError(
+            "Sample is longer than max_sequence_length"
+        )
+
+    sample["input"] = (
+        sample["input"]
+        + [pad_token] * input_padding
+    )
+
+    sample["target"] = (
+        sample["target"]
+        + [pad_token] * target_padding
+    )
+
+    return sample
+
+def generate_mixed_train_split(config, output_dir):
+    import random
+
+    train_lengths = config["train_lengths"]
+    train_samples = config["train_samples"]
+
+    samples_per_length = train_samples // len(train_lengths)
+    remainder = train_samples % len(train_lengths)
+
+    task_name = config["task"]
+
+    if task_name == "addition":
+        max_sequence_length = (2 * max(train_lengths)) + 1
+    elif task_name == "copy":
+        max_sequence_length = (2 * max(train_lengths)) + 1
+    else:
+        max_sequence_length = max(train_lengths)
+
+    pad_token = config.get("pad_token")
+
+    if pad_token is None:
+        raise ValueError(
+            "mixed_train_file requires pad_token"
+        )
+
+    mixed_dataset = []
+
+    for index, length in enumerate(train_lengths):
+        task = create_task(
+            config,
+            length
+        )
+
+        n_samples = samples_per_length
+
+        if index < remainder:
+            n_samples += 1
+
+        dataset = task.generate_dataset(n_samples)
+
+        for sample in dataset:
+            mixed_dataset.append(
+                pad_sample(
+                    sample,
+                    max_sequence_length,
+                    pad_token
+                )
+            )
+
+    random.shuffle(mixed_dataset)
+
+    task = create_task(
+        config,
+        max(train_lengths)
+    )
+
+    task.save_jsonl(
+        mixed_dataset,
+        output_dir / "train.jsonl"
+    )
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -72,7 +154,13 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     train_lengths = config.get("train_lengths")
-    if train_lengths:
+
+    if train_lengths and config.get("mixed_train_file", False):
+        generate_mixed_train_split(
+            config,
+            output_dir
+        )
+    elif train_lengths:
         samples_per_length = config["train_samples"] // len(train_lengths)
         remainder = config["train_samples"] % len(train_lengths)
 
