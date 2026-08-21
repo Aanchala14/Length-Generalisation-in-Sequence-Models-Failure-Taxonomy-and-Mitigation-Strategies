@@ -71,17 +71,40 @@ def main():
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    train_task = create_task(
-        config,
-        config["train_length"]
-    )
+    train_lengths = config.get("train_lengths")
+    if train_lengths:
+        samples_per_length = config["train_samples"] // len(train_lengths)
+        remainder = config["train_samples"] % len(train_lengths)
 
-    generate_split(
-        train_task,
-        config["train_samples"],
-        output_dir / "train.jsonl"
-    )
+        for index, length in enumerate(train_lengths):
+            train_task = create_task(
+                config,
+                length
+            )
 
+            n_samples = samples_per_length
+
+            if index < remainder:
+                n_samples += 1
+
+            generate_split(
+                train_task,
+                n_samples,
+                output_dir / f"train_{length}.jsonl"
+            )
+
+    else:
+        train_task = create_task(
+            config,
+            config["train_length"]
+            )
+
+        generate_split(
+            train_task,
+            config["train_samples"],
+            output_dir / "train.jsonl"
+        )
+    
     validation_task = create_task(
         config,
         config["train_length"]
