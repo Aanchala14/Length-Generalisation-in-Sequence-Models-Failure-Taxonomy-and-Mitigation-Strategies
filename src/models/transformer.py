@@ -86,14 +86,26 @@ class TransformerModel(nn.Module):
             vocab_size
         )
 
-    def forward(self, x):
+    def forward(self, x, return_attention=False):
         x = self.token_embedding(x)
 
         x = self.position_embedding(x)
 
+        attention_maps = []
+
         for layer in self.layers:
-            x = layer(x)
+            if return_attention:
+                x, attention_weights = layer(
+                    x,
+                    return_attention=True
+                )
+                attention_maps.append(attention_weights)
+            else:
+                x = layer(x)
 
         logits = self.output_layer(x)
+
+        if return_attention:
+            return logits, attention_maps
 
         return logits

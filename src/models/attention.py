@@ -205,7 +205,7 @@ class MultiHeadSelfAttention(nn.Module):
             self.embedding_dim
         )
 
-    def forward(self, x):
+    def forward(self, x, return_attention=False):
         batch_size, sequence_length, _ = x.shape
 
         q = self.split_heads(
@@ -256,7 +256,11 @@ class MultiHeadSelfAttention(nn.Module):
 
         context = self.combine_heads(context)
 
-        return self.out_proj(context)
+        output = self.out_proj(context)
+        if return_attention:
+            return output, attention_weights
+
+        return output
 
 
 class TransformerBlock(nn.Module):
@@ -301,8 +305,15 @@ class TransformerBlock(nn.Module):
 
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, x):
-        attention_output = self.attention(x)
+    def forward(self, x, return_attention=False):
+        if return_attention:
+            attention_output, attention_weights = self.attention(
+                x,
+                return_attention=True
+            )
+        else:
+            attention_output = self.attention(x)
+            attention_weights = None
 
         x = self.norm1(
             x + self.dropout(attention_output)
@@ -314,4 +325,6 @@ class TransformerBlock(nn.Module):
             x + self.dropout(feedforward_output)
         )
 
+        if return_attention:
+            return x, attention_weights
         return x
