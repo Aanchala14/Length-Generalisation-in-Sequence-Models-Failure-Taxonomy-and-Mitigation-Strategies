@@ -110,6 +110,18 @@ def main():
         positional_encoding=positional_encoding
     ).to(device)
 
+    initial_checkpoint = config.get("initial_checkpoint")
+
+    if initial_checkpoint:
+        model.load_state_dict(
+            torch.load(
+                initial_checkpoint,
+                map_location=device
+            )
+        )
+
+        print(f"Loaded initial checkpoint from: {initial_checkpoint}")
+
     pad_token = config.get("pad_token")
 
     criterion = (
