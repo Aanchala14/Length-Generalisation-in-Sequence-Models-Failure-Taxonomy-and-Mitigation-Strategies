@@ -1,0 +1,8 @@
+Using device: cuda
+Loaded model from: outputs/checkpoints/realworld/selfregulationscp2_train256_learned_seed123.pt
+Length 256 | Accuracy: 49.44%
+Length 512 | Accuracy: 55.56%
+Length 1024 | Accuracy: 52.22%
+Length 1152 | Accuracy: 53.89%
+
+Results saved to: outputs/results/realworld/selfregulationscp2_train256_learned_seed123_results.csv
