@@ -1,0 +1,43 @@
+Task,Positional Encoding,Encoding Label,Seed,Train Length,Test Length,Carry Condition,Token Count,Error Count,Error Rate (%)
+addition,learned,Learned,42,16,16,No carry-in,8654,20,0.23110700254217703
+addition,learned,Learned,42,16,16,Carry-in,7346,44,0.5989654233596515
+addition,learned,Learned,42,16,16,Leading carry digit,591,0,0.0
+addition,learned,Learned,42,16,32,No carry-in,16504,14546,88.1362094037809
+addition,learned,Learned,42,16,32,Carry-in,15496,13806,89.09395973154362
+addition,learned,Learned,42,16,32,Leading carry digit,607,337,55.518945634266885
+addition,learned,Learned,42,16,64,No carry-in,32570,29052,89.19864906355542
+addition,learned,Learned,42,16,64,Carry-in,31430,28165,89.61183582564429
+addition,learned,Learned,42,16,64,Leading carry digit,599,131,21.869782971619365
+addition,learned,Learned,42,16,128,No carry-in,64557,57842,89.59833945195719
+addition,learned,Learned,42,16,128,Carry-in,63443,56813,89.54967451097836
+addition,learned,Learned,42,16,128,Leading carry digit,567,174,30.687830687830687
+addition,learned,Learned,42,16,256,No carry-in,128380,115297,89.80916030534351
+addition,learned,Learned,42,16,256,Carry-in,127620,114792,89.94828396803008
+addition,learned,Learned,42,16,256,Leading carry digit,593,339,57.16694772344014
+addition,learned,Learned,42,16,512,No carry-in,256782,230611,89.80808623657421
+addition,learned,Learned,42,16,512,Carry-in,255218,229311,89.84907020664687
+addition,learned,Learned,42,16,512,Leading carry digit,595,8,1.3445378151260505
+addition,learned,Learned,42,16,1024,No carry-in,512922,461439,89.96280136161053
+addition,learned,Learned,42,16,1024,Carry-in,511078,460334,90.07118287228172
+addition,learned,Learned,42,16,1024,Leading carry digit,610,29,4.754098360655738
+addition,sinusoidal,Sinusoidal,42,16,16,No carry-in,8654,37,0.4275479547030275
+addition,sinusoidal,Sinusoidal,42,16,16,Carry-in,7346,17,0.2314184590253199
+addition,sinusoidal,Sinusoidal,42,16,16,Leading carry digit,591,0,0.0
+addition,sinusoidal,Sinusoidal,42,16,32,No carry-in,16504,14599,88.45734367426078
+addition,sinusoidal,Sinusoidal,42,16,32,Carry-in,15496,13708,88.46153846153847
+addition,sinusoidal,Sinusoidal,42,16,32,Leading carry digit,607,13,2.1416803953871497
+addition,sinusoidal,Sinusoidal,42,16,64,No carry-in,32570,29250,89.80657046361682
+addition,sinusoidal,Sinusoidal,42,16,64,Carry-in,31430,28327,90.12726694241171
+addition,sinusoidal,Sinusoidal,42,16,64,Leading carry digit,599,145,24.207011686143574
+addition,sinusoidal,Sinusoidal,42,16,128,No carry-in,64557,58114,90.01967253744753
+addition,sinusoidal,Sinusoidal,42,16,128,Carry-in,63443,57107,90.01308260958656
+addition,sinusoidal,Sinusoidal,42,16,128,Leading carry digit,567,0,0.0
+addition,sinusoidal,Sinusoidal,42,16,256,No carry-in,128380,115474,89.94703224801371
+addition,sinusoidal,Sinusoidal,42,16,256,Carry-in,127620,114727,89.89735151230215
+addition,sinusoidal,Sinusoidal,42,16,256,Leading carry digit,593,9,1.5177065767284992
+addition,sinusoidal,Sinusoidal,42,16,512,No carry-in,256782,230809,89.8851944450935
+addition,sinusoidal,Sinusoidal,42,16,512,Carry-in,255218,229798,90.0398874687522
+addition,sinusoidal,Sinusoidal,42,16,512,Leading carry digit,595,0,0.0
+addition,sinusoidal,Sinusoidal,42,16,1024,No carry-in,512922,461646,90.0031583749576
+addition,sinusoidal,Sinusoidal,42,16,1024,Carry-in,511078,460113,90.0279409405218
+addition,sinusoidal,Sinusoidal,42,16,1024,Leading carry digit,610,439,71.9672131147541

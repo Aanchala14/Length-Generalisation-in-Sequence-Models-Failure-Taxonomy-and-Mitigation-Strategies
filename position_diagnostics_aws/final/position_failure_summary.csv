@@ -1,0 +1,6 @@
+Task,Positional Encoding,Seed,Train Length,First Unseen Length,Overall Token Error (%),Start-Bin Error (%),Middle-Bin Error (%),End-Bin Error (%),Position Error Range (percentage points),Uniform Error Reference (%),Failure Pattern,Diagnostic Scope
+Addition,Learned,42,16,32,87.98417517710921,82.725,86.50898909519599,89.93333333333334,8.541666666666671,90.0,Uniform near-chance collapse,Representative seed-42 checkpoint; multi-seed eligibility is reported separately
+Addition,Sinusoidal,42,16,32,86.8525163308492,77.125,83.87120542292956,89.5,12.74166666666666,90.0,Distributed near-chance collapse,Representative seed-42 checkpoint; multi-seed eligibility is reported separately
+Delayed Copy,RoPE,42,128,256,98.964453125,98.99615384615385,98.89676923076922,99.052,0.22000000000001307,99.0,Uniform near-chance collapse,Representative seed-42 checkpoint; multi-seed eligibility is reported separately
+Delayed Copy,Sinusoidal,42,128,256,98.998046875,98.9423076923077,98.96653846153845,99.1,0.22692307692307168,99.0,Uniform near-chance collapse,Representative seed-42 checkpoint; multi-seed eligibility is reported separately
+Reverse,Learned,42,128,256,98.78671875,98.86538461538461,98.84815384615385,98.304,0.7120000000000033,99.0,Uniform near-chance collapse,Representative seed-42 checkpoint; multi-seed eligibility is reported separately

@@ -418,6 +418,9 @@ def add_uniform_token_reference(
 ):
     """
     Show the uniform valid-token error reference.
+
+    The annotation is offset below the reference line so it
+    does not overlap the mean error curves.
     """
 
     reference = (
@@ -440,19 +443,28 @@ def add_uniform_token_reference(
         ),
         xy=(
             0.98,
-            0.84
+            reference
         ),
-        xycoords="axes fraction",
+        xycoords=(
+            "axes fraction",
+            "data"
+        ),
+        xytext=(
+            0,
+            -12
+        ),
+        textcoords="offset points",
         ha="right",
-        va="center",
+        va="top",
         fontsize=8.0,
         color="#555555",
         bbox={
             "boxstyle": "round,pad=0.18",
             "facecolor": "white",
             "edgecolor": "none",
-            "alpha": 0.90,
+            "alpha": 0.94,
         },
+        zorder=6
     )
 
 

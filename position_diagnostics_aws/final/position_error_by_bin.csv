@@ -1,0 +1,261 @@
+Task,Task Label,Positional Encoding,Encoding Label,Seed,Train Length,Test Length,Position Bin,Bin Start (%),Bin End (%),Token Count,Error Count,Error Rate (%)
+addition,Addition,learned,Learned,42,16,16,0,0,10,2000,5,0.25
+addition,Addition,learned,Learned,42,16,16,1,10,20,2000,11,0.55
+addition,Addition,learned,Learned,42,16,16,2,20,30,1591,3,0.18856065367693275
+addition,Addition,learned,Learned,42,16,16,3,30,40,1409,4,0.28388928317955997
+addition,Addition,learned,Learned,42,16,16,4,40,50,1591,3,0.18856065367693275
+addition,Addition,learned,Learned,42,16,16,5,50,60,2000,17,0.85
+addition,Addition,learned,Learned,42,16,16,6,60,70,1409,4,0.28388928317955997
+addition,Addition,learned,Learned,42,16,16,7,70,80,1591,14,0.8799497171590195
+addition,Addition,learned,Learned,42,16,16,8,80,90,2000,3,0.15
+addition,Addition,learned,Learned,42,16,16,9,90,100,1000,0,0.0
+addition,Addition,learned,Learned,42,16,32,0,0,10,4000,3309,82.725
+addition,Addition,learned,Learned,42,16,32,1,10,20,3000,2696,89.86666666666666
+addition,Addition,learned,Learned,42,16,32,2,20,30,3000,2548,84.93333333333334
+addition,Addition,learned,Learned,42,16,32,3,30,40,3607,3198,88.66093706681453
+addition,Addition,learned,Learned,42,16,32,4,40,50,3000,2500,83.33333333333333
+addition,Addition,learned,Learned,42,16,32,5,50,60,3393,3043,89.68464485705864
+addition,Addition,learned,Learned,42,16,32,6,60,70,3607,3238,89.76989187690602
+addition,Addition,learned,Learned,42,16,32,7,70,80,3000,2721,90.7
+addition,Addition,learned,Learned,42,16,32,8,80,90,3000,2738,91.26666666666667
+addition,Addition,learned,Learned,42,16,32,9,90,100,3000,2698,89.93333333333334
+addition,Addition,learned,Learned,42,16,64,0,0,10,7000,5711,81.58571428571429
+addition,Addition,learned,Learned,42,16,64,1,10,20,6000,5299,88.31666666666666
+addition,Addition,learned,Learned,42,16,64,2,20,30,7000,6079,86.84285714285714
+addition,Addition,learned,Learned,42,16,64,3,30,40,6000,5391,89.85
+addition,Addition,learned,Learned,42,16,64,4,40,50,6599,5969,90.45309895438703
+addition,Addition,learned,Learned,42,16,64,5,50,60,6401,5769,90.12654272769879
+addition,Addition,learned,Learned,42,16,64,6,60,70,6599,5954,90.22579178663433
+addition,Addition,learned,Learned,42,16,64,7,70,80,6401,5778,90.26714575847524
+addition,Addition,learned,Learned,42,16,64,8,80,90,6599,5978,90.58948325503864
+addition,Addition,learned,Learned,42,16,64,9,90,100,6000,5420,90.33333333333333
+addition,Addition,learned,Learned,42,16,128,0,0,10,13000,10997,84.5923076923077
+addition,Addition,learned,Learned,42,16,128,1,10,20,13000,11662,89.70769230769231
+addition,Addition,learned,Learned,42,16,128,2,20,30,13000,11663,89.71538461538462
+addition,Addition,learned,Learned,42,16,128,3,30,40,13000,11690,89.92307692307692
+addition,Addition,learned,Learned,42,16,128,4,40,50,12567,11332,90.17267446486831
+addition,Addition,learned,Learned,42,16,128,5,50,60,13000,11677,89.82307692307693
+addition,Addition,learned,Learned,42,16,128,6,60,70,13000,11684,89.87692307692308
+addition,Addition,learned,Learned,42,16,128,7,70,80,13000,11669,89.76153846153846
+addition,Addition,learned,Learned,42,16,128,8,80,90,13000,11693,89.94615384615385
+addition,Addition,learned,Learned,42,16,128,9,90,100,12000,10762,89.68333333333334
+addition,Addition,learned,Learned,42,16,256,0,0,10,26000,23020,88.53846153846153
+addition,Addition,learned,Learned,42,16,256,1,10,20,26000,23386,89.94615384615385
+addition,Addition,learned,Learned,42,16,256,2,20,30,25593,22980,89.79017700152386
+addition,Addition,learned,Learned,42,16,256,3,30,40,25407,22842,89.90435706695006
+addition,Addition,learned,Learned,42,16,256,4,40,50,25593,23021,89.95037705622632
+addition,Addition,learned,Learned,42,16,256,5,50,60,26000,23452,90.2
+addition,Addition,learned,Learned,42,16,256,6,60,70,25407,22861,89.97913960719487
+addition,Addition,learned,Learned,42,16,256,7,70,80,25593,23023,89.95819169304107
+addition,Addition,learned,Learned,42,16,256,8,80,90,26000,23434,90.13076923076923
+addition,Addition,learned,Learned,42,16,256,9,90,100,25000,22409,89.636
+addition,Addition,learned,Learned,42,16,512,0,0,10,52000,45826,88.12692307692308
+addition,Addition,learned,Learned,42,16,512,1,10,20,51000,45806,89.8156862745098
+addition,Addition,learned,Learned,42,16,512,2,20,30,51000,45850,89.90196078431373
+addition,Addition,learned,Learned,42,16,512,3,30,40,51595,46434,89.99709274154472
+addition,Addition,learned,Learned,42,16,512,4,40,50,51000,45987,90.17058823529412
+addition,Addition,learned,Learned,42,16,512,5,50,60,51405,46191,89.85701779982492
+addition,Addition,learned,Learned,42,16,512,6,60,70,51595,46300,89.73737765287333
+addition,Addition,learned,Learned,42,16,512,7,70,80,51000,45863,89.92745098039215
+addition,Addition,learned,Learned,42,16,512,8,80,90,51000,45807,89.81764705882352
+addition,Addition,learned,Learned,42,16,512,9,90,100,51000,45866,89.93333333333334
+addition,Addition,learned,Learned,42,16,1024,0,0,10,103000,92174,89.48932038834951
+addition,Addition,learned,Learned,42,16,1024,1,10,20,102000,91769,89.96960784313725
+addition,Addition,learned,Learned,42,16,1024,2,20,30,103000,92746,90.04466019417475
+addition,Addition,learned,Learned,42,16,1024,3,30,40,102000,91632,89.83529411764705
+addition,Addition,learned,Learned,42,16,1024,4,40,50,102610,92345,89.99610174446936
+addition,Addition,learned,Learned,42,16,1024,5,50,60,102390,92219,90.06641273561871
+addition,Addition,learned,Learned,42,16,1024,6,60,70,102610,92436,90.08478705779164
+addition,Addition,learned,Learned,42,16,1024,7,70,80,102390,92221,90.06836605137221
+addition,Addition,learned,Learned,42,16,1024,8,80,90,102610,92417,90.06627034402105
+addition,Addition,learned,Learned,42,16,1024,9,90,100,102000,91843,90.0421568627451
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,0,0,10,2000,3,0.15
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,1,10,20,2000,7,0.35
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,2,20,30,1591,7,0.43997485857950974
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,3,30,40,1409,7,0.49680624556423
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,4,40,50,1591,5,0.3142677561282212
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,5,50,60,2000,11,0.55
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,6,60,70,1409,5,0.35486160397445
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,7,70,80,1591,6,0.3771213073538655
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,8,80,90,2000,3,0.15
+addition,Addition,sinusoidal,Sinusoidal,42,16,16,9,90,100,1000,0,0.0
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,0,0,10,4000,3085,77.125
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,1,10,20,3000,2696,89.86666666666666
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,2,20,30,3000,2675,89.16666666666667
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,3,30,40,3607,3227,89.46492930413086
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,4,40,50,3000,2500,83.33333333333333
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,5,50,60,3393,2864,84.40907751252578
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,6,60,70,3607,3210,88.99362350984197
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,7,70,80,3000,2682,89.4
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,8,80,90,3000,2696,89.86666666666666
+addition,Addition,sinusoidal,Sinusoidal,42,16,32,9,90,100,3000,2685,89.5
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,0,0,10,7000,5933,84.75714285714285
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,1,10,20,6000,5373,89.55
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,2,20,30,7000,6315,90.21428571428571
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,3,30,40,6000,5354,89.23333333333333
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,4,40,50,6599,5873,88.99833308076981
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,5,50,60,6401,5798,90.57959693797844
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,6,60,70,6599,5952,90.19548416426731
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,7,70,80,6401,5751,89.84533666614591
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,8,80,90,6599,5962,90.34702227610244
+addition,Addition,sinusoidal,Sinusoidal,42,16,64,9,90,100,6000,5411,90.18333333333334
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,0,0,10,13000,11215,86.26923076923077
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,1,10,20,13000,11716,90.12307692307692
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,2,20,30,13000,11606,89.27692307692308
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,3,30,40,13000,11668,89.75384615384615
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,4,40,50,12567,11290,89.83846582318772
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,5,50,60,13000,11741,90.31538461538462
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,6,60,70,13000,11710,90.07692307692308
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,7,70,80,13000,11706,90.04615384615384
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,8,80,90,13000,11728,90.21538461538462
+addition,Addition,sinusoidal,Sinusoidal,42,16,128,9,90,100,12000,10841,90.34166666666667
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,0,0,10,26000,22878,87.99230769230769
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,1,10,20,26000,23456,90.21538461538462
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,2,20,30,25593,22991,89.833157504005
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,3,30,40,25407,22877,90.04211437792735
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,4,40,50,25593,22903,89.48931348415583
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,5,50,60,26000,23402,90.00769230769231
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,6,60,70,25407,22839,89.89254929743771
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,7,70,80,25593,23007,89.89567459852303
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,8,80,90,26000,23394,89.97692307692307
+addition,Addition,sinusoidal,Sinusoidal,42,16,256,9,90,100,25000,22463,89.852
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,0,0,10,52000,46228,88.9
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,1,10,20,51000,46061,90.3156862745098
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,2,20,30,51000,45762,89.72941176470589
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,3,30,40,51595,46469,90.06492877216785
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,4,40,50,51000,45883,89.96666666666667
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,5,50,60,51405,46110,89.6994455792238
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,6,60,70,51595,46429,89.98740188002714
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,7,70,80,51000,45845,89.8921568627451
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,8,80,90,51000,45939,90.0764705882353
+addition,Addition,sinusoidal,Sinusoidal,42,16,512,9,90,100,51000,45881,89.96274509803922
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,0,0,10,103000,92648,89.9495145631068
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,1,10,20,102000,91919,90.11666666666666
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,2,20,30,103000,92682,89.98252427184465
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,3,30,40,102000,91634,89.83725490196079
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,4,40,50,102610,92252,89.90546730338174
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,5,50,60,102390,92331,90.17579841781424
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,6,60,70,102610,92342,89.99317805282136
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,7,70,80,102390,92220,90.06738939349546
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,8,80,90,102610,92307,89.95906831692818
+addition,Addition,sinusoidal,Sinusoidal,42,16,1024,9,90,100,102000,91863,90.06176470588235
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,0,0,10,13000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,1,10,20,13000,2,0.015384615384615385
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,2,20,30,13000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,3,30,40,13000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,4,40,50,12000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,5,50,60,13000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,6,60,70,13000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,7,70,80,13000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,8,80,90,13000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,128,9,90,100,12000,0,0.0
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,0,0,10,26000,25725,98.9423076923077
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,1,10,20,26000,25712,98.8923076923077
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,2,20,30,25000,24774,99.096
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,3,30,40,26000,25770,99.11538461538461
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,4,40,50,25000,24740,98.96
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,5,50,60,26000,25733,98.97307692307692
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,6,60,70,26000,25711,98.88846153846154
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,7,70,80,25000,24749,98.996
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,8,80,90,26000,25746,99.02307692307693
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,256,9,90,100,25000,24775,99.1
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,0,0,10,52000,51442,98.92692307692307
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,1,10,20,51000,50476,98.97254901960784
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,2,20,30,51000,50466,98.95294117647059
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,3,30,40,51000,50459,98.93921568627451
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,4,40,50,51000,50477,98.97450980392156
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,5,50,60,52000,51464,98.96923076923076
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,6,60,70,51000,50417,98.85686274509804
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,7,70,80,51000,50453,98.92745098039215
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,8,80,90,51000,50459,98.93921568627451
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,512,9,90,100,51000,50396,98.8156862745098
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,0,0,10,103000,101972,99.00194174757281
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,1,10,20,102000,100967,98.98725490196078
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,2,20,30,103000,101976,99.00582524271844
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,3,30,40,102000,100985,99.00490196078431
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,4,40,50,102000,101003,99.02254901960784
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,5,50,60,103000,101974,99.00388349514563
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,6,60,70,102000,100962,98.98235294117647
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,7,70,80,103000,102018,99.04660194174757
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,8,80,90,102000,101046,99.06470588235294
+copy,Delayed Copy,sinusoidal,Sinusoidal,42,128,1024,9,90,100,102000,100939,98.95980392156862
+copy,Delayed Copy,rope,RoPE,42,128,128,0,0,10,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,1,10,20,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,2,20,30,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,3,30,40,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,4,40,50,12000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,5,50,60,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,6,60,70,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,7,70,80,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,8,80,90,13000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,128,9,90,100,12000,0,0.0
+copy,Delayed Copy,rope,RoPE,42,128,256,0,0,10,26000,25739,98.99615384615385
+copy,Delayed Copy,rope,RoPE,42,128,256,1,10,20,26000,25720,98.92307692307692
+copy,Delayed Copy,rope,RoPE,42,128,256,2,20,30,25000,24756,99.024
+copy,Delayed Copy,rope,RoPE,42,128,256,3,30,40,26000,25736,98.98461538461538
+copy,Delayed Copy,rope,RoPE,42,128,256,4,40,50,25000,24708,98.832
+copy,Delayed Copy,rope,RoPE,42,128,256,5,50,60,26000,25730,98.96153846153847
+copy,Delayed Copy,rope,RoPE,42,128,256,6,60,70,26000,25732,98.96923076923076
+copy,Delayed Copy,rope,RoPE,42,128,256,7,70,80,25000,24729,98.916
+copy,Delayed Copy,rope,RoPE,42,128,256,8,80,90,26000,25736,98.98461538461538
+copy,Delayed Copy,rope,RoPE,42,128,256,9,90,100,25000,24763,99.052
+copy,Delayed Copy,rope,RoPE,42,128,512,0,0,10,52000,51449,98.94038461538462
+copy,Delayed Copy,rope,RoPE,42,128,512,1,10,20,51000,50466,98.95294117647059
+copy,Delayed Copy,rope,RoPE,42,128,512,2,20,30,51000,50504,99.02745098039216
+copy,Delayed Copy,rope,RoPE,42,128,512,3,30,40,51000,50506,99.03137254901961
+copy,Delayed Copy,rope,RoPE,42,128,512,4,40,50,51000,50481,98.98235294117647
+copy,Delayed Copy,rope,RoPE,42,128,512,5,50,60,52000,51500,99.03846153846153
+copy,Delayed Copy,rope,RoPE,42,128,512,6,60,70,51000,50487,98.99411764705883
+copy,Delayed Copy,rope,RoPE,42,128,512,7,70,80,51000,50487,98.99411764705883
+copy,Delayed Copy,rope,RoPE,42,128,512,8,80,90,51000,50507,99.03333333333333
+copy,Delayed Copy,rope,RoPE,42,128,512,9,90,100,51000,50525,99.06862745098039
+copy,Delayed Copy,rope,RoPE,42,128,1024,0,0,10,103000,101936,98.96699029126214
+copy,Delayed Copy,rope,RoPE,42,128,1024,1,10,20,102000,100971,98.99117647058823
+copy,Delayed Copy,rope,RoPE,42,128,1024,2,20,30,103000,102039,99.06699029126213
+copy,Delayed Copy,rope,RoPE,42,128,1024,3,30,40,102000,101019,99.03823529411764
+copy,Delayed Copy,rope,RoPE,42,128,1024,4,40,50,102000,100940,98.96078431372548
+copy,Delayed Copy,rope,RoPE,42,128,1024,5,50,60,103000,101982,99.01165048543689
+copy,Delayed Copy,rope,RoPE,42,128,1024,6,60,70,102000,101047,99.0656862745098
+copy,Delayed Copy,rope,RoPE,42,128,1024,7,70,80,103000,101980,99.00970873786407
+copy,Delayed Copy,rope,RoPE,42,128,1024,8,80,90,102000,101002,99.02156862745097
+copy,Delayed Copy,rope,RoPE,42,128,1024,9,90,100,102000,100939,98.95980392156862
+reverse,Reverse,learned,Learned,42,128,128,0,0,10,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,1,10,20,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,2,20,30,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,3,30,40,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,4,40,50,12000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,5,50,60,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,6,60,70,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,7,70,80,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,8,80,90,13000,0,0.0
+reverse,Reverse,learned,Learned,42,128,128,9,90,100,12000,0,0.0
+reverse,Reverse,learned,Learned,42,128,256,0,0,10,26000,25705,98.86538461538461
+reverse,Reverse,learned,Learned,42,128,256,1,10,20,26000,25731,98.96538461538462
+reverse,Reverse,learned,Learned,42,128,256,2,20,30,25000,24754,99.016
+reverse,Reverse,learned,Learned,42,128,256,3,30,40,26000,25718,98.91538461538461
+reverse,Reverse,learned,Learned,42,128,256,4,40,50,25000,24751,99.004
+reverse,Reverse,learned,Learned,42,128,256,5,50,60,26000,25660,98.6923076923077
+reverse,Reverse,learned,Learned,42,128,256,6,60,70,26000,25680,98.76923076923077
+reverse,Reverse,learned,Learned,42,128,256,7,70,80,25000,24690,98.76
+reverse,Reverse,learned,Learned,42,128,256,8,80,90,26000,25629,98.57307692307693
+reverse,Reverse,learned,Learned,42,128,256,9,90,100,25000,24576,98.304
+reverse,Reverse,learned,Learned,42,128,512,0,0,10,52000,51466,98.97307692307692
+reverse,Reverse,learned,Learned,42,128,512,1,10,20,51000,50472,98.96470588235294
+reverse,Reverse,learned,Learned,42,128,512,2,20,30,51000,50449,98.91960784313726
+reverse,Reverse,learned,Learned,42,128,512,3,30,40,51000,50456,98.93333333333334
+reverse,Reverse,learned,Learned,42,128,512,4,40,50,51000,50449,98.91960784313726
+reverse,Reverse,learned,Learned,42,128,512,5,50,60,52000,51417,98.87884615384615
+reverse,Reverse,learned,Learned,42,128,512,6,60,70,51000,50396,98.8156862745098
+reverse,Reverse,learned,Learned,42,128,512,7,70,80,51000,50356,98.73725490196078
+reverse,Reverse,learned,Learned,42,128,512,8,80,90,51000,50398,98.81960784313725
+reverse,Reverse,learned,Learned,42,128,512,9,90,100,51000,50369,98.76274509803922
+reverse,Reverse,learned,Learned,42,128,1024,0,0,10,103000,101980,99.00970873786407
+reverse,Reverse,learned,Learned,42,128,1024,1,10,20,102000,100927,98.94803921568628
+reverse,Reverse,learned,Learned,42,128,1024,2,20,30,103000,101851,98.88446601941747
+reverse,Reverse,learned,Learned,42,128,1024,3,30,40,102000,100899,98.92058823529412
+reverse,Reverse,learned,Learned,42,128,1024,4,40,50,102000,100900,98.92156862745098
+reverse,Reverse,learned,Learned,42,128,1024,5,50,60,103000,101909,98.94077669902913
+reverse,Reverse,learned,Learned,42,128,1024,6,60,70,102000,100888,98.90980392156862
+reverse,Reverse,learned,Learned,42,128,1024,7,70,80,103000,101905,98.9368932038835
+reverse,Reverse,learned,Learned,42,128,1024,8,80,90,102000,100853,98.87549019607843
+reverse,Reverse,learned,Learned,42,128,1024,9,90,100,102000,100778,98.80196078431372

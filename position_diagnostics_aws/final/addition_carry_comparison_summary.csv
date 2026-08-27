@@ -1,0 +1,15 @@
+Task,Positional Encoding,Encoding Label,Seed,Train Length,Test Length,Incoming Carry Error (%),No Incoming Carry Error (%),Carry Minus No-Carry (percentage points),Absolute Carry Difference (percentage points),Interpretation
+addition,learned,Learned,42,16,16,0.5989654233596515,0.231107002542177,0.36785842081747455,0.36785842081747455,Carry and no-carry error differ by less than one percentage point
+addition,learned,Learned,42,16,32,89.09395973154362,88.1362094037809,0.9577503277627244,0.9577503277627244,Carry and no-carry error differ by less than one percentage point
+addition,learned,Learned,42,16,64,89.61183582564429,89.19864906355542,0.41318676208886984,0.41318676208886984,Carry and no-carry error differ by less than one percentage point
+addition,learned,Learned,42,16,128,89.54967451097836,89.59833945195719,-0.048664940978824234,0.048664940978824234,Carry and no-carry error differ by less than one percentage point
+addition,learned,Learned,42,16,256,89.94828396803008,89.80916030534351,0.13912366268657195,0.13912366268657195,Carry and no-carry error differ by less than one percentage point
+addition,learned,Learned,42,16,512,89.84907020664687,89.80808623657421,0.040983970072659304,0.040983970072659304,Carry and no-carry error differ by less than one percentage point
+addition,learned,Learned,42,16,1024,90.07118287228172,89.96280136161053,0.10838151067119384,0.10838151067119384,Carry and no-carry error differ by less than one percentage point
+addition,sinusoidal,Sinusoidal,42,16,16,0.2314184590253199,0.4275479547030275,-0.19612949567770757,0.19612949567770757,Carry and no-carry error differ by less than one percentage point
+addition,sinusoidal,Sinusoidal,42,16,32,88.46153846153847,88.45734367426078,0.004194787277683076,0.004194787277683076,Carry and no-carry error differ by less than one percentage point
+addition,sinusoidal,Sinusoidal,42,16,64,90.12726694241172,89.80657046361682,0.3206964787949005,0.3206964787949005,Carry and no-carry error differ by less than one percentage point
+addition,sinusoidal,Sinusoidal,42,16,128,90.01308260958656,90.01967253744753,-0.006589927860972011,0.006589927860972011,Carry and no-carry error differ by less than one percentage point
+addition,sinusoidal,Sinusoidal,42,16,256,89.89735151230215,89.94703224801371,-0.0496807357115614,0.0496807357115614,Carry and no-carry error differ by less than one percentage point
+addition,sinusoidal,Sinusoidal,42,16,512,90.0398874687522,89.8851944450935,0.15469302365869453,0.15469302365869453,Carry and no-carry error differ by less than one percentage point
+addition,sinusoidal,Sinusoidal,42,16,1024,90.0279409405218,90.0031583749576,0.02478256556420888,0.02478256556420888,Carry and no-carry error differ by less than one percentage point
