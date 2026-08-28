@@ -1,0 +1,3156 @@
+% The document class supplies options to control rendering of some standard
+% features in the result.  The goal is for uniform style, so some attention 
+% to detail is *vital* with all fields.  Each field (i.e., text inside the
+% curly braces below, so the MEng text inside {MEng} for instance) should 
+% take into account the following:
+%
+% - author name       should be formatted as "FirstName LastName"
+%   (not "Initial LastName" for example),
+% - supervisor name   should be formatted as "Title FirstName LastName"
+%   (where Title is "Dr." or "Prof." for example),
+% - degree programme  should be "BSc", "MEng", "MSci", "MSc" or "PhD",
+% - dissertation title should be correctly capitalised (plus you can have
+%   an optional sub-title if appropriate, or leave this field blank),
+% - dissertation type should be formatted as one of the following:
+%   * for the MEng degree programme either "enterprise" or "research" to
+%     reflect the stream,
+%   * for the MSc  degree programme "$X/Y/Z$" for a project deemed to be
+%     X%, Y% and Z% of type I, II and III.
+% - year              should be formatted as a 4-digit year of submission
+%   (so 2014 rather than the academic year, say 2013/14 say).
+
+\documentclass[
+    author={Aanchala Ravindra Bhongade},
+    supervisor={Dr. Fernando Moreno-Pino},
+    degree={MSc},
+    title={Length Generalisation in Transformer-Based Sequence Models: Failure Taxonomy and Mitigation Strategies},
+    subtitle={MSc Data Science},
+    type={},
+    year={2026}
+]{dissertation}
+
+\renewcommand{\today}{Friday 4 September, 2026}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+
+
+\maketitle
+\frontmatter
+\makedecl
+
+% ----------------------------------------------------------------------------- ACKNOLEDGEMENT---------
+
+\chapter*{Acknowledgements}
+
+\noindent
+I would like to express my sincere gratitude to my supervisor, Dr. Fernando Moreno-Pino,  for his guidance, feedback, and support throughout this project. His advice helped me refine the experimental design, interpret the results more carefully, and develop a clearer direction for the dissertation. I am equally grateful to my personal tutor, Dr. Conor Houghton, for his support and encouragement throughout my journey at the University of Bristol.
+
+I would also like to acknowledge the University of Bristol for providing the resources and academic environment that made this work possible.
+
+Finally, I am grateful to my family and friends for their encouragement and support during the completion of this dissertation.
+
+
+
+
+%==================================
+
+\tableofcontents
+\listoffigures
+\listoftables
+%\listofalgorithms
+%\lstlistoflistings
+
+% The following sections are part of the front matter, but are not generated
+% automatically by LaTeX; the use of \chapter* means they are not numbered.
+
+
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Supporting Technologies}
+\addcontentsline{toc}{chapter}{Supporting Technologies}
+
+\begin{itemize}
+    \item Python was used to implement dataset generation, model training,
+    evaluation, diagnostic analysis, and result visualisation.
+
+    \item PyTorch was used to implement the Transformer models, positional
+    encoding variants, optimisation procedure, checkpointing, and GPU
+    execution.
+
+    \item NumPy and pandas were used for numerical processing, aggregation
+    of experimental results, and construction of reproducible summary tables.
+
+    \item Matplotlib was used to produce the dissertation figures. A common
+    visual style, colour mapping, typography, and output format were applied
+    across the final plots.
+
+    \item PyYAML configuration files were used to define experiment settings
+    separately from the training and evaluation implementation.
+
+    \item The aeon dataset tools were used to obtain and prepare the publicly
+    available SelfRegulationSCP2 time-series dataset.
+
+    \item Amazon Web Services EC2 G5-family GPU resources were used for the
+    multi-seed training and evaluation runs that were impractical to execute
+    locally.
+
+    \item Git and GitHub were used for version control and for synchronising
+    the experimental implementation between local and AWS environments.
+
+    \item LaTeX was used to prepare the dissertation and to include
+    publication-quality PDF figures.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Notation and Acronyms}
+\addcontentsline{toc}{chapter}{Notation and Acronyms}
+
+\section*{Acronyms}
+
+\begin{description}
+    \item[ALiBi] Attention with Linear Biases.
+    \item[AWS] Amazon Web Services.
+    \item[EM] Exact match.
+    \item[FFN] Feed-forward network.
+    \item[GPU] Graphics Processing Unit.
+    \item[ID] In-distribution evaluation.
+    \item[LSTM] Long Short-Term Memory.
+    \item[NoPE] No explicit positional encoding.
+    \item[OOD] Out-of-distribution evaluation.
+    \item[PE] Positional encoding.
+    \item[RNN] Recurrent neural network.
+    \item[RoPE] Rotary Position Embedding.
+    \item[SD] Standard deviation.
+    \item[UEA] University of East Anglia.
+\end{description}
+
+\section*{Mathematical Notation}
+
+\begin{description}
+    \item[$n$] Sequence length.
+
+    \item[$d_{\mathrm{model}}$] Dimensionality of the Transformer
+    representations.
+
+    \item[$d_k$] Dimensionality of the key and query vectors within an
+    attention head.
+
+    \item[$N_{\mathrm{head}}$] Number of attention heads.
+
+    \item[$\mathbf{X}$] Matrix of input representations supplied to a
+    self-attention layer.
+
+    \item[$\mathbf{Q},\mathbf{K},\mathbf{V}$] Query, key, and value matrices
+    used in self-attention.
+
+    \item[$\mathcal{L}_{\mathrm{train}}$] Set of sequence lengths represented
+    during training.
+
+    \item[$L_{\mathrm{train}}$] Sequence length used to train a fixed-length
+    configuration.
+
+    \item[$L_{\mathrm{test}}$] Sequence length used during evaluation.
+
+    \item[$L_{\max}$] Maximum sequence length represented during training,
+    $\max\mathcal{L}_{\mathrm{train}}$.
+
+    \item[$A_{\mathrm{EM}}(L)$] Exact-match accuracy at test length $L$.
+
+    \item[$A_{\mathrm{tok}}(L)$] Token accuracy at test length $L$.
+
+    \item[$E_{\mathrm{EM}}(L)$] Exact-match error percentage,
+    $100-A_{\mathrm{EM}}(L)$.
+
+    \item[$E_{\mathrm{tok}}(L)$] Token-error percentage,
+    $100-A_{\mathrm{tok}}(L)$.
+
+    \item[$\mathcal{V}_{\mathrm{target}}$] Set of possible target-output
+    symbols.
+
+    \item[$|\mathcal{V}_{\mathrm{target}}|$] Number of possible target-output
+    symbols.
+
+    \item[$E_{\mathrm{chance}}$] Uniform-prediction token-error reference,
+    $100\left(1-1/|\mathcal{V}_{\mathrm{target}}|\right)$.
+\end{description}
+
+% -----------------------------------------------------------------------------
+\chapter*{Reproducibility Statement}
+\addcontentsline{toc}{chapter}{Reproducibility Statement}
+
+\noindent
+The experimental implementation separates task generation, model
+definitions, training, evaluation, configuration files, raw results, and
+derived plots. Synthetic experiments were repeated using random seeds 42,
+123, and 2024. Configuration files record the model architecture, positional
+encoding, training length, evaluation lengths, optimiser settings, and output
+locations. Final figures were generated from saved CSV results rather than
+manually entered values. Representative position-wise diagnostics use the
+seed-42 checkpoints and are explicitly distinguished from the multi-seed
+baseline analysis.
+
+% ----------------------------------------------------------------------------- ABSTRACT------------
+
+\chapter*{Abstract}
+
+\noindent
+Transformer models have become a dominant architecture for sequence modelling, partly because self-attention allows them to represent dependencies across an input without the recurrence used in earlier sequence models. However, strong performance on the sequence lengths observed during training does not necessarily imply that the same model has learned a rule that generalises to longer sequences. This limitation is important because many practical sequence-modelling problems require models to operate reliably outside the exact length distribution seen during training.
+
+This dissertation investigates length generalisation in Transformer-based sequence models using a controlled train-short/test-long experimental framework. The project focuses on three synthetic sequence tasks: addition, delayed copy, and reverse. These tasks were selected because they test different forms of sequence reasoning, including symbolic computation, long-range memory, and position-dependent transformations. A compact Transformer model was evaluated across five positional encoding settings: learned positional embeddings, sinusoidal positional encodings, no explicit positional encoding, ALiBi, and RoPE. Experiments were repeated across three random seeds to assess robustness rather than relying on single-run results.
+
+
+A baseline-eligibility procedure first identified configurations that reliably
+learned the training task. Eligible configurations were then analysed using
+exact-match accuracy, token-error percentages, position-wise error profiles,
+attention diagnostics, and task-specific tests of carry conditions and
+dependency distance. Mixed-length training, curriculum learning, and
+randomised padding were evaluated against matched original baselines to test
+specific hypotheses about exposure to varied lengths and dependence on
+absolute positions.
+
+All five eligible task-encoding configurations that met the multi-seed baseline-eligibility criterion fell below the 10\% exact-match
+threshold at the first unseen length. At this point, Addition showed
+approximately 86.9--88.0\% token error, with errors increasing modestly
+towards later output positions. Delayed Copy and Reverse showed approximately
+98.8--99.0\% token error that was almost uniform across output positions.
+Addition errors differed by less than one percentage point between digits
+with and without an incoming carry for the learned model and were effectively
+identical for the sinusoidal model. Reverse errors were not concentrated at
+a particular dependency distance. Mixed-length variants underfit in the
+evaluated settings, while curriculum and randomised-padding variants that
+retained training-length performance produced no observed improvement at
+unseen lengths. In the limited SelfRegulationSCP2 extension, mean
+classification accuracy remained approximately 49--56\% across the evaluated
+input lengths rather than showing the catastrophic exact-match collapse
+observed on the synthetic tasks.
+
+The resulting failure taxonomy distinguishes training-length underfitting,
+seed instability, immediate extrapolation collapse, position-dependent error structure,
+and no observed improvement under tested mitigation. These findings show
+that length-generalisation evaluation should establish a valid training
+baseline before examining not only whether performance decreases, but how
+failure is distributed and which intervention hypothesis was actually tested.
+
+\vfill
+
+\noindent
+\textbf{Keywords:} Length generalisation; Transformers; positional encoding;
+synthetic sequence tasks; extrapolation; failure taxonomy; baseline
+eligibility; position-wise diagnostics; mitigation strategies; time-series
+classification.
+
+
+% =============================================================================
+
+% After the front matter comes a number of chapters; under each chapter,
+% sections, subsections and even subsubsections are permissible.  The
+% pages in this part are numbered with Arabic numerals.  Note that:
+%
+% - A reference point can be marked using \label{XXX}, and then later
+%   referred to via \ref{XXX}; for example Chapter\ref{chap:context}.
+% - The chapters are presented here in one file; this can become hard
+%   to manage.  An alternative is to save the content in seprate files
+%   the use \input{XXX} to import it, which acts like the #include
+%   directive in C.
+
+\mainmatter
+
+% -----------------------------------------------------------------------------
+
+\chapter{Introduction}
+\label{chap:introduction}
+
+\section{Context and Motivation}
+
+\noindent
+Sequence models are used in applications where the amount of available
+context can vary substantially between examples. A model may be trained using
+sequences of a particular length because of data availability, memory
+constraints, or computational cost, but later be required to process longer
+inputs. Reliable performance therefore requires more than fitting the length
+distribution represented in the training data: the model must also transfer
+the learned computation to sequence lengths that were not observed during
+training.
+
+Transformers have become a widely used architecture for sequence modelling
+because self-attention allows direct interaction between positions without
+the recurrent computation used in earlier sequence models
+\cite{vaswani2017attention}. However, self-attention does not by itself
+guarantee that a model will learn a length-independent rule. A Transformer can
+achieve high accuracy within the training distribution while relying on
+patterns that are specific to the positions or sequence lengths encountered
+during training. Consequently, strong in-distribution performance may conceal
+a substantial failure when the same model is evaluated on longer sequences.
+
+Length generalisation refers to the ability of a model trained on shorter
+instances to perform correctly on longer instances of the same underlying
+task. It is a form of out-of-distribution generalisation because the task rule
+remains unchanged while the sequence length moves beyond the training
+distribution. Previous studies have shown that this remains difficult for
+Transformer models, including on tasks for which a systematic algorithm
+should, in principle, apply at arbitrary lengths
+\cite{anil2022exploring,zhou2024algorithms}. This distinction is especially
+important for arithmetic and algorithmic tasks: success on short examples
+does not necessarily demonstrate that the model has learned the general
+procedure needed to solve longer examples.
+
+Positional encoding is closely connected to this problem because a
+Transformer must represent token order while operating at positions that may
+not have appeared during training. Learned absolute embeddings, fixed
+sinusoidal encodings, rotary position embedding (RoPE) \cite{su2021roformer}, ALiBi \cite{press2022train}, and models without
+explicit positional encodings (NoPE) \cite{kazemnejad2023impact} make different assumptions about how position
+should be represented. Randomised positional encodings have specifically been proposed to expose models during training to positions beyond the ordinary range \cite{ruoss2023randomized}. Nevertheless,
+published results vary across architectures, tasks, training procedures, and
+evaluation metrics. A positional encoding that assists one experimental
+setting cannot therefore be assumed to provide length generalisation
+universally. This problem is related to, but distinct from, extending the usable context window or benchmarking efficient long-context architectures \cite{dai2019transformerxl,tay2021longrange}.
+
+A further difficulty concerns how failure is evaluated. Reporting only
+accuracy at the longest test length does not establish whether the model
+learned the original training task, where extrapolation first deteriorated,
+or how errors are distributed within the output. For example, a configuration
+that never learns the training length represents training underfitting rather
+than length-extrapolation failure. Similarly, two models with zero
+sequence-level exact-match accuracy may exhibit different token-error
+percentages and different positional error structures. These behaviours
+require different interpretations even though their final exact-match scores
+are identical.
+
+This dissertation addresses these limitations through a controlled
+train-short/test-long investigation of compact Transformer models. Addition,
+delayed copy, and reverse tasks are used to represent symbolic computation,
+long-range retention, and position-dependent transformation. The experiments
+compare five positional encoding settings across three random seeds, first
+establishing which configurations learn the training task reliably and then
+examining how eligible configurations behave at progressively longer
+sequence lengths. The study combines exact-match and token-level metrics with
+position-wise, attention-based, and task-specific diagnostics. It also
+evaluates targeted training interventions against matched original baselines
+and includes a limited real-world time-series extension. The inclusion of this extension is motivated by the use of specialised Transformer architectures for long and irregularly sampled time-series data \cite{morenopino2024rough}.
+
+\section{Research Problem, Aim, and Questions}
+\label{sec:research_questions}
+
+Existing studies demonstrate that Transformer length generalisation is
+affected by positional representation, training procedure, task structure,
+and output format \cite{anil2022exploring,kazemnejad2023impact,
+ruoss2023randomized}. However, identifying which configuration achieves the
+highest accuracy does not fully characterise the problem. A model may fail
+because it never learned the training task, because its performance depends
+strongly on random initialisation, or because a solution that works at the
+training length does not transfer to longer sequences. These cases can
+produce similarly poor long-length accuracy while representing different
+experimental behaviours.
+
+The central problem addressed in this dissertation is therefore not simply
+whether Transformer performance decreases as sequence length increases. It is
+how to distinguish the observable forms of failure, identify where errors
+occur within the predicted output, and determine whether an intervention
+changes the relevant behaviour when compared with an appropriate baseline.
+
+In this dissertation, a failure taxonomy means a structured classification of empirically observed failure behaviours. The purpose of the taxonomy is not to assign a single label to every unsuccessful model, but to separate distinct experimental outcomes that have different interpretations, such as underfitting, extrapolation collapse, seed instability, and failure to improve under mitigation.
+
+Importantly, negative results are treated as diagnostic evidence rather than as unsuccessful experiments. A poor result is interpreted according to whether the model fails to learn the training task, learns the training task but collapses beyond it, varies substantially across random seeds, or remains unchanged after a targeted intervention. \\
+
+The primary research question is:
+
+\begin{quote}
+\itshape
+When a Transformer model trained on short sequences is evaluated on
+substantially longer sequences, which empirically distinguishable failure
+behaviours occur, where within the output do the errors arise, and do targeted
+training interventions alter these behaviours?
+\end{quote}
+
+This question is divided into five supporting questions:
+
+\begin{enumerate}
+    \item Which combinations of task and positional encoding reliably learn
+    the training-length task across multiple random seeds?
+
+    \item For configurations that learn the training task, at which unseen
+    sequence length does performance first collapse, and how rapidly does it
+    deteriorate thereafter?
+
+    \item How are errors distributed across output positions, carry
+    conditions, and dependency distances, and do these distributions differ
+    between addition, delayed copy, and reverse?
+
+    \item Do learned, sinusoidal, rotary, ALiBi, and no explicit positional
+    encodings exhibit different training-fit, seed-stability, or
+    extrapolation behaviours under otherwise matched conditions?
+
+    \item Do mixed-length training, curriculum learning, and randomised
+    padding improve unseen-length performance relative to matched original
+    baselines while preserving training-length performance?
+\end{enumerate}
+
+The corresponding aim is to construct an evidence-based taxonomy that
+separates training-length underfitting, seed instability, immediate
+extrapolation collapse, position-dependent error structure, and no observed
+improvement under tested mitigation. The purpose of this taxonomy is to
+provide a more precise vocabulary for reporting length-generalisation
+experiments than a single statement that a model ``fails'' at longer
+sequences.
+
+\section{Scope and Experimental Boundaries}
+\label{sec:scope}
+
+This dissertation investigates length generalisation using compact
+Transformer models under controlled train-short/test-long conditions. The
+main synthetic benchmark is restricted to addition, delayed copy, and
+reverse, which provide deterministic tasks with controllable sequence
+lengths. Associative recall was explored during development but excluded from
+the main comparison because the model did not learn the training task
+reliably enough to support a valid extrapolation analysis.
+
+The study compares learned, sinusoidal, RoPE, ALiBi, and no explicit
+positional encodings across three random seeds. Multi-seed experiments are
+used to establish training fit, seed stability, and baseline eligibility.
+More detailed position-wise and task-specific analyses use representative
+seed-42 checkpoints and are explicitly distinguished from the multi-seed
+results.
+
+The mitigation study is limited to mixed-length training, curriculum
+learning, and randomised padding. Each intervention is compared with a
+matched original baseline and is evaluated according to whether it preserves
+training-length performance while improving performance at unseen lengths.
+The conclusions therefore concern the tested configurations rather than the
+entire families of these training methods.
+
+A limited real-world extension uses the SelfRegulationSCP2 time-series
+classification dataset. Its inclusion is motivated by the broader use of
+specialised Transformer architectures for long and irregularly sampled
+time-series data \cite{morenopino2024rough}. However, this extension is
+exploratory and is not presented as a state-of-the-art time-series benchmark
+or as direct validation of the synthetic failure taxonomy.
+
+The dissertation does not study parameter scaling, pre-trained language
+models, retrieval systems, recurrent-memory architectures, or specialised
+context-window extension methods. Attention and error diagnostics are used to
+characterise observable behaviour, but they are not treated as complete
+causal explanations of the models' internal computations.
+
+\section{Contributions and Achievements}
+\label{sec:contributions}
+
+The contribution of this dissertation is primarily empirical and
+methodological. It does not propose a new Transformer architecture. Instead,
+it develops a controlled framework for distinguishing different forms of
+poor long-length performance and applies that framework consistently across
+tasks, positional encodings, random seeds, and training interventions.
+
+The main contribution is therefore an evidence-based failure taxonomy supported by controlled experiments, multi-seed robustness analysis, position-wise diagnostics, attention diagnostics, and matched mitigation comparisons. \\
+
+The principal contributions and achievements are:
+
+\begin{itemize}
+    \item A reproducible synthetic benchmark covering addition, delayed copy,
+    and reverse with five positional encoding settings and three random
+    seeds, producing 45 main synthetic training runs, alongside 15 real-world extension runs and separate mitigation experiments.
+
+    \item A baseline-eligibility procedure that separates configurations
+    which reliably learn the training task from training underfitting and
+    seed-dependent success.
+
+    \item An evaluation framework that combines exact-match accuracy with
+    token-error percentages, degradation curves, and first-unseen-length
+    comparisons.
+
+    \item Position-wise and task-specific diagnostics that examine where
+    errors occur, including output-position profiles, carry-conditioned
+    addition errors, and dependency-distance errors for reverse.
+
+    \item A matched comparison of mixed-length training, curriculum learning,
+    and randomised padding against their corresponding original baselines,
+    with each intervention interpreted according to its intended target.
+
+    \item An evidence-based failure taxonomy that distinguishes
+    training-length underfitting, seed instability, immediate extrapolation
+    collapse, position-dependent error structure, and no observed improvement
+    under tested mitigation.
+
+    \item A limited real-world extension using SelfRegulationSCP2 to contrast
+    synthetic sequence-generation failures with behaviour on a time-series
+    classification task.
+
+    \item A reproducible experimental implementation with separate configurations, checkpoints, raw CSV results, derived summaries, diagnostic outputs, and final report figures for traceability.
+\end{itemize}
+
+The main empirical outcome is that every task-encoding configuration meeting
+the multi-seed baseline-eligibility criterion collapsed at the first unseen
+length, although the token-error structure differed across tasks. The tested
+mitigation variants either underfit or produced no observed improvement at
+unseen lengths when training-length performance was preserved. These findings
+motivate the dissertation's emphasis on describing the form and location of
+failure rather than reporting only that accuracy decreases.
+
+\section{Dissertation Structure}
+\label{sec:dissertation_structure}
+
+The remainder of this dissertation is organised as follows. Chapter 2
+introduces the technical background and reviews existing research on
+Transformers, positional encoding, length generalisation, algorithmic
+evaluation, and long-context sequence modelling. Chapter 3 describes the
+experimental methodology, including the synthetic tasks, model architecture,
+baseline-eligibility procedure, evaluation metrics, diagnostic analyses,
+mitigation experiments, and real-world extension.
+
+Chapter 4 presents the multi-seed synthetic benchmark results and establishes
+which task--encoding configurations provide valid extrapolation baselines.
+Chapter 5 analyses the observed failures in greater detail using positional,
+task-specific, and attention-based diagnostics before comparing the tested
+mitigation strategies and constructing the failure taxonomy. Chapter 6
+reports the limited SelfRegulationSCP2 time-series extension.
+
+Chapter 7 discusses the findings in relation to the research questions and
+existing literature, together with the study's limitations and implications.
+Finally, Chapter 8 summarises the principal conclusions and identifies
+directions for future work.
+% -----------------------------------------------------------------------------
+
+\chapter{Background}
+\label{chap:background}
+
+\section{Sequence Modelling and Transformer Architecture}
+\label{sec:transformer_background}
+
+Sequence modelling concerns data whose interpretation depends on the ordering
+and interaction of its elements. Given an input sequence
+$\mathbf{x}=(x_1,\ldots,x_n)$, a sequence model constructs representations that
+can be used to predict an output at each position, classify the complete
+sequence, or generate another sequence. Earlier neural sequence-to-sequence
+systems commonly used recurrent architectures, in which a hidden state was
+updated sequentially as each input element was processed
+\cite{sutskever2014sequence}. This recurrence provided an explicit notion of
+order, but it also created a sequential computational path through the input.
+
+Attention mechanisms introduced a different way of representing dependencies.
+Instead of relying exclusively on a single recurrent state, an attention
+mechanism computes a weighted combination of representations according to
+their relevance to the current prediction \cite{bahdanau2015neural}. The
+Transformer extended this principle by replacing recurrence with stacked
+self-attention and feed-forward layers \cite{vaswani2017attention}. As a
+result, representations at different sequence positions can be updated in
+parallel, while each position can directly incorporate information from other
+positions.
+
+\subsection{Sequence Representation and Self-Attention}
+\label{subsec:self_attention}
+
+Let the input to a self-attention layer be represented by
+$\mathbf{X}\in\mathbb{R}^{n\times d_{\mathrm{model}}}$, where $n$ is the
+sequence length and $d_{\mathrm{model}}$ is the representation dimension.
+Self-attention constructs query, key, and value matrices through learned
+linear projections:
+
+\begin{equation}
+\mathbf{Q}=\mathbf{X}\mathbf{W}^{Q}, \qquad
+\mathbf{K}=\mathbf{X}\mathbf{W}^{K}, \qquad
+\mathbf{V}=\mathbf{X}\mathbf{W}^{V}.
+\label{eq:qkv_projections}
+\end{equation}
+Here, $\mathbf{W}^{Q}$, $\mathbf{W}^{K}$, and $\mathbf{W}^{V}$ are
+learned projection matrices, while $\mathbf{Q}$, $\mathbf{K}$, and
+$\mathbf{V}$ denote the resulting query, key, and value matrices.
+
+The query associated with one position is compared with the keys associated
+with all positions. Scaled dot-product attention is then calculated as
+
+\begin{equation}
+\operatorname{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})
+=
+\operatorname{softmax}
+\left(
+\frac{\mathbf{Q}\mathbf{K}^{\mathsf{T}}}{\sqrt{d_k}}
+\right)\mathbf{V},
+\label{eq:scaled_dot_product_attention}
+\end{equation}
+
+where $d_k$ is the dimensionality of the key vectors
+\cite{vaswani2017attention}. The scaling factor $\sqrt{d_k}$ limits the
+magnitude of the dot products before the softmax operation. Each row of the
+resulting attention matrix defines a distribution over the positions from
+which a query receives information.
+
+This mechanism provides a short computational path between any pair of
+positions. However, self-attention without additional positional information
+is insensitive to the order in which the input representations are supplied:
+permuting the input positions produces the corresponding permutation of the
+outputs. Consequently, the Transformer requires either explicit positional
+representations or an architectural mechanism through which position can
+affect the attention calculation. This requirement is central to the
+length-generalisation problem considered in this dissertation.
+
+\subsection{Multi-Head Attention and Transformer Encoder Blocks}
+\label{subsec:multihead_encoder}
+
+Multi-head attention applies the attention calculation using multiple sets of
+learned projections. For attention head $h$,
+
+\begin{equation}
+\operatorname{head}_h
+=
+\operatorname{Attention}
+\left(
+\mathbf{X}\mathbf{W}^{Q}_h,
+\mathbf{X}\mathbf{W}^{K}_h,
+\mathbf{X}\mathbf{W}^{V}_h
+\right).
+\label{eq:attention_head}
+\end{equation}
+
+The head outputs are concatenated and projected back to the model dimension:
+
+\begin{equation}
+\operatorname{MultiHead}(\mathbf{X})
+=
+\operatorname{Concat}
+\left(
+\operatorname{head}_1,\ldots,\operatorname{head}_{N{\mathrm{head}}}
+\right)\mathbf{W}^{O},
+\label{eq:multihead_attention}
+\end{equation}
+
+where $N{\mathrm{head}}$ is the number of attention heads and $\mathbf{W}^{O}$ is a learned
+output projection. Using separate projections allows different heads to form
+different attention distributions, although the existence of multiple heads
+does not guarantee that they learn distinct or interpretable functions.
+
+A Transformer encoder block combines multi-head self-attention with a
+position-wise feed-forward network. Residual connections preserve the input
+to each sublayer, while layer normalisation is applied to stabilise the
+representations. In the post-normalisation formulation used by the original
+Transformer, the two principal operations can be written as
+
+\begin{align}
+\mathbf{H}
+&=
+\operatorname{LayerNorm}
+\left(
+\mathbf{X}+\operatorname{MultiHead}(\mathbf{X})
+\right), \\
+\mathbf{Z}
+&=
+\operatorname{LayerNorm}
+\left(
+\mathbf{H}+\operatorname{FFN}(\mathbf{H})
+\right),
+\label{eq:transformer_encoder_block}
+\end{align}
+
+with
+
+\begin{equation}
+\operatorname{FFN}(\mathbf{H})
+=
+\sigma(\mathbf{H}\mathbf{W}_1+\mathbf{b}_1)\mathbf{W}_2+\mathbf{b}_2,
+\label{eq:positionwise_ffn}
+\end{equation}
+
+Here, $\mathbf{H}$ is the representation produced by the attention
+sublayer and $\mathbf{Z}$ is the output of the encoder block.
+$\operatorname{LayerNorm}$ denotes layer normalisation, while
+$\operatorname{FFN}$ denotes the position-wise feed-forward network.
+The matrices $\mathbf{W}_1$ and $\mathbf{W}_2$ and the vectors
+$\mathbf{b}_1$ and $\mathbf{b}_2$ are learned parameters, and $\sigma$
+is a non-linear activation function. The same feed-forward transformation
+is applied independently at every sequence position.
+
+The synthetic models used in this dissertation employ compact stacks of
+encoder blocks following this general structure. Their precise dimensions,
+activation function, optimisation settings, and output mappings are reported
+in Chapter~\ref{chap:Methodology and Experimental Design}. The next section examines the mechanisms
+through which positional information is incorporated into these blocks.
+
+\section{Positional Information in Transformers}
+\label{sec:positional_background}
+
+Unlike recurrent models, self-attention does not process tokens through an
+inherently ordered sequence of state updates. Without an additional source of
+positional information, the same token representations presented in a
+different order produce correspondingly permuted outputs. A Transformer must
+therefore obtain information about order either through explicit position
+vectors, modifications to the attention calculation, or structural features
+such as an autoregressive mask.
+
+Positional methods can broadly be distinguished by whether they represent
+absolute positions or relationships between positions. Absolute methods
+associate a representation with each position in the sequence. Relative
+methods instead modify attention according to the distance or displacement
+between a query and a key \cite{shaw2018relative}. This distinction is
+particularly relevant to length generalisation because a model may be
+evaluated at absolute positions or relative distances that were not observed
+during training.
+
+\subsection{Learned and Sinusoidal Positional Encodings}
+\label{subsec:absolute_positional_encodings}
+
+Learned absolute positional embeddings associate each position $p$ with a
+trainable vector $\mathbf{p}_p$. The input representation at that position is
+
+\begin{equation}
+\mathbf{z}_p = \mathbf{e}(x_p) + \mathbf{p}_p,
+\label{eq:learned_position_embedding}
+\end{equation}
+
+where $\mathbf{e}(x_p)$ is the embedding of the token at position $p$.
+Because the positional vectors are optimised jointly with the model, they can
+adapt to the positions represented in the training data. However, this
+approach does not impose a functional relationship between neighbouring
+positions. Entries allocated for positions beyond the training range receive
+no direct training signal, and positions outside the allocated embedding
+table cannot be represented without extending the table.
+
+The original Transformer also introduced fixed sinusoidal positional
+encodings \cite{vaswani2017attention}. For position $p$ and representation
+dimension $i$, these are defined as
+
+\begin{align}
+\operatorname{PE}(p,2i)
+&=
+\sin\left(
+\frac{p}{10000^{2i/d_{\mathrm{model}}}}
+\right), \\
+\operatorname{PE}(p,2i+1)
+&=
+\cos\left(
+\frac{p}{10000^{2i/d_{\mathrm{model}}}}
+\right).
+\label{eq:sinusoidal_position_encoding}
+\end{align}
+
+Here, $\operatorname{PE}$ denotes the positional encoding, $p$ is the sequence position, and $i$ indexes pairs of representation dimensions.
+
+Different dimensions therefore vary at different frequencies. Unlike a
+learned lookup table, the sinusoidal representation is generated by a fixed
+function and can be evaluated at positions beyond those used during
+training. Relative offsets can also be expressed through linear
+transformations of these sinusoidal components. These properties make
+sinusoidal encoding a plausible candidate for length extrapolation, but they
+do not guarantee that the surrounding Transformer learns a computation that
+uses the representation systematically at unseen lengths.
+
+\subsection{Rotary Position Embedding}
+\label{subsec:rope_background}
+
+Rotary Position Embedding (RoPE) incorporates position into the query and key
+vectors rather than adding a positional vector to the token representation
+\cite{su2021roformer}. Pairs of query and key dimensions are rotated by an
+angle determined by their position. For position $p$, the transformation can
+be written abstractly as
+
+\begin{equation}
+\widetilde{\mathbf{q}}_p
+=
+\mathbf{R}_{p}\mathbf{q}_p,
+\qquad
+\widetilde{\mathbf{k}}_p
+=
+\mathbf{R}_{p}\mathbf{k}_p,
+\label{eq:rope_rotation}
+\end{equation}
+
+where $\mathbf{R}_{p}$ is a block-diagonal rotation matrix containing
+position-dependent sine and cosine terms. Attention is subsequently computed
+using the rotated query and key vectors:
+
+\begin{equation}
+\widetilde{\mathbf{q}}_p^{\mathsf{T}}
+\widetilde{\mathbf{k}}_r
+=
+\mathbf{q}_p^{\mathsf{T}}
+\mathbf{R}_{p}^{\mathsf{T}}
+\mathbf{R}_{r}
+\mathbf{k}_r.
+\label{eq:rope_relative}
+\end{equation}
+
+Because the product
+$\mathbf{R}_{p}^{\mathsf{T}}\mathbf{R}_{r}$ depends on the relative
+displacement between $p$ and $r$, RoPE introduces relative-position
+information into the attention score while retaining an absolute
+position-dependent transformation. The rotations can be evaluated at longer
+positions, although their mathematical availability does not ensure that a
+model trained over a shorter range will interpret the unseen rotation phases
+correctly.
+
+\subsection{Attention with Linear Biases}
+\label{subsec:alibi_background}
+
+Attention with Linear Biases (ALiBi) represents distance by adding a
+head-specific linear penalty directly to each attention score
+\cite{press2022train}. A general form of the biased score between positions
+$i$ and $j$ in head $h$ is
+
+\begin{equation}
+a_{ij}^{(h)}
+=
+\frac{
+\mathbf{q}_{i}^{(h)}
+\left(\mathbf{k}_{j}^{(h)}\right)^{\mathsf{T}}
+}{
+\sqrt{d_k}
+}
+-
+m_h\Delta(i,j),
+\label{eq:alibi_attention}
+\end{equation}
+
+where $m_h$ is a fixed slope and $\Delta(i,j)$ is the positional distance
+used by the attention mechanism. Different slopes cause different heads to
+apply different distance penalties. In a bidirectional encoder,
+$\Delta(i,j)$ can be defined using absolute distance, whereas a causal model
+restricts attention to preceding positions.
+
+ALiBi does not require a positional embedding table and its bias can be
+calculated at arbitrary sequence lengths. It was specifically introduced
+under a train-short/test-long evaluation setting. Nevertheless, the linear
+bias favours particular attention-distance patterns; whether those patterns
+support extrapolation depends on the task and on the dependencies required
+to produce the correct output.
+
+\subsection{Transformers Without Explicit Positional Encoding}
+\label{subsec:nope_background}
+
+A Transformer without explicit positional encoding is commonly described as
+NoPE. Under this condition, no positional vector is added to the token
+embedding, and neither RoPE nor a positional attention bias is applied.
+Research on causal Transformers has shown that models can sometimes recover
+useful position-related behaviour without an explicit positional encoding,
+partly because the causal attention mask itself introduces an ordering
+structure \cite{kazemnejad2023impact}.
+
+This observation does not mean that explicit position information is
+unnecessary in every architecture. In an unmasked bidirectional
+self-attention encoder, removing all positional mechanisms leaves the model
+permutation-equivariant: reordering the input tokens causes the outputs to be
+reordered in the same way, without otherwise identifying their original
+positions. NoPE is consequently an important control condition. It tests
+whether task content and the remaining architecture provide enough
+information to learn the required transformation.
+
+The five settings considered in this dissertation therefore introduce
+position at different points in the computation. Learned and sinusoidal
+methods modify the input representations; RoPE transforms queries and keys;
+ALiBi modifies the attention scores; and NoPE supplies no explicit position
+signal. Their structural differences motivate the controlled comparison
+reported in the later experimental chapters.
+
+\section{Length Generalisation}
+\label{sec:length_generalisation_background}
+
+\subsection{Length Generalisation and Out-of-Distribution Evaluation}
+\label{subsec:length_ood}
+
+Consider a family of tasks in which $f_n$ denotes the required mapping for
+sequences of length $n$. A model is trained using examples whose lengths
+belong to a training set $\mathcal{L}_{\mathrm{train}}$, with maximum observed
+length
+
+\begin{equation}
+L_{\max}
+=
+\max \mathcal{L}_{\mathrm{train}}.
+\label{eq:maximum_training_length}
+\end{equation}
+
+An ordinary in-distribution evaluation measures performance on new examples
+whose lengths remain within $\mathcal{L}_{\mathrm{train}}$. In contrast, a
+length-generalisation evaluation uses test lengths
+
+\begin{equation}
+n > L_{\max},
+\label{eq:unseen_test_length}
+\end{equation}
+
+while preserving the underlying task definition. The inputs are therefore
+longer, but the rule required to produce the output remains unchanged.
+
+This setting differs from standard independent and identically distributed
+testing. The model must extrapolate along a controlled dimension of the data
+rather than generalise only to new samples drawn from the same length
+distribution. Strong performance at $L_{\max}$ demonstrates that the model
+can fit the observed task instances, but it does not establish that the
+learned computation represents the complete family $\{f_n\}$. A solution can
+be correct over the observed range while depending on length-specific
+features, absolute positions, or statistical regularities that cease to hold
+when $n>L_{\max}$.
+
+Length generalisation is related to systematic generalisation: both concern
+whether learned components or operations can be applied in combinations
+outside the training distribution. Work on compositional sequence learning
+has shown that high performance on familiar combinations can coexist with
+poor performance under systematic changes to the test distribution
+\cite{lake2018generalization}. Length extrapolation provides a particularly
+controlled instance of this broader problem because the task semantics can be
+held constant while only the size of the instance changes.
+
+A rigorous train-short/test-long experiment must therefore separate two
+questions. First, did the model reliably learn the task at the training
+length? Second, conditional on that success, did the learned solution transfer
+to longer instances? Without the first condition, poor long-length accuracy
+cannot be attributed specifically to extrapolation.
+
+\subsection{Length Generalisation in Algorithmic Tasks}
+\label{subsec:algorithmic_length_generalisation}
+
+Algorithmic tasks provide a controlled environment for studying this form of
+generalisation. Their target outputs are produced by deterministic procedures,
+and new examples can be generated at precisely specified lengths. In
+principle, an algorithm such as digit-wise addition or sequence reversal can
+be applied to inputs longer than those used during training. In practice,
+however, a neural model can minimise its training loss using a representation
+that is only reliable over the observed range.
+
+This distinction has motivated research into whether successful neural
+models learn transferable procedures or length-specific approximations.
+Studies of arithmetic with Transformer-based language models report that
+increasing model scale alone does not reliably produce length extrapolation,
+while intermediate reasoning steps can improve some settings
+\cite{anil2022exploring}. More broadly, experiments organised according to
+formal-language complexity show that fitting the training distribution does
+not imply non-trivial generalisation to longer strings, and that performance
+depends on both the task structure and the inductive bias of the architecture
+\cite{deletang2023neural}.
+
+Zhou et al.\ examine this question through the algorithms representable by
+Transformers and distinguish tasks for which training tends to recover a
+simple length-generalising program from tasks for which models favour
+non-generalising pattern-matching solutions \cite{zhou2024algorithms}. Their
+results are important because they show that architectural expressivity is
+not sufficient by itself: the existence of a Transformer implementation of
+an algorithm does not guarantee that optimisation will recover that
+implementation from finite training examples.
+
+Synthetic algorithmic benchmarks are therefore useful not because they
+represent the full complexity of practical applications, but because they
+make the required rule and the distribution shift explicit. They permit
+controlled comparisons across tasks, encodings, training procedures, and
+random seeds. Their simplicity also makes it possible to analyse individual
+output positions and task-specific dependencies after aggregate accuracy has
+deteriorated.
+
+\subsection{Length Generalisation Versus Long-Context Modelling}
+\label{subsec:length_vs_long_context}
+
+Length generalisation should not be treated as synonymous with long-context
+modelling. A long-context architecture is designed to process or retain
+information across a large input. Transformer-XL, for example, extends the
+effective context available to a model through segment-level recurrence and a
+relative positional formulation \cite{dai2019transformerxl}. The Long Range
+Arena benchmark instead evaluates the efficiency and effectiveness of
+architectures on several tasks containing long sequences
+\cite{tay2021longrange}.
+
+These approaches address important computational and representational
+questions, but operating on a long sequence does not necessarily demonstrate
+extrapolation. A model can be trained and tested on similarly long examples,
+in which case the evaluation remains within the observed length regime.
+Conversely, a compact model can be used in a strict length-generalisation
+experiment even when its test sequences are modest by contemporary
+long-context standards, provided that they extend substantially beyond the
+training range.
+
+The two research areas can nevertheless interact. Positional mechanisms,
+attention-distance biases, memory structures, and computational cost all
+influence how a model behaves as its input grows. The defining feature of a
+length-generalisation experiment is therefore not the absolute magnitude of
+the context window, but the controlled separation between the lengths used
+for training and those used for evaluation.
+
+\section{Controlled Sequence Tasks}
+\label{sec:controlled_tasks_background}
+
+Controlled sequence tasks make it possible to vary sequence length without
+changing the rule that determines the correct output. Unlike natural-language
+datasets, their target mappings are deterministic and their relevant
+dependencies can be stated explicitly. This makes them useful for separating
+failure to learn a task from failure to apply a learned computation at longer
+lengths.
+
+The tasks used in this dissertation represent three different computational
+requirements. Addition requires symbolic computation with possible carry
+propagation; delayed copy requires retention and aligned retrieval after an
+intervening delay; and reverse requires a position-dependent reordering of the
+complete input. The following subsections describe the computational
+properties of these tasks. Their precise data-generation and serialisation
+procedures are specified in Chapter~\ref{chap:methodology}.
+
+\subsection{Addition}
+\label{subsec:addition_background}
+
+Addition is frequently used as a controlled test of whether neural models can
+learn arithmetic procedures rather than associations limited to the numerical
+range represented during training \cite{anil2022exploring,
+lee2024teaching}. Consider two $n$-digit decimal operands with digit
+sequences
+
+\begin{equation}
+\mathbf{a}=(a_1,\ldots,a_n),
+\qquad
+\mathbf{b}=(b_1,\ldots,b_n),
+\label{eq:addition_operands}
+\end{equation}
+
+where $a_1$ and $b_1$ are the most significant digits. The corresponding
+integers are
+
+\begin{equation}
+A=\sum_{i=1}^{n}a_i10^{n-i},
+\qquad
+B=\sum_{i=1}^{n}b_i10^{n-i}.
+\label{eq:addition_integer_values}
+\end{equation}
+
+Digit-wise addition proceeds from the least significant position towards the
+most significant position. If $c_{i+1}$ denotes the carry entering position
+$i$, then
+
+\begin{align}
+s_i &= a_i+b_i+c_{i+1}, \\
+y_i &= s_i \bmod 10, \\
+c_i &= \left\lfloor\frac{s_i}{10}\right\rfloor,
+\label{eq:digitwise_addition}
+\end{align}
+
+with $c_{n+1}=0$. Here, $y_i$ is the output digit at position $i$, while
+$c_i$ is the carry propagated towards the next more significant position.
+
+The task therefore combines aligned local interactions with a dependency that
+can propagate across several digit positions. A model may perform well on
+short operands by learning statistical or position-specific regularities
+without recovering a procedure that remains reliable for longer operands.
+Furthermore, aggregate accuracy alone does not reveal whether failures are
+associated with carry propagation, output alignment, or a broader collapse
+across all positions. These alternatives motivate the carry-conditioned and
+position-wise diagnostics used later in the dissertation.
+
+\subsection{Delayed Copy}
+\label{subsec:copy_background}
+
+Copying tasks have been used to evaluate whether sequence models can preserve
+information across an intervening delay \cite{arjovsky2016unitary}. Given a
+symbol sequence
+
+\begin{equation}
+\mathbf{x}=(x_1,\ldots,x_n),
+\label{eq:copy_source}
+\end{equation}
+
+the delayed-copy task first presents the sequence, followed by a separator and
+a region of padding symbols. The required output reproduces the original
+symbols after this delay. Abstractly, the input and target can be represented
+as
+
+\begin{align}
+\mathbf{x}_{\mathrm{input}}
+&=
+(x_1,\ldots,x_n,\mathtt{SEP},
+\underbrace{\mathtt{PAD},\ldots,\mathtt{PAD}}_{n}), \\
+\mathbf{x}_{\mathrm{target}}
+&=
+(\underbrace{\mathtt{PAD},\ldots,\mathtt{PAD}}_{n+1},
+x_1,\ldots,x_n).
+\label{eq:delayed_copy_mapping}
+\end{align}
+
+Here, $\mathtt{SEP}$ marks the boundary between the source and delayed-output
+regions, and $\mathtt{PAD}$ is a padding symbol. Each predicted content token
+must match a corresponding token from the first part of the input.
+
+Increasing $n$ simultaneously increases the amount of information that must
+be retained and the distance between each source symbol and its required
+output position. The task does not require arithmetic transformation, but it
+does require reliable content preservation and positional alignment. It
+therefore provides a controlled contrast with addition: errors can indicate a
+failure to retrieve or align stored symbols rather than a failure of symbolic
+calculation.
+
+\subsection{Reverse}
+\label{subsec:reverse_background}
+
+For the reverse task, an input sequence
+
+\begin{equation}
+\mathbf{x}=(x_1,x_2,\ldots,x_n)
+\end{equation}
+
+is mapped to
+
+\begin{equation}
+\mathbf{y}=(x_n,x_{n-1},\ldots,x_1),
+\qquad
+y_i=x_{n-i+1}.
+\label{eq:reverse_mapping}
+\end{equation}
+
+Unlike delayed copy, reverse does not preserve the original positional
+alignment. Every output position must identify the input position determined
+by the sequence length. The required source position for a fixed output index
+therefore changes when $n$ changes. This makes reverse a direct test of
+whether a model has learned a general position-dependent transformation
+rather than associations tied to absolute training positions.
+
+The source-target dependency distance also varies across the output. Tokens
+near the ends of the sequence must be transferred across large distances,
+whereas positions near the centre have shorter dependencies. This structure
+allows performance to be analysed according to dependency distance rather
+than only output position. Prior controlled studies have similarly used
+formal and algorithmic sequence transformations to examine whether neural
+architectures transfer learned computations to longer inputs
+\cite{deletang2023neural,zhou2024algorithms}.
+
+Figure~\ref{fig:controlled_task_examples} summarises representative
+input--target mappings for the three controlled tasks.
+
+\begin{figure}[tbp]
+    \centering
+    \includegraphics[width=\textwidth]
+    {controlled_task_examples.pdf}
+    \caption{Representative input--target mappings for addition, delayed
+    copy, and reverse. Addition combines digit-wise computation with carry
+    propagation; delayed copy requires retrieval after an intervening padded
+    region; and reverse maps each output position to its length-dependent
+    source position. \texttt{PAD} and \texttt{SEP} denote padding and
+    separator tokens, respectively. The examples illustrate task
+    serialisation rather than the sequence lengths used in the experiments.}
+    \label{fig:controlled_task_examples}
+\end{figure}
+
+Together, the three tasks separate computational properties that would be
+conflated in a single aggregate benchmark. Addition emphasises computation
+and carry propagation, delayed copy emphasises retention and aligned
+retrieval, and reverse emphasises length-dependent positional transformation.
+This separation supports a failure analysis that asks not only whether
+accuracy decreases, but whether different task structures produce different
+error behaviours.
+
+\section{Evaluating Length-Generalisation Failure}
+\label{sec:evaluation_background}
+
+A length-generalisation evaluation must establish more than whether aggregate
+accuracy decreases. It must first verify that the model learned the
+training-length task, then identify where deterioration begins and how errors
+are distributed. Sequence-level accuracy, token-level accuracy, random-seed
+variation, position-wise profiles, and attention statistics provide
+complementary evidence about these behaviours.
+
+\subsection{Sequence-Level and Token-Level Metrics}
+\label{subsec:sequence_token_metrics}
+
+Let $N_L$ denote the number of evaluation examples at test length $L$.
+After applying any task-specific padding mask, let $\mathbf{y}^{(r)}$ and
+$\widehat{\mathbf{y}}^{(r)}$ denote the evaluated target and predicted token
+sequences for example $r$. Exact-match accuracy is
+
+\begin{equation}
+A_{\mathrm{EM}}(L)
+=
+\frac{100}{N_L}
+\sum_{r=1}^{N_L}
+\mathbb{I}
+\left[
+\widehat{\mathbf{y}}^{(r)}
+=
+\mathbf{y}^{(r)}
+\right],
+\label{eq:exact_match_accuracy}
+\end{equation}
+
+where $\mathbb{I}[\cdot]$ is the indicator function. An example contributes
+to the exact-match score only when every predicted token is correct. Exact
+match therefore measures complete task success, but it does not show how many
+tokens were incorrect within a failed sequence.
+
+If target example $r$ contains $T_r$ evaluated tokens, token accuracy is
+
+\begin{equation}
+A_{\mathrm{tok}}(L)
+=
+\frac{
+100
+}{
+\sum_{r=1}^{N_L}T_r
+}
+\sum_{r=1}^{N_L}
+\sum_{j=1}^{T_r}
+\mathbb{I}
+\left[
+\widehat{y}^{(r)}_j
+=
+y^{(r)}_j
+\right].
+\label{eq:token_accuracy}
+\end{equation}
+
+Token accuracy distinguishes almost-correct predictions from predictions that
+are incorrect across nearly every output position. The corresponding error
+percentages are
+
+\begin{align}
+E_{\mathrm{EM}}(L)
+&=
+100-A_{\mathrm{EM}}(L), \\
+E_{\mathrm{tok}}(L)
+&=
+100-A_{\mathrm{tok}}(L).
+\label{eq:error_percentages}
+\end{align}
+
+Reporting errors as percentages makes the magnitude of failure directly
+interpretable. For example, zero exact-match accuracy always corresponds to
+$100\%$ exact-match error, but the token-error percentage may range from a
+small value to a value close to uniform prediction.
+
+Exact match also becomes increasingly strict as the output grows. If token
+predictions were independent and each token were correct with probability
+$p$, the probability of an entirely correct sequence of length $T$ would be
+
+\begin{equation}
+P(\text{exact match})=p^T.
+\label{eq:exact_match_length_effect}
+\end{equation}
+
+This expression is an illustration rather than an independence assumption
+about the models. It shows why sequence-level performance can fall sharply
+even when token accuracy decreases more gradually.
+
+For a target vocabulary
+$\mathcal{V}_{\mathrm{target}}$, uniform prediction gives expected token
+accuracy $100/|\mathcal{V}_{\mathrm{target}}|$. The corresponding token-error
+reference is
+
+\begin{equation}
+E_{\mathrm{chance}}
+=
+100
+\left(
+1-\frac{1}{|\mathcal{V}_{\mathrm{target}}|}
+\right).
+\label{eq:uniform_error_reference}
+\end{equation}
+
+This value provides a descriptive reference for near-uniform prediction; it
+is not, by itself, a statistical significance test.
+
+\subsection{Random-Seed Stability}
+\label{subsec:seed_stability_background}
+
+Neural-network training is stochastic because parameter initialisation, data
+ordering, and optimisation can vary between runs. Reporting only the
+best-performing seed can therefore conceal unstable training behaviour.
+Empirical studies have demonstrated that random seeds can materially change
+the conclusions drawn from sequence-model experiments, motivating the
+reporting of score distributions or multiple-run summaries
+\cite{reimers2017reporting}.
+
+For a metric $A_s(L)$ obtained from seed $s$, the mean across $S$ seeds is
+
+\begin{equation}
+\overline{A}(L)
+=
+\frac{1}{S}
+\sum_{s=1}^{S}A_s(L),
+\label{eq:seed_mean}
+\end{equation}
+
+and the sample standard deviation is
+
+\begin{equation}
+\operatorname{SD}(L)
+=
+\sqrt{
+\frac{1}{S-1}
+\sum_{s=1}^{S}
+\left(
+A_s(L)-\overline{A}(L)
+\right)^2
+}.
+\label{eq:seed_standard_deviation}
+\end{equation}
+
+In this dissertation, error bars representing
+$\overline{A}(L)\pm 1\operatorname{SD}(L)$ describe variation across random
+seeds. They do not represent standard errors or confidence intervals. Because
+the main benchmark uses three seeds, individual seed outcomes are also
+retained when assessing whether a configuration learned the training task
+reliably.
+
+This distinction supports the baseline-eligibility procedure introduced in
+Chapter~\ref{chap:methodology}. A configuration that succeeds for only one
+initialisation is evidence of seed instability, whereas a configuration that
+succeeds consistently at the training length but fails at longer lengths
+provides a valid basis for studying extrapolation.
+
+\subsection{Position-Wise and Task-Specific Diagnostics}
+\label{subsec:positionwise_background}
+
+Aggregate token error can conceal substantial variation across an output.
+Let $N_j$ be the number of evaluated examples containing output position $j$.
+The position-wise token-error percentage is
+
+\begin{equation}
+E_j
+=
+100
+\left[
+1-
+\frac{1}{N_j}
+\sum_{r=1}^{N_j}
+\mathbb{I}
+\left[
+\widehat{y}^{(r)}_j=y^{(r)}_j
+\right]
+\right].
+\label{eq:positionwise_error}
+\end{equation}
+
+Plotting $E_j$ across positions reveals whether errors are approximately
+uniform, concentrated near sequence boundaries, or progressively increasing
+through the output. Positions can also be grouped into start, middle, and end
+regions to provide compact percentage summaries without discarding the full
+position-wise profile.
+
+Task-specific groupings test more focused hypotheses. For addition, output
+digits can be divided according to whether they receive an incoming carry.
+For reverse, errors can be grouped by the distance between each output
+position and its required source position. Delayed copy can be examined
+according to the aligned source and target locations. These analyses identify
+associations between error and task structure, although they do not alone
+establish the internal cause of a prediction.
+
+\subsection{Attention-Based Diagnostics}
+\label{subsec:attention_diagnostics_background}
+
+Attention weights provide an additional description of how the model
+distributes attention mass. Let $\alpha_{ij}^{(h)}$ denote the attention
+weight from query position $i$ to key position $j$ in head $h$, with
+
+\begin{equation}
+\sum_{j=1}^{n}\alpha_{ij}^{(h)}=1.
+\end{equation}
+
+The normalised attention entropy is
+
+\begin{equation}
+H_i^{(h)}
+=
+-
+\frac{
+\sum_{j=1}^{n}
+\alpha_{ij}^{(h)}
+\log\alpha_{ij}^{(h)}
+}{
+\log n
+}.
+\label{eq:normalised_attention_entropy}
+\end{equation}
+
+Values closer to zero indicate concentrated attention, while values closer to
+one indicate a more diffuse distribution. Dividing by $\log n$ makes entropy
+more comparable across sequence lengths.
+
+The average attention distance is
+
+\begin{equation}
+D_i^{(h)}
+=
+\sum_{j=1}^{n}
+\alpha_{ij}^{(h)}
+|i-j|,
+\label{eq:average_attention_distance}
+\end{equation}
+
+and the local-attention ratio within a window of radius $w$ is
+
+\begin{equation}
+R_i^{(h)}(w)
+=
+\sum_{\substack{j=1\\|i-j|\leq w}}^{n}
+\alpha_{ij}^{(h)}.
+\label{eq:local_attention_ratio}
+\end{equation}
+
+These quantities describe whether attention becomes more diffuse, operates
+over greater distances, or remains concentrated near each query position as
+sequence length increases. They must nevertheless be interpreted alongside
+accuracy. Average distance can grow mechanically when longer positions become
+available, and a change in attention statistics does not necessarily identify
+the cause of a model's error.
+
+Attention weights are therefore treated in this dissertation as behavioural
+diagnostics rather than complete causal explanations. Prior research has
+shown that substantially different attention distributions can sometimes
+produce similar predictions, cautioning against interpreting attention
+weights as faithful explanations of model decisions
+\cite{jain2019attention}. Their role here is to identify changes associated
+with extrapolation failure, not to claim that an observed attention pattern
+alone caused that failure.
+
+\section{Training Strategies for Length Generalisation}
+\label{sec:mitigation_background}
+
+Training interventions for length generalisation address different possible
+sources of failure. Exposing a model to several training lengths targets
+dependence on a single length distribution. Curriculum learning targets the
+optimisation path by increasing task difficulty gradually. Randomised
+positional exposure instead targets the possibility that the positional
+representations encountered at longer lengths are out of distribution.
+
+These strategies should not be interpreted as interchangeable. An
+intervention may improve optimisation without changing extrapolation, or it
+may expose additional positions while weakening performance on the original
+training task. Its intended target and its training-length performance must
+therefore be established before unseen-length results are interpreted.
+
+\subsection{Mixed-Length Training}
+\label{subsec:mixed_length_background}
+
+A fixed-length training condition draws every training example from a single
+sequence length $L_{\mathrm{train}}$. Mixed-length training instead draws
+examples from a set
+
+\begin{equation}
+\mathcal{L}_{\mathrm{mix}}
+=
+\{L_1,L_2,\ldots,L_K\},
+\label{eq:mixed_length_set}
+\end{equation}
+
+where the lengths are no greater than the maximum training length. If
+$\pi_k$ is the proportion of training examples drawn from length $L_k$, the
+mixed-length objective can be written as
+
+\begin{equation}
+\mathcal{J}_{\mathrm{mix}}(\boldsymbol{\theta})
+=
+\sum_{k=1}^{K}
+\pi_k
+\,
+\mathbb{E}_{
+(\mathbf{x},\mathbf{y})\sim\mathcal{D}_{L_k}
+}
+\left[
+\ell
+\left(
+f_{\boldsymbol{\theta}}(\mathbf{x}),
+\mathbf{y}
+\right)
+\right],
+\label{eq:mixed_length_objective}
+\end{equation}
+
+where $\boldsymbol{\theta}$ denotes the model parameters,
+$\mathcal{D}_{L_k}$ is the data distribution at length $L_k$, and
+$\ell$ is the training loss.
+
+The hypothesis is that exposure to multiple lengths discourages a model from
+associating the task with one fixed sequence shape or one set of boundary
+positions. It may instead encourage features that are shared across the
+observed length range. This motivation is consistent with evidence that
+Transformer length generalisation depends on both the task and the training
+distribution \cite{anil2022exploring,zhou2024algorithms}.
+
+Mixed-length training introduces a trade-off. For a fixed total data budget,
+including more lengths reduces the number of examples available at each
+individual length. Padding and batching can also change the proportion of
+content and special tokens seen during optimisation. Consequently, a
+mixed-length model may underfit even the original training task. Any apparent
+extrapolation benefit must therefore be considered together with
+training-length accuracy and a matched fixed-length baseline.
+
+\subsection{Curriculum Learning}
+\label{subsec:curriculum_background}
+
+Curriculum learning presents training examples in a progression from simpler
+to more difficult conditions \cite{bengio2009curriculum}. In a
+length-based curriculum, sequence length acts as the difficulty variable. A
+model can be trained through an ordered series
+
+\begin{equation}
+L_1 < L_2 < \cdots < L_K,
+\label{eq:length_curriculum}
+\end{equation}
+
+where the parameters learned at stage $k-1$ initialise training at stage
+$k$. Abstractly,
+
+\begin{equation}
+\boldsymbol{\theta}_k
+=
+\operatorname{Train}
+\left(
+\boldsymbol{\theta}_{k-1},
+\mathcal{D}_{L_k}
+\right).
+\label{eq:curriculum_update}
+\end{equation}
+
+The intended target is optimisation. Shorter examples may allow the model to
+learn a partial or simpler form of the required computation before longer
+dependencies are introduced. The later stages then refine the existing
+parameters rather than learning the longest training task entirely from a
+random initialisation.
+
+A successful curriculum does not necessarily produce extrapolation. The
+model may retain useful features from earlier stages, but it may also adapt to
+the final curriculum length and remain dependent on that observed range.
+Curriculum learning must therefore be compared with a model trained directly
+at the final training length. The comparison tests whether gradual length
+increases alter the resulting behaviour, rather than assuming that the
+curriculum is intrinsically beneficial.
+
+\subsection{Randomised Positional Exposure and Padded Training}
+\label{subsec:randomised_position_background}
+
+A separate hypothesis is that failure occurs because positional
+representations at unseen lengths differ from those encountered during
+training. Ruoss et al.\ propose randomised positional encodings that simulate
+a larger positional range during training
+\cite{ruoss2023randomized}. For a sequence of length $n$, their approach
+selects an ordered subset
+
+\begin{equation}
+p_1 < p_2 < \cdots < p_n
+\end{equation}
+
+This formulation describes the randomised positional-index method proposed
+by Ruoss et al.; it is not the padded mixed-length implementation evaluated
+in this dissertation.
+
+from a larger range of possible indices and applies the positional
+representation associated with each selected $p_i$. This allows short
+training sequences to encounter positional indices that would ordinarily
+appear only in longer inputs. Their method directly targets positional
+out-of-distribution exposure.
+
+Padding-based strategies are related but not equivalent. Presenting examples
+of several logical lengths within a common padded tensor can vary the
+locations of separators, output regions, and sequence boundaries. However,
+right-padding alone does not randomly change the starting position of the
+content, nor does it reproduce randomised positional-index sampling.
+Padding-based training should consequently be described according to the
+positions it actually varies.
+
+The padded condition evaluated in this dissertation is motivated by the
+broader positional-exposure hypothesis, but is treated as a distinct
+intervention rather than a reproduction of randomised positional encoding.
+Its precise construction, including the use of mixed logical lengths,
+right-padding, and shuffled training examples, is described in
+Chapter~\ref{chap:Methodology and Experimental Design
+
+\subsection{Intervention-Specific Evaluation}
+\label{subsec:intervention_evaluation}
+
+The effect of an intervention at length $L$ can be expressed relative to its
+matched original baseline as
+
+\begin{equation}
+\Delta A(L)
+=
+A_{\mathrm{intervention}}(L)
+-
+A_{\mathrm{baseline}}(L).
+\label{eq:intervention_difference}
+\end{equation}
+
+A positive value at unseen lengths is meaningful only if the intervention
+also preserves adequate performance at the training length. If the
+intervention fails to learn the training task, the result indicates
+training-length underfitting rather than evidence about improved or worsened
+extrapolation.
+
+The three strategy families therefore test different hypotheses:
+mixed-length training tests whether broader length exposure reduces
+dependence on a single training length; curriculum learning tests whether a
+gradual optimisation path produces a more transferable solution; and the
+padded mixed-length condition tests whether varying logical boundaries and
+output positions within a common tensor changes extrapolation behaviour.
+This intervention-specific framing prevents all unsuccessful variants from
+being assigned the same interpretation.
+
+\section{Long Sequences in Time-Series Classification}
+\label{sec:timeseries_background}
+
+Multivariate time-series classification assigns a single class label to a
+sequence containing several measurements at each time step. This differs
+fundamentally from the controlled sequence-to-sequence tasks considered in
+this dissertation. In Addition, Delayed Copy, and Reverse, increasing the
+input length also increases the number of output tokens that must be predicted
+correctly. In time-series classification, by contrast, the output remains a
+single class label regardless of the input length. Consequently, length-related
+behaviour is evaluated using classification accuracy rather than token or
+exact-match accuracy.
+
+Transformers are relevant to long time series because self-attention can model
+interactions between observations separated by many time steps. However,
+long sequences also increase the computational cost of attention and may
+contain dependencies at multiple temporal scales. Real-world time series can
+introduce additional complications, including irregular sampling, noise, and
+variation in the quantity of information available across a sequence.
+Specialised approaches such as Rough Transformers therefore use
+continuous-time representations and signature-based attention to capture
+local and global temporal structure while reducing computational
+requirements~\cite{morenopino2024rough}. Rough Transformers are discussed
+here as motivation for studying length in real-world time-series models; they
+are not implemented in the experiments in this dissertation.
+
+The exploratory real-world experiment uses SelfRegulationSCP2 from the UEA
+Multivariate Time Series Classification Archive~\cite{bagnall2018uea}. The
+archive was introduced to support reproducible comparison of multivariate
+time-series classification methods and provides predefined training and test
+splits across datasets from different application domains. SelfRegulationSCP2
+provides a useful contrast to the deterministic synthetic tasks because each
+example contains multiple real-valued channels and is associated with a
+sequence-level class label.
+
+In this dissertation, a compact Transformer is trained using a fixed prefix
+of each training series and subsequently evaluated using progressively longer
+prefixes. The same five positional-encoding conditions used in the controlled
+experiments are considered. This design examines whether the classifier's
+performance is sensitive to input lengths beyond the prefix used during
+training. Nevertheless, it should not be interpreted as an exact equivalent
+of algorithmic length extrapolation. A longer time-series prefix can introduce
+additional useful evidence, irrelevant observations, or noise, whereas a
+longer synthetic example applies the same deterministic rule to more symbols.
+
+The real-world experiment is therefore treated as a limited exploratory
+extension rather than direct validation of the synthetic-task failure
+taxonomy. Its purpose is to examine whether length sensitivity also appears
+in a noisy sequence-level classification setting and whether its empirical
+form differs from the immediate exact-match collapse observed on the
+controlled tasks.
+
+\section{Research Gap and Chapter Summary}
+\label{sec:background_gap}
+
+\subsection{Research Gap}
+
+Previous work has established that positional representation and training
+length can substantially affect Transformer extrapolation. ALiBi was designed
+to improve evaluation on sequences longer than those used during
+training~\cite{press2022train}, while comparative studies have shown that the
+choice of positional encoding can alter length-generalisation
+behaviour~\cite{kazemnejad2023impact}. Other work has investigated
+algorithmic tasks and randomised positional strategies as ways of improving
+generalisation beyond the observed training lengths
+~\cite{zhou2024algorithms,ruoss2023randomized}.
+
+However, reporting only accuracy at longer lengths does not fully explain a
+model's behaviour. A low out-of-distribution score may result from several
+different situations: the model may not have reliably learned the
+training-length task, performance may be unstable across random seeds, failure
+may occur immediately after the training boundary, or errors may be
+concentrated in particular output positions or task-specific conditions.
+These cases have different interpretations and should not be grouped together
+as a single form of length-generalisation failure.
+
+There is therefore a need for an evaluation framework that separates baseline
+validity from extrapolation behaviour. In particular, the training-length
+baseline should be verified across multiple seeds before conclusions are
+drawn from longer test sequences. Once a valid baseline has been established,
+the analysis should examine not only whether accuracy decreases, but also
+where errors occur, how close performance is to a task-appropriate chance
+reference, and whether the same behaviour is reproduced across positional
+encoding choices.
+
+Mitigation experiments require similar care. An intervention can only be
+interpreted as improving length generalisation if it first preserves adequate
+performance at the training length. Otherwise, low out-of-distribution
+performance may simply reflect training underfit. Furthermore, mixed-length
+training, curriculum learning, and randomised padding target different
+possible causes of failure. Their outcomes should consequently be compared
+with matched original baselines and interpreted in relation to the specific
+hypothesis each intervention was intended to test.
+
+This dissertation addresses these gaps through a controlled comparison of
+five positional-encoding settings across Addition, Delayed Copy, and Reverse.
+It combines multi-seed baseline eligibility with exact-match and token-level
+metrics, percentage-based error reporting, position-wise diagnostics,
+task-specific analyses, and matched baseline-versus-mitigation comparisons.
+A limited multivariate time-series classification experiment is included as
+an exploratory contrast, while remaining separate from the main synthetic
+failure taxonomy.
+
+\subsection{Chapter Summary}
+
+This chapter introduced the Transformer components required for the study,
+including self-attention and positional representation. It explained why
+performance at the training length is insufficient evidence of length
+generalisation and described the distinct computational demands of Addition,
+Delayed Copy, and Reverse. It also established the roles of exact-match
+accuracy, token error, multi-seed evaluation, position-wise analysis, and
+task-specific diagnostics.
+
+The chapter further distinguished the hypotheses underlying mixed-length
+training, curriculum learning, and randomised padding, and explained why a
+mitigation must retain training-length performance before its extrapolation
+behaviour can be interpreted. Finally, it situated the exploratory
+SelfRegulationSCP2 experiment within multivariate time-series classification
+and clarified why sequence-level classification is not directly equivalent
+to deterministic sequence-to-sequence extrapolation.
+
+The next chapter translates these principles into the experimental
+methodology, specifying the datasets, model architecture, positional-encoding
+conditions, training procedure, baseline-eligibility criterion, evaluation
+metrics, diagnostic analyses, and mitigation comparisons.
+% -----------------------------------------------------------------------------
+
+\chapter{Methodology and Experimental Design}
+\label{chap:Methodology and Experimental Design}
+
+\noindent
+This chapter specifies the experimental methodology used to investigate
+length generalisation in Transformer-based sequence models. The experiments
+follow a controlled train-short/test-long protocol in which a model is trained
+using sequences of a fixed length and subsequently evaluated on progressively
+longer unseen sequences. This design makes it possible to distinguish
+successful learning at the training length from extrapolation beyond the
+observed length distribution.
+
+The methodology was organised around three requirements. First, a
+configuration had to learn the training-length task reliably before its
+longer-length behaviour could be interpreted. Second, conclusions had to be
+supported across multiple random seeds rather than inferred from a single
+run. Third, evaluation had to describe not only whether performance decreased,
+but also where and how the resulting errors were distributed.
+
+The chapter first presents the overall experimental pipeline and then
+describes the controlled tasks, dataset generation, Transformer architecture,
+positional-encoding conditions, training procedure, baseline-eligibility
+criterion, evaluation metrics, diagnostic analyses, and mitigation
+experiments. A separate exploratory experiment on multivariate time-series
+classification is presented at the end of the chapter. Throughout the
+controlled experiments, the architecture and training procedure were kept as
+consistent as possible so that sequence length, task, positional encoding,
+and training intervention remained the principal experimental variables.
+
+
+\section{Experimental Overview}
+\label{sec:experimental_overview}
+
+The study used a staged experimental pipeline. Controlled algorithmic tasks
+were first generated at predefined training and evaluation lengths. A compact
+Transformer was then trained for each combination of task, positional
+encoding, and random seed. Five positional-encoding conditions were examined:
+learned positional embeddings, sinusoidal encoding, no explicit positional
+encoding, ALiBi, and RoPE. Each baseline condition was repeated using three
+random seeds, giving 45 baseline training runs across the three tasks.
+
+The train-short/test-long protocol follows the general form used in previous
+investigations of positional extrapolation and algorithmic length
+generalisation~\cite{press2022train,kazemnejad2023impact,zhou2024algorithms}.
+However, the present methodology introduces an explicit baseline-eligibility
+stage before extrapolation results are interpreted. Training-length
+performance was assessed separately for every task--encoding--seed
+combination. Only task--encoding configurations that learned the training
+task sufficiently reliably across seeds were used as the principal baselines
+for the subsequent failure analysis.
+
+Eligible baselines were evaluated over a sequence of increasing test lengths.
+The resulting curves were used to determine whether degradation began at the
+first unseen length or emerged more gradually. Exact-match accuracy was
+supplemented by token-error percentages, position-wise error profiles, and
+task-specific diagnostics. These analyses examined whether errors were
+distributed uniformly across an output or associated with particular
+positions, carry conditions, or dependency distances. Attention analyses were
+used as supporting diagnostics rather than as direct evidence that a model
+had learned a particular algorithm.
+
+Mitigation experiments were conducted only as matched comparisons with an
+original baseline using the same task and positional-encoding condition.
+Mixed-length training, curriculum learning, and randomised padding were
+treated as separate interventions because they test different hypotheses
+about the source of length-related failure. An intervention was not interpreted
+as improving extrapolation unless it first retained adequate performance at
+the training length.
+
+Finally, a limited experiment using the SelfRegulationSCP2 multivariate
+time-series dataset examined input-length sensitivity in a sequence-level
+classification setting. This experiment used the same positional-encoding
+conditions and multiple random seeds, but it was analysed separately because
+time-series classification is not directly equivalent to deterministic
+sequence-to-sequence extrapolation.
+
+\begin{table}[htbp]
+\centering
+\label{tab:experimental_pipeline}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{
+    p{0.08\textwidth}
+    p{0.29\textwidth}
+    p{0.52\textwidth}
+}
+\hline
+\textbf{Stage} & \textbf{Procedure} & \textbf{Purpose} \\
+\hline
+1 &
+Controlled data generation &
+Create deterministic training and test sets at predefined sequence lengths. \\
+
+2 &
+Multi-seed baseline training &
+Train each task and positional-encoding condition using seeds 42, 123, and
+2024. \\
+
+3 &
+Baseline eligibility &
+Identify configurations that reliably learn the training-length task before
+interpreting extrapolation. \\
+
+4 &
+Extrapolation diagnostics &
+Measure exact-match and token errors across lengths and determine where
+failure occurs. \\
+
+5 &
+Matched mitigation comparison &
+Compare each intervention with its corresponding original baseline and check
+whether training-length performance is retained. \\
+
+6 &
+Exploratory real-world extension &
+Examine input-length sensitivity on SelfRegulationSCP2 using sequence-level
+classification accuracy. \\
+\hline
+\end{tabular}
+\caption{Stages of the experimental methodology.}
+\end{table}
+
+\section{Synthetic Task Design}
+\label{sec:method-synthetic-tasks}
+
+The conceptual motivation for Addition, Delayed Copy, and Reverse was
+discussed in Chapter~\ref{chap:background}, and their transformations are
+illustrated in Figure~\ref{fig:controlled_task_examples}. This section
+therefore focuses on their exact experimental implementation.
+
+For each task, the nominal length \(L\) has a task-specific meaning. In
+Addition, \(L\) is the number of digits in each operand; in Delayed Copy, it
+is the number of content tokens to reproduce; and in Reverse, it is the
+complete sequence length. The resulting sequence construction is summarised
+in Table~\ref{tab:synthetic-task-implementation}.
+
+\begin{table}[htbp]
+\centering
+
+\label{tab:synthetic-task-implementation}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{
+    p{0.18\textwidth}
+    p{0.25\textwidth}
+    p{0.26\textwidth}
+    p{0.18\textwidth}
+}
+\hline
+\textbf{Task} &
+\textbf{Meaning of \(L\)} &
+\textbf{Encoded sequence length} &
+\textbf{Vocabulary} \\
+\hline
+
+Addition &
+Digits per operand &
+\(2L+1\) input and target tokens &
+10 digits, plus, and padding \\
+
+Delayed Copy &
+Content tokens to reproduce &
+\(2L+1\) input and target tokens &
+100 content symbols, separator, and padding \\
+
+Reverse &
+Number of input tokens &
+\(L\) input and target tokens &
+100 content symbols \\
+
+\hline
+\end{tabular}
+\caption{Implementation of the controlled synthetic tasks.}
+\end{table}
+
+For Addition, leading zeros were excluded so that both operands always had
+the intended length. The sum was right-aligned within the target and preceded
+by padding tokens. For Delayed Copy, the input contained the content sequence,
+a separator, and \(L\) padding tokens; the target contained \(L+1\) padding
+tokens followed by the original content sequence. Reverse directly mapped
+each generated sequence to the same tokens in the opposite order.
+
+Associative Recall was also implemented during development but was excluded
+from the main comparison because it did not provide sufficiently reliable
+training-length performance. This decision followed the baseline-eligibility
+principle: extrapolation behaviour was not interpreted when the original task
+had not first been learned reliably.
+
+\section{Train-Short/Test-Long Protocol}
+\label{sec:train-short-test-long}
+
+Each model was trained using examples at one nominal length
+\(L_{\mathrm{train}}\) and evaluated at both the training length and a sequence
+of progressively longer lengths \cite{press2022train,kazemnejad2023impact,zhou2024algorithms}. Performance at
+\(L_{\mathrm{test}}=L_{\mathrm{train}}\) was treated as in-distribution
+performance, while evaluations satisfying
+\(L_{\mathrm{test}}>L_{\mathrm{train}}\) were treated as
+out-of-distribution length extrapolation.
+
+Addition models were trained using operands containing 16 digits and evaluated
+using operands containing up to 1024 digits. Delayed Copy and Reverse models
+were trained at a nominal length of 128 and evaluated at lengths up to 1024.
+The complete schedule is shown in
+Table~\ref{tab:train-test-lengths}. These values refer to nominal task length:
+as specified in Section~\ref{sec:method-synthetic-tasks}, the encoded sequence
+length is \(2L+1\) for Addition and Delayed Copy and \(L\) for Reverse.
+
+\begin{table}[htbp]
+\centering
+
+\label{tab:train-test-lengths}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{
+    p{0.23\textwidth}
+    p{0.15\textwidth}
+    p{0.17\textwidth}
+    p{0.34\textwidth}
+}
+\hline
+\textbf{Task} &
+\(\boldsymbol{L_{\mathrm{train}}}\) &
+\textbf{First unseen length} &
+\(\boldsymbol{L_{\mathrm{test}}}\) \\
+\hline
+
+Addition &
+16 &
+32 &
+16, 32, 64, 128, 256, 512, 1024 \\
+
+Delayed Copy &
+128 &
+256 &
+128, 256, 512, 1024 \\
+
+Reverse &
+128 &
+256 &
+128, 256, 512, 1024 \\
+
+SelfRegulationSCP2 &
+256 &
+512 &
+256, 512, 1024, 1152 \\
+
+\hline
+\end{tabular}
+\caption{Training and evaluation-length schedule. Synthetic-task values denote
+nominal task lengths, while SelfRegulationSCP2 values denote time-series
+prefix lengths.}
+\end{table}
+
+For the synthetic tasks, a separate test set was generated at every evaluation
+length using the same deterministic rule as the training data. The underlying
+task therefore remained unchanged; only the length required to execute the
+task increased.
+
+Training-length performance was evaluated before extrapolation behaviour. A
+configuration that did not learn the task reliably at
+\(L_{\mathrm{train}}\) was classified as training underfit and was not used as
+evidence of length-generalisation failure. For configurations that satisfied
+the baseline-eligibility criterion, performance at the first unseen and
+subsequent lengths was used to characterise whether degradation was immediate
+or gradual. The numerical eligibility and collapse thresholds are defined in
+Section~\ref{sec:evaluation-metrics}.
+
+\section{Experiment Matrix}
+\label{sec:experiment-matrix}
+
+The synthetic baseline experiment crossed three tasks, five positional-encoding
+conditions, and three random seeds. This produced
+
+\[
+3\ \text{tasks}
+\times 5\ \text{positional encodings}
+\times 3\ \text{seeds}
+=45
+\]
+
+independently trained synthetic baseline models. Each trained checkpoint was
+evaluated at every test length configured for its task. Associative Recall was
+not included in this matrix because it did not satisfy the training-fit
+requirement described in Section~\ref{sec:method-synthetic-tasks}.
+
+The complete synthetic matrix was first used to assess training-length
+performance and seed stability. Baseline eligibility was then determined at
+the task--encoding level using results from all three seeds. Consequently,
+all 45 baseline runs contributed to the eligibility analysis, while the
+principal extrapolation and failure-behaviour analyses focused on
+task--encoding configurations that satisfied the eligibility criterion.
+
+The real-world extension crossed one dataset with the same five positional
+encodings and three seeds, producing a further 15 trained models. It was
+analysed separately from the synthetic benchmark because it predicts one
+sequence-level class rather than a target token at every output position.
+
+Table~\ref{tab:experiment-matrix} summarises the baseline experiment matrix.
+
+\begin{table}[htbp]
+\centering
+\label{tab:experiment-matrix}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{
+    p{0.31\textwidth}
+    p{0.48\textwidth}
+    p{0.11\textwidth}
+}
+\hline
+\textbf{Experiment component} &
+\textbf{Values} &
+\textbf{Models} \\
+\hline
+
+Synthetic tasks &
+Addition, Delayed Copy, Reverse &
+-- \\
+
+Synthetic positional encodings &
+Learned, sinusoidal, NoPE, ALiBi, RoPE &
+-- \\
+
+Synthetic seeds &
+42, 123, 2024 &
+-- \\
+
+Synthetic baseline matrix &
+\(3\) tasks \(\times\) \(5\) encodings \(\times\) \(3\) seeds &
+45 \\
+
+Real-world dataset &
+SelfRegulationSCP2 &
+-- \\
+
+Real-world baseline matrix &
+\(1\) dataset \(\times\) \(5\) encodings \(\times\) \(3\) seeds &
+15 \\
+
+Total baseline models &
+Synthetic and real-world experiments &
+60 \\
+
+\hline
+\end{tabular}
+\caption{Baseline experimental matrix. The counts refer to independently
+trained model checkpoints and exclude the subsequent mitigation experiments.}
+\end{table}
+
+The task dimension was used to compare behaviour across distinct deterministic
+transformations. The positional-encoding dimension examined whether
+training fit and extrapolation varied with the representation of sequence
+order. Finally, the seed dimension measured sensitivity to model
+initialisation, training stochasticity, and synthetic data generation.
+Mitigation experiments were conducted as additional matched interventions and
+are specified separately in Section~\ref{sec:mitigation-methodology}.
+
+\section{Model Architecture}
+\label{sec:model-architecture}
+
+The synthetic experiments used a compact encoder-only Transformer implemented
+from scratch in PyTorch, following the principal components of the original
+Transformer architecture~\cite{vaswani2017attention}. The model was not
+pretrained. It consisted of a task-specific token-embedding layer, one of the
+five positional treatments, two Transformer blocks, and a linear output layer
+that produced vocabulary logits independently at every sequence position.
+
+Each Transformer block applied multi-head self-attention followed by a
+position-wise feedforward network. Residual connections and dropout were
+applied around both sublayers, with layer normalisation performed after each
+residual addition. The feedforward network used a ReLU activation between its
+two linear transformations.
+
+The model used full bidirectional self-attention and did not apply a causal
+mask. This was appropriate because every controlled task was formulated as a
+non-autoregressive sequence-to-sequence transformation: the complete input
+sequence was supplied simultaneously, and the model predicted a target token
+at every position. The architecture was held constant across
+positional-encoding conditions, except for the positional component being
+evaluated.
+
+\begin{table}[htbp]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{
+    p{0.46\textwidth}
+    p{0.38\textwidth}
+}
+\hline
+\textbf{Architecture component} &
+\textbf{Configuration} \\
+\hline
+
+Token-embedding dimension &
+128 \\
+
+Transformer blocks &
+2 \\
+
+Attention heads &
+4 \\
+
+Dimension per attention head &
+32 \\
+
+Feedforward hidden dimension &
+256 \\
+
+Feedforward activation &
+ReLU \\
+
+Dropout probability &
+0.1 \\
+
+Normalisation &
+Post-residual layer normalisation \\
+
+Attention visibility &
+Full bidirectional attention; no causal mask \\
+
+Output layer &
+Linear projection to task vocabulary at every position \\
+
+\hline
+\end{tabular}
+\caption{Transformer architecture used for the controlled synthetic
+experiments. Optimisation settings are reported separately in
+Section~\ref{sec:training-procedure}.}
+\label{tab:model-config}
+\end{table}
+
+The maximum supported sequence length was chosen to cover the longest encoded
+input in each task. It was set to 2049 positions for Addition and Delayed Copy,
+corresponding to \(2(1024)+1\), and to 1024 positions for Reverse. These
+limits determined the size of the learned positional-embedding table and the
+precomputed sinusoidal encoding buffer but did not change the number of
+Transformer blocks or attention heads.
+
+The architecture was intentionally compact because the objective was
+controlled comparison rather than state-of-the-art task performance. Keeping
+the architecture fixed made it possible to repeat the full experiment matrix
+across tasks, positional encodings, lengths, and seeds while attributing
+differences more directly to the experimental conditions.
+
+\section{Positional Encoding Variants}
+\label{sec:positional-encoding-variants}
+
+Five positional conditions were evaluated: learned absolute embeddings,
+sinusoidal encodings, no explicit positional encoding, ALiBi, and RoPE. Their
+theoretical motivations were discussed in Chapter~\ref{chap:background}; this
+section specifies how they were implemented in the experimental model.
+
+Only the positional treatment was changed between conditions. The token
+embedding, number of Transformer blocks, attention heads, feedforward
+dimension, output layer, and optimisation procedure otherwise remained fixed.
+This controlled design reduced the possibility that an architectural change
+unrelated to position caused the observed performance differences.
+
+\begin{table}[htbp]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{
+    p{0.17\textwidth}
+    p{0.25\textwidth}
+    p{0.47\textwidth}
+}
+\hline
+\textbf{Encoding} &
+\textbf{Application point} &
+\textbf{Experimental implementation} \\
+\hline
+
+Learned &
+Input representations &
+A trainable embedding vector was added for each absolute position. \\
+
+Sinusoidal &
+Input representations &
+Fixed sine and cosine vectors were added using the original Transformer
+frequency schedule. \\
+
+NoPE &
+No explicit intervention &
+Token embeddings were passed to the first Transformer block without an added
+positional signal. \\
+
+ALiBi &
+Attention logits &
+A head-specific negative bias proportional to the absolute distance between
+query and key positions was added before the softmax. \\
+
+RoPE &
+Queries and keys &
+Pairs of query and key dimensions were rotated using position-dependent sine
+and cosine frequencies before their dot product was calculated. \\
+
+\hline
+\end{tabular}
+\caption{Implementation of the five positional-encoding conditions.}
+\label{tab:positional-encodings}
+\end{table}
+
+For the learned condition, a trainable positional-embedding table was
+allocated up to the maximum supported sequence length. During baseline
+training, however, only entries corresponding to positions present at the
+training length received gradient updates. Embeddings assigned exclusively to
+longer unseen positions therefore remained at their initial values. This is
+an inherent property of the evaluated learned absolute-position baseline and
+is relevant when interpreting its extrapolation behaviour.
+
+The sinusoidal condition used the fixed sine and cosine construction from the
+original Transformer~\cite{vaswani2017attention}. Because these vectors were
+defined in advance for every supported position, evaluation at a longer length
+did not require learning additional position parameters.
+
+The NoPE condition applied no explicit positional transformation. It was
+included because previous work has shown that Transformers without an
+explicit positional encoding can still exhibit task-dependent positional and
+length-generalisation behaviour~\cite{kazemnejad2023impact}. In the present
+bidirectional implementation, NoPE otherwise used the same attention and
+feedforward operations as the other conditions.
+
+ALiBi added a head-specific linear penalty to the attention logits
+~\cite{press2022train}. Because the model used bidirectional rather than
+causal attention, the implemented bias depended on the absolute separation
+between positions:
+
+\[
+B^{(h)}_{ij}=-m_h |i-j|,
+\]
+
+where \(m_h\) is the fixed slope for attention head \(h\). This symmetric
+form favoured nearby positions in both directions. It should therefore be
+understood as a bidirectional adaptation of the ALiBi distance bias rather
+than the original causal-language-model setting.
+
+RoPE applied rotary position information directly to the query and key
+representations before attention scores were computed
+~\cite{su2024roformer}. The implementation used an even head dimension of 32
+and the standard frequency base of \(10\,000\). Value representations were
+not rotated.
+
+All five conditions were subjected to the same multi-seed baseline-eligibility
+assessment. Consequently, a positional condition that failed to learn a task
+at the training length was classified as training underfit rather than as
+evidence of extrapolation failure. The eligibility procedure is defined in
+Section~\ref{sec:baseline-eligibility}.
+
+\section{Training and Evaluation Procedure}
+\label{sec:training-procedure}
+
+All models were implemented and trained using PyTorch
+~\cite{paszke2019pytorch}. For each synthetic configuration, the generated
+data contained 10,000 training examples, 1,000 validation examples, and 1,000
+test examples at every evaluation length. The validation split was generated
+as part of the data pipeline but was not used for early stopping or checkpoint
+selection in the final experiments.
+
+Each baseline model was trained for 10 epochs. The checkpoint saved after the
+final epoch was used for evaluation; no best-validation checkpoint was
+selected. Optimisation used AdamW~\cite{loshchilov2019decoupled} with a
+learning rate of \(10^{-3}\). No learning-rate scheduler, early stopping, or
+gradient clipping was applied. Because the optimiser was instantiated using
+the PyTorch defaults apart from the learning rate, its weight-decay coefficient
+was \(0.01\).
+
+The loss was token-level cross-entropy. For Addition and Delayed Copy, target
+positions containing the padding token were excluded from the loss. Reverse
+does not use a padding token, so every target position contributed to its
+training loss.
+
+\begin{table}[htbp]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{
+    p{0.49\textwidth}
+    p{0.35\textwidth}
+}
+\hline
+\textbf{Training component} &
+\textbf{Configuration} \\
+\hline
+
+Training examples per run &
+10,000 \\
+
+Validation examples &
+1,000 at the training length \\
+
+Test examples &
+1,000 at each evaluation length \\
+
+Training epochs &
+10 \\
+
+Optimiser &
+AdamW \\
+
+Learning rate &
+\(10^{-3}\) \\
+
+Weight decay &
+\(0.01\) \\
+
+Learning-rate schedule &
+None \\
+
+Checkpoint selection &
+Final training epoch \\
+
+Addition batch size &
+8 \\
+
+Delayed Copy batch size &
+1 \\
+
+Reverse batch size &
+1 \\
+
+Random seeds &
+42, 123, and 2024 \\
+
+\hline
+\end{tabular}
+\caption{Training and evaluation configuration for the synthetic baseline
+experiments.}
+\label{tab:training-configuration}
+\end{table}
+
+The three seeds controlled Python, NumPy, and PyTorch randomness, including
+synthetic data generation and model initialisation. GPU random-number
+generators were also seeded when CUDA was available. The seed repetitions
+therefore measured the combined sensitivity of the experimental pipeline to
+data sampling, parameter initialisation, minibatch ordering, and stochastic
+training operations.
+
+After training, each checkpoint was loaded in evaluation mode and evaluated
+separately on the held-out dataset for every configured test length. Dropout
+was disabled during evaluation, and predictions were obtained using the
+highest-logit token at each output position. All test sets were generated
+before evaluation and were not used for model selection or further
+optimisation.
+
+\section{Evaluation Metrics}
+\label{sec:evaluation-metrics}
+
+The synthetic tasks were evaluated using token accuracy and exact-match
+accuracy. Let \(y_{n,j}\) denote the target token at position \(j\) in
+sequence \(n\), and let \(\hat{y}_{n,j}\) denote the corresponding predicted
+token. A binary mask \(m_{n,j}\) indicates whether that position is included
+in evaluation. For Addition and Delayed Copy, padding targets have
+\(m_{n,j}=0\); for Reverse, every position has \(m_{n,j}=1\).
+
+Token accuracy at test length \(L\) is defined as
+
+\[
+A_{\mathrm{tok}}(L)
+=
+100
+\frac{
+\sum_{n=1}^{N}
+\sum_{j}
+m_{n,j}
+\mathbb{I}
+\left[
+\hat{y}_{n,j}=y_{n,j}
+\right]
+}{
+\sum_{n=1}^{N}
+\sum_{j}m_{n,j}
+}.
+\]
+
+It measures the percentage of evaluated target tokens predicted correctly.
+Padding positions do not contribute to either the numerator or denominator.
+
+Exact-match accuracy is defined as
+
+\[
+A_{\mathrm{EM}}(L)
+=
+\frac{100}{N}
+\sum_{n=1}^{N}
+\mathbb{I}
+\left[
+\hat{y}_{n,j}=y_{n,j}
+\text{ for every position satisfying }m_{n,j}=1
+\right].
+\]
+
+A sequence is therefore counted as correct only when every non-padding target
+token is predicted correctly. Exact-match accuracy was treated as the primary
+synthetic-task metric because each task requires a complete output sequence.
+Token accuracy was retained as a complementary metric because it distinguishes
+complete sequence failure from outputs containing some correct tokens.
+
+For interpretability, both metrics were also reported as error percentages:
+
+\[
+E_{\mathrm{tok}}(L)=100-A_{\mathrm{tok}}(L),
+\qquad
+E_{\mathrm{EM}}(L)=100-A_{\mathrm{EM}}(L).
+\]
+
+Token error was compared with a uniform-prediction reference over the active
+target vocabulary. This reference is 90% error for Addition, which predicts
+one of ten digits at active positions, and 99% error for Delayed Copy and
+Reverse, which use 100 possible content symbols. These references apply to
+token error and should not be confused with the 10% exact-match collapse
+threshold defined below.
+
+\subsection{Multi-seed aggregation}
+
+For every task, positional encoding, and test length, performance was
+aggregated across the three seeds. If the seed-level measurements are
+\(A_1,A_2,A_3\), their mean is
+
+\[
+\bar{A}=\frac{1}{3}\sum_{s=1}^{3}A_s.
+\]
+
+The sample standard deviation was used to describe variation between seeds,
+while the standard error was calculated as
+
+\[
+\mathrm{SE}=\frac{\mathrm{SD}}{\sqrt{3}}.
+\]
+
+Standard deviation and standard error were not treated as interchangeable.
+Standard deviation describes the observed dispersion between the three runs,
+whereas standard error describes uncertainty in their estimated mean. Every
+result figure specifies explicitly which quantity, if any, is displayed by
+its error bars or shaded region.
+
+\subsection{Baseline eligibility}
+
+Baseline eligibility was determined before extrapolation performance was
+interpreted. A seed was considered to have fitted the training task when
+
+\[
+A_{\mathrm{EM}}(L_{\mathrm{train}})\geq 90\%.
+\]
+
+A task--encoding configuration was classified as \emph{eligible} only when
+all three seeds met this threshold. A configuration was classified as
+\emph{seed unstable} when the threshold was met by only one or two seeds.
+Configurations for which no seed met the threshold were classified as
+\emph{not eligible}. Only eligible task--encoding configurations were used
+as the principal baselines for conclusions about extrapolation failure.
+
+The 90\% criterion is an operational eligibility threshold rather than a claim
+that 90\% constitutes perfect learning. Its purpose is to prevent
+training-length underfit or seed instability from being misreported as
+length-generalisation failure.
+
+\section{Performance Degradation Curves}
+\label{sec:performance-degradation}
+
+Performance degradation curves plot accuracy or error percentage against the
+nominal test length. They show the training-length result together with every
+longer evaluation point, making it possible to distinguish an immediate
+collapse at the first unseen length from degradation that emerges only at
+larger lengths.
+
+For each eligible task--encoding configuration, the first collapse length was
+defined using the mean exact-match accuracy across seeds:
+
+\[
+L_{\mathrm{collapse}}
+=
+\min
+\left\{
+L>L_{\mathrm{train}}
+:
+\bar{A}_{\mathrm{EM}}(L)<10\%
+\right\}.
+\]
+
+If mean exact-match accuracy fell below 10% at the first unseen length, the
+observed behaviour was classified as \emph{immediate extrapolation collapse}.
+If the threshold was crossed only at a later length, the behaviour was
+classified as delayed degradation followed by collapse. If no evaluated
+length fell below the threshold, the result was described as \emph{no
+observed collapse within the evaluated range}.
+
+The 10% value is an operational reporting threshold. It is not the theoretical
+chance accuracy of an entire output sequence and does not, by itself,
+identify the internal cause of failure. Its purpose is to provide a consistent
+criterion for locating severe degradation across tasks whose complete output
+lengths differ.
+
+The eligible-baseline plots show the multi-seed mean together with one
+standard deviation and faint individual-seed curves. This presentation makes
+both the average length trend and seed-level stability visible. Training
+length is marked using a vertical reference line, and the 10% exact-match
+threshold is marked using a horizontal reference line.
+
+Because the evaluated lengths increase approximately geometrically, they are
+displayed at equally spaced horizontal positions with their true numerical
+values retained as tick labels. This improves label readability and prevents
+the shorter lengths from being compressed near the left edge. The equal
+visual spacing should therefore not be interpreted as a linear numerical
+distance between consecutive sequence lengths.
+
+\section{Attention Diagnostics}
+
+Accuracy alone does not explain why a model fails. Therefore, attention diagnostics are used to examine how attention behaviour changes as sequence length increases. Attention maps are extracted at the training length, at the first failure length, and at the longest test length.
+
+Three attention statistics are computed. Normalised attention entropy measures how diffuse the attention distribution is. Average attention distance measures how far tokens attend across the sequence. Local attention ratio measures the proportion of attention assigned to nearby positions. Together, these diagnostics provide evidence about whether the attention patterns learned at short lengths transfer to longer contexts.
+
+The purpose of this analysis is not to claim a complete mechanistic explanation of Transformer failure. Instead, it provides supporting evidence for the failure taxonomy by showing whether performance collapse is accompanied by systematic changes in attention behaviour.
+
+\section{Mitigation Experiments}
+
+After the baseline and positional encoding experiments, several simple mitigation strategies are tested. These include mixed-length training, curriculum training, and randomised padded training. The motivation is to test whether exposing the model to a wider range of lengths during training improves extrapolation.
+
+Mixed-length training combines examples from multiple training lengths into a single dataset. Curriculum training gradually increases the training length across stages by loading a checkpoint from the previous stage. Randomised padded training introduces variable-length examples padded to a common maximum length.
+
+These experiments are evaluated against the same train-short/test-long metrics. The key question is whether the mitigation improves long-length exact-match accuracy while preserving training-length performance. If a mitigation reduces training-length accuracy to near zero, it is treated as underfitting rather than successful mitigation.
+
+\section{Real-World Extension}
+
+The main benchmark is synthetic because synthetic tasks provide controlled tests of algorithmic extrapolation. However, a small real-world extension is included to test whether similar length-related behaviour appears outside exact sequence-generation tasks.
+
+The real-world extension uses SelfRegulationSCP2 from the UEA time-series archive. This is a multivariate time-series classification dataset with sequence length 1152. It was selected because it provides a long real-world sequence setting and has been used in recent long-sequence time-series research.
+
+For this experiment, a Transformer classifier is trained on prefixes of length 256 and evaluated on prefixes of length 256, 512, 1024, and 1152. The same five positional encoding variants are evaluated across the same three seeds. Unlike the synthetic tasks, the output is a class label rather than a full target sequence, so the metric is classification accuracy.
+
+This extension is not intended as a state-of-the-art comparison. Instead, it is used as a small validation study to compare the behaviour of controlled synthetic algorithmic tasks with a real-world long-sequence classification task.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\hline
+Component & Setting \\
+\hline
+Dataset & SelfRegulationSCP2 \\
+Dataset type & Multivariate time-series classification \\
+Full sequence length & 1152 \\
+Training prefix length & 256 \\
+Evaluation prefix lengths & 256, 512, 1024, 1152 \\
+Output type & Class label \\
+Metric & Classification accuracy \\
+Positional encodings & Learned, sinusoidal, NoPE, ALiBi, RoPE \\
+Seeds & 42, 123, 2024 \\
+\hline
+\end{tabular}
+\caption{Configuration of the real-world time-series extension.}
+\label{tab:realworld_setup}
+\end{table}
+
+\section{Failure Taxonomy Construction}
+
+The final methodological step is to organise the observed behaviours into a failure taxonomy. The taxonomy is constructed from the combination of exact-match degradation, training-length performance, seed variation, attention diagnostics, and mitigation results.
+
+Five failure categories are considered: extrapolation collapse, training-length underfitting, seed instability, attention diffusion, and mitigation-resistant failure. This taxonomy is intended to make the results more interpretable than a single accuracy table. It separates cases where the model fails because it cannot learn the training task from cases where it learns the training task but does not extrapolate.
+
+\section{Output Organisation}
+
+All experimental outputs are stored in a structured directory layout so that the results can be traced back to the corresponding experiment type. Raw result CSV files are stored separately from aggregated summaries and generated figures. This separation is important because the report uses summary tables and plots, while the raw CSV files preserve the original outputs from each individual run.
+
+The multi-seed synthetic results are stored under \texttt{outputs/results/multiseed\_results/}. Mitigation results are stored under \texttt{outputs/results/mitigation\_results/}. Real-world extension results are stored under \texttt{outputs/results/realworld/}. Aggregated plots and summary tables are stored under \texttt{outputs/plots/} and \texttt{outputs/analysis/}.
+
+This structure supports reproducibility because each reported figure or table can be linked back to the raw result files and the configuration files used to generate them.
+
+\section{Implementation and Compute Setup}
+
+The project is implemented in Python using PyTorch. Synthetic datasets are generated using task-specific Python classes and stored as JSONL files. Experiment settings are stored in YAML configuration files. Results are saved as CSV files and summarised using plotting scripts that generate degradation curves, error summaries, attention diagnostics, mitigation summaries, and real-world extension plots.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\hline
+Component & Location \\
+\hline
+Synthetic task generation & \texttt{src/tasks/} \\
+Synthetic data loading & \texttt{src/data/} \\
+Model implementations & \texttt{src/models/} \\
+Training and evaluation scripts & \texttt{src/training/} \\
+Experiment configurations & \texttt{configs/} \\
+Multi-seed configurations & \texttt{configs/multiseed/} \\
+Mitigation configurations & \texttt{configs/mitigation/} \\
+Real-world configurations & \texttt{configs/realworld/} \\
+Raw result CSVs & \texttt{outputs/results/} \\
+Generated plots and summaries & \texttt{outputs/plots/}, \texttt{outputs/analysis/} \\
+\hline
+\end{tabular}
+\caption{Project components used to support reproducibility.}
+\label{tab:reproducibility_components}
+\end{table}
+
+Experiments were run both locally and on Amazon Web Services. Local execution was used for debugging, validation, and smaller runs. AWS GPU instances were used for longer training runs and the full multi-seed experimental matrix. This setup made it possible to run repeated experiments while keeping the implementation reproducible through configuration files and saved outputs.
+
+% -----------------------------------------------------------------------------
+
+\chapter{Synthetic Benchmark Results}
+\label{chap:Results}
+
+\noindent
+This chapter reports the main synthetic benchmark results. The experiments evaluate whether Transformer models trained on short sequences can generalise to longer sequences on controlled algorithmic tasks. The central finding is that several models achieve high accuracy at the training length but fail sharply when evaluated on longer sequences. This indicates that strong in-distribution performance is not sufficient evidence that a model has learned a length-general algorithm.
+
+The chapter first gives an overview of the result structure, then analyses performance on addition, delayed copy, and reverse. It then compares positional encoding methods and examines robustness across random seeds. The chapter concludes by summarising the main synthetic failure patterns that motivate the deeper analysis in the following chapter.
+
+\section{Overview of Synthetic Results}
+
+The main synthetic benchmark consists of three tasks: addition, delayed copy, and reverse. Each task is evaluated under five positional encoding settings: learned positional embeddings, sinusoidal positional encodings, NoPE, ALiBi, and RoPE. Each configuration is repeated across three random seeds.
+
+The main metrics are token accuracy and exact-match accuracy. Exact-match accuracy is the primary metric because each synthetic task requires a complete structured output. A model can have non-zero token accuracy while still failing to solve the task algorithmically. Therefore, exact-match accuracy is used to determine whether a model has learned the complete rule.
+
+Across the synthetic benchmark, the results show three broad behaviours. First, some configurations fit the training length but fail at the first longer test length. Second, some configurations do not fit the training length and are therefore classified as underfitting rather than extrapolation failure. Third, some configurations show strong seed sensitivity, meaning that conclusions based on a single run would be unreliable.
+
+\section{Addition Results}
+
+The addition task tests whether the model can learn symbolic arithmetic and carry propagation. Models are trained on digit length 16 and evaluated on digit lengths up to 1024. This is the most stringent extrapolation setting in the benchmark because the model must apply the same arithmetic rule to numbers much longer than those seen during training.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/addition_exact_degradation_mean_se.png}
+\caption{Exact-match accuracy on the addition task as test length increases. Results are averaged across three random seeds, with error bars showing standard error.}
+\label{fig:addition_exact_degradation}
+\end{figure}
+
+Figure~\ref{fig:addition_exact_degradation} shows that learned and sinusoidal positional encodings achieve high exact-match accuracy at the training length, but exact-match accuracy drops to 0\% at the first longer length. Learned positional embeddings achieve a mean exact-match accuracy of 92.0\% at length 16, while sinusoidal encodings achieve 93.7\%. However, both fall to 0\% when evaluated beyond the training length.
+
+This behaviour indicates immediate extrapolation collapse. The model can solve the addition task for the length seen during training, but it does not learn an arithmetic procedure that transfers to longer numbers. RoPE shows partial training-length performance, with 47.3\% exact-match accuracy at length 16, but also fails to extrapolate. NoPE and ALiBi do not solve the training length, so their results are interpreted as training-length underfitting rather than extrapolation collapse.
+
+\section{Delayed Copy Results}
+
+The delayed copy task tests long-range memory. Unlike the original simple copy task, the model must reproduce the sequence after a separator and padding region. This makes the task a stronger test of whether information can be retained and retrieved over longer contexts.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/copy_exact_degradation_mean_se.png}
+\caption{Exact-match accuracy on the delayed copy task as test length increases. Results are averaged across three random seeds, with error bars showing standard error.}
+\label{fig:copy_exact_degradation}
+\end{figure}
+
+Figure~\ref{fig:copy_exact_degradation} shows that sinusoidal positional encoding and RoPE fit the training length almost perfectly. Sinusoidal encoding achieves 99.93\% mean exact-match accuracy at length 128, while RoPE achieves 100.0\%. However, both fall to 0\% exact-match accuracy at length 256 and remain at 0\% for longer lengths.
+
+This result shows that the model can memorise and reproduce delayed sequences at the training length, but the learned behaviour does not generalise to longer delays. Learned positional embeddings show high seed instability on this task: the mean exact-match accuracy at the training length is 33.13\%, with a large standard deviation. This suggests that some runs find a training-length solution while others do not. NoPE and ALiBi underfit the training length and are therefore not interpreted as successful extrapolation tests.
+
+\section{Reverse Results}
+
+The reverse task tests whether the model can learn a systematic positional remapping. Each output token must correspond to the input token at the reverse position. This requires a precise mapping between input and output positions.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/reverse_exact_degradation_mean_se.png}
+\caption{Exact-match accuracy on the reverse task as test length increases. Results are averaged across three random seeds, with error bars showing standard error.}
+\label{fig:reverse_exact_degradation}
+\end{figure}
+
+Figure~\ref{fig:reverse_exact_degradation} shows that learned positional embeddings solve the training length, achieving 100.0\% exact-match accuracy at length 128. However, exact-match accuracy drops to 0\% at length 256 and remains at 0\% for length 512 and 1024.
+
+This again demonstrates extrapolation collapse. The model learns a mapping that works at the training length, but the learned positional transformation does not extend to longer sequences. Sinusoidal encoding shows partial and unstable training-length performance, with high variation across seeds. NoPE, ALiBi, and RoPE do not reliably fit the training length on this task, so these configurations are classified as underfitting.
+
+\section{Positional Encoding Comparison}
+
+The positional encoding comparison shows that positional encoding strongly affects whether the model can fit the training length. However, none of the tested positional encoding methods produce reliable exact-match extrapolation to the longest test length.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\hline
+Task & Encoding & Exact at Train & Exact at Longest & Failure Type \\
+\hline
+Addition & Learned & 92.0 & 0.0 & Fits train; fails extrapolation \\
+Addition & Sinusoidal & 93.7 & 0.0 & Fits train; fails extrapolation \\
+Addition & NoPE & 0.0 & 0.0 & Underfits training length \\
+Addition & ALiBi & 0.0 & 0.0 & Underfits training length \\
+Addition & RoPE & 47.3 & 0.0 & Partial fit; fails extrapolation \\
+Delayed copy & Sinusoidal & 99.93 & 0.0 & Fits train; fails extrapolation \\
+Delayed copy & RoPE & 100.0 & 0.0 & Fits train; fails extrapolation \\
+Reverse & Learned & 100.0 & 0.0 & Fits train; fails extrapolation \\
+\hline
+\end{tabular}
+\caption{Selected synthetic benchmark results showing training-length performance and longest-length performance. Values are mean exact-match accuracies across three random seeds.}
+\label{tab:selected_synthetic_summary}
+\end{table}
+
+Table~\ref{tab:selected_synthetic_summary} summarises the most important pattern. Some positional encodings allow the model to fit the training length, but this does not translate into length extrapolation. This is clearest for addition with learned and sinusoidal encodings, delayed copy with sinusoidal and RoPE, and reverse with learned positional embeddings. In each case, high training-length accuracy is followed by 0\% exact-match accuracy at longer lengths.
+
+The results also show why NoPE and ALiBi must be interpreted carefully. In this implementation and training setup, they often do not learn the training length. Their poor long-length performance therefore cannot be treated as evidence of extrapolation failure alone. Instead, they represent a different failure mode: training-length underfitting.
+
+\section{Failure Length Analysis}
+
+To compare models more directly, the first failure length is recorded for each configuration. The first failure length is defined as the first test length at which exact-match accuracy falls below 10\%. This measure is useful because two models may both reach 0\% accuracy at the longest test length, but one may fail immediately while another may retain performance for longer.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llll}
+\hline
+Task & Encoding & First Failure Length & Interpretation \\
+\hline
+Addition & Learned & 32 & Immediate extrapolation collapse \\
+Addition & Sinusoidal & 32 & Immediate extrapolation collapse \\
+Addition & RoPE & 32 & Partial fit followed by collapse \\
+Delayed copy & Sinusoidal & 256 & Immediate extrapolation collapse \\
+Delayed copy & RoPE & 256 & Immediate extrapolation collapse \\
+Reverse & Learned & 256 & Immediate extrapolation collapse \\
+\hline
+\end{tabular}
+\caption{Selected first failure lengths for configurations that learned or partially learned the training length.}
+\label{tab:first_failure_lengths}
+\end{table}
+
+Table~\ref{tab:first_failure_lengths} shows that failure usually occurs at the first longer evaluation length. Addition fails when moving from length 16 to 32, while delayed copy and reverse fail when moving from length 128 to 256. This suggests that the models do not degrade gradually as the length increases. Instead, the learned solution appears closely tied to the training length.
+
+\section{Multi-Seed Robustness}
+
+The multi-seed experiments test whether the observed patterns are stable across random initialisation and data-generation randomness. This is important because some configurations produce very different results depending on the seed.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/exact_at_train_mean_se.png}
+\caption{Training-length exact-match accuracy across tasks and positional encodings. Results are averaged across three random seeds, with error bars showing standard error.}
+\label{fig:exact_at_train_mean_se}
+\end{figure}
+
+Figure~\ref{fig:exact_at_train_mean_se} shows that some configurations are stable while others are highly seed dependent. For example, reverse with learned positional embeddings is stable at the training length, while reverse with sinusoidal encoding has high variation. Delayed copy with learned positional embeddings also shows high variation across seeds.
+
+This result supports the decision to report mean, standard deviation, and standard error rather than relying on a single seed. It also motivates seed instability as one of the failure categories in the taxonomy. A model configuration that succeeds in one run but fails in another is less reliable than one that consistently learns the training task.
+
+\section{Generalisation Gap}
+
+The generalisation gap measures the difference between exact-match accuracy at the training length and exact-match accuracy at the longest test length. A large gap indicates that the model fits the training distribution but fails to extrapolate.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/generalisation_gap_mean.png}
+\caption{Mean generalisation gap between training-length exact-match accuracy and longest-length exact-match accuracy.}
+\label{fig:generalisation_gap}
+\end{figure}
+
+Figure~\ref{fig:generalisation_gap} shows that the largest gaps occur when models fit the training length but fail completely at the longest test length. This is particularly clear for reverse with learned positional embeddings, delayed copy with sinusoidal encoding and RoPE, and addition with learned and sinusoidal positional encodings.
+
+A high generalisation gap is therefore not simply a sign of poor overall performance. It specifically identifies configurations where the model appears successful under the training distribution but fails under length extrapolation. This distinction is central to the project because it separates extrapolation collapse from ordinary underfitting.
+
+\section{Comparison with Expected Positional Encoding Behaviour}
+
+The results differ from a simple expectation that relative or extrapolatable positional encodings should automatically improve length generalisation. In particular, RoPE fits the delayed copy training length but still fails at longer lengths, while ALiBi and NoPE often do not learn the training length under this setup. This indicates that positional encoding alone is not sufficient to guarantee algorithmic extrapolation.
+
+This distinction is important when interpreting the results. A positional encoding method may be designed to support longer contexts, but the model must still learn a task solution that can use that positional information in a length-general way. The synthetic benchmark therefore suggests that length generalisation failure depends not only on the positional representation, but also on the task structure, optimisation behaviour, and the type of computation required.
+
+\section{Summary of Synthetic Findings}
+
+The synthetic benchmark results show that length generalisation failure is not a single behaviour. Some models learn the training length and then collapse immediately when tested on longer sequences. Others fail to learn the training length at all. Some configurations are highly sensitive to random seed.
+
+The main conclusion from this chapter is that high training-length accuracy does not imply algorithmic length generalisation. In addition, delayed copy, and reverse, several models achieve strong training-length performance but 0\% exact-match accuracy at longer lengths. This motivates the failure analysis in the next chapter, which examines attention behaviour, mitigation attempts, and the construction of a failure taxonomy.
+
+% -----------------------------------------------------------------------------
+
+\chapter{Failure Analysis, Mitigation Strategies, and Taxonomy}
+\label{chap:Failure Analysis and Mitigation}
+
+
+\noindent
+The previous chapter showed that several Transformer configurations achieve high training-length accuracy but fail sharply when evaluated on longer sequences. This chapter investigates these failures in more detail. The aim is to move beyond reporting accuracy and to analyse how the models fail, whether simple mitigation strategies reduce the failures, and how the observed behaviours can be organised into a failure taxonomy.
+
+The chapter first introduces the motivation for attention-based diagnostics. It then analyses attention behaviour across sequence lengths, reports the mitigation experiments, and finally presents the proposed taxonomy of length-generalisation failures.
+
+\section{Motivation for Failure Analysis}
+
+Accuracy-based evaluation is necessary but incomplete. A degradation curve can show when a model fails, but it does not explain what changes inside the model as sequence length increases. Two models may both reach 0\% exact-match accuracy at a long test length, but they may fail for different reasons. One may never learn the training task, another may learn a brittle length-specific solution, and another may be sensitive to random seed.
+
+For this reason, the project analyses failure using three sources of evidence. First, exact-match degradation curves identify where failure begins. Second, attention diagnostics measure how self-attention behaviour changes across lengths. Third, mitigation experiments test whether simple interventions can reduce the observed failures. These sources of evidence are then combined into a failure taxonomy.
+
+\section{Attention Diagnostic Metrics}
+
+Attention diagnostics are computed from saved attention maps. For selected trained models, attention is extracted at the training length, at the first failure length, and at the longest test length. The purpose is to examine whether the transition from successful training-length performance to failed long-length performance is accompanied by systematic changes in attention behaviour.
+
+Three diagnostic metrics are used. Normalised attention entropy measures how diffuse the attention distribution is relative to the maximum possible entropy for that sequence length. A low value indicates more concentrated attention, while a high value indicates more diffuse attention. Average attention distance measures how far tokens attend on average across the sequence. Local attention ratio measures the proportion of attention assigned to nearby positions.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\hline
+Metric & Interpretation \\
+\hline
+Normalised attention entropy & Measures how diffuse attention is \\
+Average attention distance & Measures how far attention reaches across the sequence \\
+Local attention ratio & Measures how much attention remains near local positions \\
+\hline
+\end{tabular}
+\caption{Attention diagnostic metrics used to analyse failure behaviour.}
+\label{tab:attention_metrics}
+\end{table}
+
+These metrics do not provide a complete mechanistic explanation, but they help identify whether attention behaviour changes consistently when models are evaluated beyond the training length.
+
+\section{Attention Behaviour on Addition}
+
+The addition task provides a clear example of extrapolation collapse. Learned and sinusoidal positional encodings fit the training length but fail immediately at length 32 and beyond. Attention diagnostics were therefore computed at length 16, length 32, and length 1024.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/addition_normalised_entropy.png}
+\caption{Normalised attention entropy for addition at the training length, first failure length, and longest test length.}
+\label{fig:addition_attention_entropy}
+\end{figure}
+
+Figure~\ref{fig:addition_attention_entropy} shows that attention entropy increases as sequence length increases. For the learned positional encoding model, normalised attention entropy rises from 0.16 at length 16 to 0.28 at length 32 and 0.59 at length 1024. This increase coincides with exact-match accuracy falling from 94.1\% at length 16 to 0\% at longer lengths.
+
+This suggests that the attention pattern used to solve addition at the training length does not scale cleanly to longer inputs. The model appears able to coordinate attention over short digit sequences, but the attention distribution becomes more diffuse as the number length grows. Since addition requires precise alignment and carry propagation, diffuse attention is consistent with a failure to preserve the required algorithmic structure.
+
+\section{Attention Behaviour on Delayed Copy}
+
+Delayed copy tests whether the model can retain and reproduce information after a separator and delay. The synthetic results showed that sinusoidal and RoPE models fit the training length but fail at length 256 and beyond.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/copy_normalised_entropy.png}
+\caption{Normalised attention entropy for delayed copy at the training length, first failure length, and longest test length.}
+\label{fig:copy_attention_entropy}
+\end{figure}
+
+Figure~\ref{fig:copy_attention_entropy} shows that attention entropy remains high and increases at longer lengths. At the training length, the model can still solve the task despite relatively broad attention. However, when the sequence length doubles, exact-match accuracy collapses to 0\%.
+
+This indicates that the model's training-length solution does not extend to longer memory demands. The task requires the output region to retrieve the corresponding token from the earlier input region. A model that learns this correspondence only for the training length may fail when the distance between the stored sequence and the copied output changes.
+
+\section{Attention Behaviour on Reverse}
+
+The reverse task requires a precise mapping between each output position and the corresponding input position in reverse order. The learned positional encoding model solves the training length but fails immediately when evaluated at length 256.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/reverse_normalised_entropy.png}
+\caption{Normalised attention entropy for reverse at the training length, first failure length, and longest test length.}
+\label{fig:reverse_attention_entropy}
+\end{figure}
+
+Figure~\ref{fig:reverse_attention_entropy} shows that attention becomes increasingly diffuse as length increases. For the learned positional encoding model, normalised attention entropy rises from 0.54 at length 128 to 0.73 at length 256 and 0.91 at length 1024. This change occurs alongside a drop from 100\% exact-match accuracy at the training length to 0\% at longer lengths.
+
+This pattern suggests that the model learns a position-specific transformation for length 128 rather than a general reversal rule. When the sequence length changes, the learned positional mapping no longer applies, and the attention distribution becomes less structured.
+
+\section{Mitigation Strategy Design}
+
+After identifying strong extrapolation failures, several simple mitigation strategies were tested. The purpose of these experiments was to determine whether exposing the model to more varied length conditions would improve length generalisation.
+
+Three mitigation approaches were explored. Mixed-length training combines examples of multiple lengths into a single training dataset. Curriculum training trains the model in stages, gradually increasing the training length. Randomised padded training introduces variable-length sequences padded to a common maximum length. These strategies were selected because they are simple, computationally feasible, and directly target the hypothesis that training on a wider range of lengths might reduce length-specific learning.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\hline
+Mitigation & Hypothesis & Expected Benefit \\
+\hline
+Mixed-length training & Train on varied lengths together & Reduce length-specific fitting \\
+Curriculum training & Increase length gradually & Stabilise learning across lengths \\
+Randomised padded training & Randomise effective sequence length & Reduce reliance on fixed positions \\
+\hline
+\end{tabular}
+\caption{Mitigation strategies evaluated in the project.}
+\label{tab:mitigation_strategies}
+\end{table}
+
+A mitigation is considered useful only if it preserves training-length performance while improving longer-length exact-match accuracy. If a mitigation reduces training-length performance to near zero, it is classified as underfitting rather than successful mitigation.
+
+\section{Mitigation Results}
+
+The mitigation results show that the tested strategies do not solve the main extrapolation failures. Some mitigation variants underfit the training length, while others preserve training-length accuracy but still fail at longer lengths.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/mitigation_exact_train_vs_1024.png}
+\caption{Comparison of training-length exact-match accuracy and length-1024 exact-match accuracy for mitigation experiments.}
+\label{fig:mitigation_train_vs_long}
+\end{figure}
+
+Figure~\ref{fig:mitigation_train_vs_long} shows that curriculum and randomised padded training can preserve training-length performance on delayed copy, but exact-match accuracy at length 1024 remains 0\%. For example, copy curriculum with sinusoidal encoding and copy curriculum with RoPE both achieve 100\% exact-match accuracy at the training length but 0\% at length 1024. Similarly, reverse curriculum with learned positional embeddings achieves 100\% at the training length but 0\% at longer lengths.
+
+Mixed-length training performs worse in some cases. Addition mixed-length training fails to achieve non-zero exact-match accuracy even at the training length. This suggests that simply combining multiple lengths can make optimisation harder without necessarily encouraging a length-general solution.
+
+The mitigation experiments therefore support an important conclusion: simple exposure to varied or gradually increasing sequence lengths is not sufficient to force algorithmic length generalisation in this setup. The model can still learn a solution that fits the observed lengths without learning the underlying rule in a way that transfers to much longer sequences.
+
+\section{Proposed Failure Taxonomy}
+
+The taxonomy is the main interpretive contribution of the project. Rather than treating all low long-length accuracy as the same phenomenon, the taxonomy separates failures according to the evidence observed in the experiments. This distinction is important because a model that fails to learn the training length, a model that learns the training length but collapses under extrapolation, and a model that succeeds only under some random seeds represent different problems.
+
+Based on the synthetic benchmark, attention diagnostics, multi-seed results, and mitigation experiments, five failure categories are identified. These categories are intended to distinguish different ways in which length generalisation can fail.
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{p{3.3cm}p{4.0cm}p{5.5cm}}
+\hline
+Failure Type & Evidence & Interpretation \\
+\hline
+Extrapolation collapse & High exact-match accuracy at the training length followed by 0\% at longer lengths & The model learns a length-specific solution rather than a length-general algorithm \\
+Training-length underfitting & Near-zero exact-match accuracy at the training length & The configuration is not a valid extrapolation test because the task itself was not learned \\
+Seed instability & Large variation across random seeds & The model's success depends strongly on optimisation path or data randomness \\
+Attention diffusion & Increased normalised entropy and reduced local structure at longer lengths & Attention patterns learned at short lengths do not transfer reliably to longer contexts \\
+Mitigation-resistant failure & Mitigation preserves training-length accuracy but does not improve longer-length accuracy & Simple exposure to varied lengths is insufficient to induce length-general behaviour \\
+\hline
+\end{tabular}
+\caption{Failure taxonomy derived from the experimental results.}
+\label{tab:failure_taxonomy}
+\end{table}
+
+The taxonomy also clarifies the role of the mitigation experiments. If a mitigation strategy preserves training-length accuracy but still fails at longer lengths, the result is classified as mitigation-resistant failure. If the mitigation prevents the model from learning the training length, it is instead classified as training-length underfitting. This separation prevents failed mitigation attempts from being interpreted too broadly.
+
+The taxonomy is useful because it prevents different failures from being collapsed into a single category. For example, NoPE and ALiBi often perform poorly, but their failures should not be interpreted in the same way as learned or sinusoidal models that solve the training length and then collapse at longer lengths. The former are underfitting cases, while the latter are extrapolation collapse cases.
+
+Similarly, high seed variation is distinct from systematic extrapolation collapse. A configuration that succeeds under one seed and fails under another requires a different interpretation from one that consistently fits the training length and consistently fails beyond it. The taxonomy therefore helps make the results more precise and prevents overgeneralisation.
+
+\section{Summary}
+
+This chapter analysed the failures observed in the synthetic benchmark. Attention diagnostics showed that attention behaviour changes as sequence length increases, with normalised entropy generally rising at failure lengths. Mitigation experiments showed that simple mixed-length, curriculum, and randomised padded training do not solve the extrapolation problem in this setup. Finally, the observed behaviours were organised into a taxonomy of five failure types.
+
+The main conclusion is that length generalisation failure is not a single phenomenon. It can appear as immediate extrapolation collapse, training-length underfitting, seed instability, attention diffusion, or mitigation-resistant failure. This taxonomy forms the central interpretive contribution of the project and provides the basis for the discussion in later chapters.
+
+% ----------------------------------------------------------------------
+
+\chapter{Real-World Extension}
+\label{chap:Real-World Extension}
+
+\noindent
+The main experiments in this project use synthetic algorithmic tasks because they provide controlled tests of length generalisation. However, synthetic tasks are intentionally simplified and may not reflect all properties of real-world sequential data. To complement the synthetic benchmark, a small real-world extension was conducted using the SelfRegulationSCP2 dataset from the UEA time-series archive.
+
+The purpose of this extension is not to perform a state-of-the-art comparison. Instead, it is used as a validation study to examine whether the sharp length-generalisation failures observed in exact synthetic sequence tasks also appear in a real-world long-sequence classification setting.
+
+\section{Dataset and Task}
+
+SelfRegulationSCP2 is a multivariate time-series classification dataset. Each example consists of a sequence of continuous-valued observations and a class label. The full sequence length is 1152, making it suitable for testing behaviour at longer input lengths.
+
+Unlike the synthetic tasks, the output is not a sequence of tokens. The model predicts a single class label for each input sequence. This difference is important because classification accuracy is a weaker requirement than exact-match sequence prediction. A model may still classify correctly using partial or local information, whereas the synthetic tasks require every output token to be correct.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\hline
+Component & Setting \\
+\hline
+Dataset & SelfRegulationSCP2 \\
+Dataset type & Multivariate time-series classification \\
+Full sequence length & 1152 \\
+Training prefix length & 256 \\
+Evaluation prefix lengths & 256, 512, 1024, 1152 \\
+Output type & Class label \\
+Metric & Classification accuracy \\
+Positional encodings & Learned, sinusoidal, NoPE, ALiBi, RoPE \\
+Seeds & 42, 123, 2024 \\
+\hline
+\end{tabular}
+\caption{Configuration of the real-world extension.}
+\label{tab:realworld_extension_setup}
+\end{table}
+
+\section{Experimental Protocol}
+
+The real-world experiment follows the same general train-short/test-long principle as the synthetic benchmark. A Transformer classifier is trained using prefixes of length 256 and evaluated on prefixes of length 256, 512, 1024, and the full sequence length of 1152. The same five positional encoding variants are evaluated across three random seeds.
+
+The model architecture is adapted from the synthetic Transformer. Instead of token embeddings, the continuous time-series features are projected into the Transformer embedding dimension using a linear layer. The Transformer layers then process the sequence, and mean pooling is applied across the temporal dimension before a final classification layer predicts the class label.
+
+The input time-series data are normalised using statistics computed from the training split. This prevents information from the test set leaking into preprocessing. Results are reported as mean classification accuracy across three seeds, with standard deviation and standard error used to describe variation.
+
+\section{Real-World Results}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/selfregulationscp2_accuracy_mean_se.png}
+\caption{Classification accuracy on SelfRegulationSCP2 as test sequence length increases. Results are averaged across three random seeds, with error bars showing standard error.}
+\label{fig:selfregulationscp2_accuracy}
+\end{figure}
+
+Figure~\ref{fig:selfregulationscp2_accuracy} shows that the real-world task behaves differently from the synthetic sequence-to-sequence tasks. Accuracy remains relatively flat across increasing input lengths. Most positional encodings stay within approximately 49\% to 54\% mean accuracy across the evaluated lengths.
+
+At the full sequence length of 1152, learned and sinusoidal positional encodings achieve the highest mean accuracy, both reaching 53.52\%. ALiBi reaches 51.48\%, NoPE reaches 50.37\%, and RoPE reaches 49.07\%. RoPE achieves its highest mean accuracy at length 512, reaching 55.56\%, but this does not persist at the full length. NoPE shows the largest variation across seeds at the full sequence length.
+
+The key observation is that the real-world task does not show the catastrophic collapse observed in the synthetic exact-match tasks. In the synthetic benchmark, models often fall from near-perfect training-length accuracy to 0\% exact-match accuracy at the first longer length. In contrast, SelfRegulationSCP2 accuracy remains modest but relatively stable as the input length increases.
+
+\section{Comparison with Synthetic Tasks}
+
+The difference between the synthetic and real-world results is likely explained by the difference in task structure. Addition, delayed copy, and reverse require exact structured outputs. A single incorrect token causes an exact-match failure. These tasks therefore provide strict tests of whether the model has learned a complete algorithm.
+
+SelfRegulationSCP2 is a classification task. The model only needs to predict one class label, and useful information may be available from local or partial temporal patterns. As a result, increasing sequence length does not necessarily require the model to apply a precise length-general algorithm. The model may still make reasonable predictions even if its internal sequence processing is not perfectly length-general.
+
+This comparison suggests that length-generalisation failure is task-dependent. The most severe failures appear in controlled algorithmic settings where exact symbolic or positional transformations are required. In real-world classification, length changes may affect performance more gradually or weakly because the task can be solved using partial evidence.
+
+\section{Limitations of the Extension}
+
+The real-world extension is intentionally limited in scope. Only one dataset is used, and the goal is not to compete with specialised time-series models. The Transformer classifier is kept close to the synthetic model design so that the experiment remains comparable to the rest of the project.
+
+The results should therefore be interpreted as a validation check rather than a broad conclusion about real-world length generalisation. A more complete study would include additional long-sequence datasets, stronger time-series baselines, and task-specific architectures. However, the extension is still useful because it shows that the catastrophic collapse observed in synthetic exact-match tasks does not automatically transfer to all long-sequence settings.
+
+\section{Summary}
+
+The real-world extension provides a contrast to the synthetic benchmark. On SelfRegulationSCP2, classification accuracy remains relatively stable as input length increases from 256 to 1152. This differs from the synthetic tasks, where exact-match accuracy often collapses immediately beyond the training length.
+
+This supports one of the central conclusions of the project: length generalisation failure should not be treated as a single uniform phenomenon. Its severity and form depend on the task, output type, evaluation metric, and required computation.
+
+%=========================================================================
+
+\chapter{Discussion}
+\label{chap:Discussion}
+
+\noindent
+This chapter discusses the main findings of the project and relates them back to the original research question: when a Transformer model is trained only on short sequences, what fails when it is evaluated on longer sequences, and can these failures be systematically classified? The results show that length generalisation failure is not a single uniform behaviour. Instead, different configurations fail in different ways depending on whether they learn the training length, whether they extrapolate beyond it, how stable they are across seeds, and how their attention behaviour changes with sequence length.
+
+\section{Summary of Main Findings}
+
+The synthetic benchmark showed that several Transformer configurations can achieve high exact-match accuracy at the training length while failing completely at longer lengths. This pattern was observed across addition, delayed copy, and reverse. For example, learned and sinusoidal positional encodings fitted the addition task at length 16 but dropped to 0\% exact-match accuracy at length 32 and beyond. Similarly, sinusoidal and RoPE models fitted delayed copy at length 128 but failed at length 256 and beyond. Reverse with learned positional embeddings showed the same pattern.
+
+This finding supports the view that high in-distribution accuracy is not sufficient evidence of length-general reasoning. A model can learn a solution that works for the training length without learning the underlying algorithm in a form that transfers to longer sequences.
+
+A second major finding is that positional encoding affects training-length performance but does not guarantee extrapolation. Some positional encodings, such as learned and sinusoidal encodings on addition or RoPE on delayed copy, allow the model to fit the training length. However, this does not prevent collapse at longer lengths. Other encodings, especially NoPE and ALiBi in this setup, often fail to learn the training length and are therefore better interpreted as underfitting cases rather than extrapolation failures.
+
+A third finding is that failures are not always stable across random seeds. Some configurations show large variation at the training length, meaning that a single run may give a misleading impression of model behaviour. This justifies the use of multiple seeds and motivates seed instability as a distinct failure category.
+
+\section{What the Taxonomy Contributes}
+
+The proposed taxonomy is the main interpretive contribution of the project. Rather than reporting only that models fail at longer lengths, the taxonomy separates failure into distinct categories: extrapolation collapse, training-length underfitting, seed instability, attention diffusion, and mitigation-resistant failure.
+
+This distinction matters because different failures imply different problems. If a model fails to learn the training length, the issue is not length extrapolation but basic task learning or optimisation. If a model fits the training length and immediately fails at the next longer length, the issue is extrapolation collapse. If success depends strongly on random seed, the issue is reliability. If attention becomes increasingly diffuse at longer lengths, this provides a diagnostic signal that the model's internal behaviour changes as length increases. If mitigation preserves training accuracy but does not improve longer-length performance, the failure is resistant to simple length exposure.
+
+The taxonomy therefore provides a more precise way to discuss length generalisation failure. It also prevents overgeneralisation. For example, it would be misleading to state simply that ALiBi or NoPE fail at length generalisation in this project. In many cases, they fail to learn the training length, so their behaviour belongs to a different category from models that solve the training task and then collapse under extrapolation.
+
+\section{Interpretation of Attention Diagnostics}
+
+The attention diagnostics showed that attention behaviour changes as sequence length increases. In the analysed models, normalised attention entropy generally increased at longer lengths, and local attention structure weakened. This pattern was especially clear for addition and reverse, where strong training-length performance was followed by exact-match collapse.
+
+These findings suggest that the attention patterns used at the training length do not transfer cleanly to longer contexts. For addition, the model must coordinate digit positions and carry information. For reverse, it must map each output position to a corresponding input position. When attention becomes more diffuse, these precise computations may no longer be represented reliably.
+
+However, attention diagnostics should be interpreted cautiously. They provide evidence that model behaviour changes with length, but they do not fully explain causality. Increased attention entropy may be a symptom of failure rather than its only cause. A more complete mechanistic analysis would require additional interventions, such as attention ablations or probing experiments.
+
+\section{Interpretation of Mitigation Results}
+
+The mitigation experiments tested whether simple exposure to varied lengths could improve extrapolation. The results were mostly negative. Mixed-length training sometimes caused underfitting, while curriculum and randomised padded training preserved training-length performance but did not improve long-length exact-match accuracy.
+
+This suggests that the problem is not solved simply by showing the model more length variation. The model can still learn solutions that work within the observed regime without acquiring a truly length-general rule. This is important because it shows that mitigation strategies should be evaluated not only by whether they improve training or validation performance, but by whether they change the failure length and reduce the generalisation gap.
+
+The negative mitigation results are still useful. They show that the observed failures are not trivial artefacts of using one fixed training length. Even when the training process is modified to include more variation, the model continues to fail at longer lengths. This strengthens the case for treating mitigation-resistant failure as part of the taxonomy.
+
+\section{Synthetic Tasks versus Real-World Classification}
+
+The real-world extension showed a different pattern from the synthetic benchmark. On SelfRegulationSCP2, classification accuracy remained relatively stable as input length increased from 256 to 1152. This contrasts with the synthetic tasks, where exact-match accuracy often collapsed immediately beyond the training length.
+
+This difference is likely due to the nature of the tasks. The synthetic tasks require exact sequence-level computation. A single incorrect token causes exact-match failure. By contrast, SelfRegulationSCP2 is a classification task, where the model only needs to predict one label. Useful local or partial temporal features may be sufficient for correct classification, even if the model is not performing a fully length-general computation.
+
+The real-world extension therefore supports a more nuanced conclusion: length generalisation failure is task-dependent. Controlled synthetic tasks reveal severe algorithmic failures, while real-world classification may show flatter performance because the evaluation metric and task structure are less strict.
+
+\section{Limitations}
+
+The project has several limitations. First, the Transformer model is intentionally small. This makes the experiment matrix feasible, but larger models may behave differently. Second, the project focuses on a limited set of synthetic tasks. Although addition, delayed copy, and reverse test different forms of sequence reasoning, they do not cover all possible long-context behaviours.
+
+Third, the mitigation strategies are simple. More advanced methods, such as recurrent memory, retrieval mechanisms, scratchpad reasoning, or specialised long-context architectures, may produce different results. Fourth, the attention analysis is diagnostic rather than fully mechanistic. It identifies changes in attention behaviour but does not prove that those changes are the sole cause of failure.
+
+Finally, the real-world extension uses only one dataset. It provides a useful contrast with the synthetic benchmark, but it should not be interpreted as a broad conclusion about all real-world long-sequence tasks.
+
+\section{Implications}
+
+The results suggest that length generalisation should be evaluated using more than one metric and more than one task. Exact-match degradation curves, seed variation, attention diagnostics, and mitigation response each reveal different aspects of model behaviour. A model that appears successful under one view may fail under another.
+
+The project also suggests that positional encoding should not be evaluated only by long-length accuracy. It is important to first check whether the model learns the training length. Without this distinction, underfitting can be mistaken for extrapolation failure.
+
+More broadly, the results support the idea that length generalisation is not simply a matter of extending the context window. The model must learn computations that remain valid when the sequence length changes. This is especially challenging for tasks requiring exact symbolic or positional transformations.
+
+\section{Summary}
+
+This discussion has argued that the project's main contribution is not only the experimental results, but the classification of those results into distinct failure modes. The synthetic benchmark shows strong extrapolation collapse, the attention diagnostics reveal changes in model behaviour at longer lengths, the mitigation experiments show resistance to simple interventions, and the real-world extension demonstrates that failure patterns depend on task type.
+
+Together, these findings support the central conclusion that Transformer length generalisation failure should be analysed as a set of distinguishable behaviours rather than treated as a single aggregate drop in accuracy.
+
+%======================================================================
+
+\chapter{Conclusion}
+\label{chap:Conclusion}
+
+\noindent
+This project investigated length generalisation in Transformer-based sequence models using a controlled train-short/test-long experimental framework. The central question was whether Transformer models trained on short sequences learn rules that generalise to longer sequences, or whether they learn length-specific solutions that fail outside the training distribution.
+
+The project evaluated this question using synthetic algorithmic tasks, positional encoding comparisons, multiple random seeds, attention diagnostics, mitigation experiments, and a small real-world extension. The main synthetic tasks were addition, delayed copy, and reverse. These tasks were selected because they require different forms of sequence reasoning: symbolic arithmetic, long-range memory, and positional remapping.
+
+The results showed that high training-length accuracy does not imply length-general behaviour. Several models achieved strong exact-match accuracy at the training length but collapsed to 0\% exact-match accuracy at longer lengths. This pattern was observed for addition with learned and sinusoidal positional encodings, delayed copy with sinusoidal and RoPE, and reverse with learned positional embeddings. These results suggest that the models often learn solutions that are tied to the training length rather than rules that extrapolate.
+
+The positional encoding comparison showed that positional information strongly affects whether a model can fit the training length. However, no positional encoding method tested in this project produced reliable exact-match extrapolation to the longest synthetic test lengths. NoPE and ALiBi often failed to learn the training length, so their poor long-length performance was interpreted as training-length underfitting rather than pure extrapolation failure.
+
+The multi-seed experiments showed that some configurations are sensitive to random initialisation and data-generation randomness. This demonstrates the importance of reporting mean, standard deviation, and standard error rather than relying on a single run. Seed instability was therefore included as one of the failure types in the final taxonomy.
+
+Attention diagnostics provided additional evidence about how models behave as sequence length increases. In the analysed cases, attention became more diffuse at longer lengths, with normalised attention entropy generally increasing at failure lengths. This suggests that attention patterns learned at short lengths do not transfer reliably to longer contexts, although the analysis should be interpreted as diagnostic rather than fully causal.
+
+The mitigation experiments showed that simple mitigation strategies were not sufficient to solve the problem. Mixed-length training sometimes caused underfitting, while curriculum and randomised padded training could preserve training-length performance without improving longer-length exact-match accuracy. These results indicate that simple exposure to varied lengths does not necessarily force the model to learn length-general algorithms.
+
+The main contribution of the project is a failure taxonomy for Transformer length generalisation. The taxonomy identifies five failure categories: extrapolation collapse, training-length underfitting, seed instability, attention diffusion, and mitigation-resistant failure. This taxonomy helps distinguish between different reasons for poor long-length performance and prevents all failures from being treated as the same phenomenon.
+
+A small real-world extension using the SelfRegulationSCP2 time-series classification dataset showed a different pattern from the synthetic benchmark. Classification accuracy remained relatively stable as input length increased from 256 to 1152. This suggests that catastrophic exact-match collapse is especially visible in controlled algorithmic sequence-generation tasks, while real-world classification may rely on partial or local features that remain useful across lengths.
+
+Overall, the project supports the conclusion that length generalisation failure in Transformers is task-dependent and multi-faceted. It cannot be understood only by reporting final accuracy at the longest test length. Instead, it requires analysing training-length performance, degradation curves, robustness across seeds, attention behaviour, and response to mitigation strategies.
+
+\section{Future Work}
+
+Several directions remain for future work. First, the experiments could be repeated with larger Transformer models to test whether scale changes the observed failure patterns. Second, the mitigation study could be extended to more advanced methods, such as scratchpad reasoning, recurrent memory, retrieval mechanisms, or specialised long-context architectures. Third, the real-world extension could be expanded to additional long-sequence datasets and stronger time-series baselines.
+
+Future work could also make the attention analysis more mechanistic. For example, attention ablations or probing experiments could test whether the observed attention diffusion directly contributes to failure. Finally, the proposed taxonomy could be applied to other architectures and tasks to test whether the same failure categories generalise beyond the experimental setting used in this project.
+
+\section{Final Remarks}
+
+The findings of this project show that Transformer models can appear successful at the training length while failing sharply outside it. This makes length generalisation an important reliability issue for sequence modelling. By combining controlled experiments with diagnostic analysis and a failure taxonomy, the project provides a structured way to understand and report these failures.
+
+
+
+
+
+% =============================================================================
+
+% Finally, after the main matter, the back matter is specified.  This is
+% typically populated with just the bibliography.  LaTeX deals with these
+% in one of two ways, namely
+%
+% - inline, which roughly means the author specifies entries using the 
+%   \bibitem macro and typesets them manually, or
+% - using BiBTeX, which means entries are contained in a separate file
+%   (which is essentially a database) then imported; this is the 
+%   approach used below, with the databased being dissertation.bib.
+%
+% Either way, the each entry has a key (or identifier) which can be used
+% in the main matter to cite it, e.g., \cite{X}, \cite[Chapter 2}{Y}.
+
+\backmatter
+
+\bibliography{references}
+
+% -----------------------------------------------------------------------------
+
+% The dissertation concludes with a set of (optional) appendices; these are 
+% the same as chapters in a sense, but once signalled as being appendices via
+% the associated macro, LaTeX manages them appropriately.
+
+\appendix
+
+\chapter{An Example Appendix}
+\label{appx:example}
+
+Content which is not central to, but may enhance the dissertation can be 
+included in one or more appendices; examples include, but are not limited
+to
+
+\begin{itemize}
+\item lengthy mathematical proofs, numerical or graphical results which 
+      are summarised in the main body,
+\item sample or example calculations, 
+      and
+\item results of user studies or questionnaires.
+\end{itemize}
+
+\noindent
+Note that in line with most research conferences, the examiners are not
+obliged to read such appendices.
+
+% =============================================================================
+
+\end{document}

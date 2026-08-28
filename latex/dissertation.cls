@@ -17,7 +17,7 @@
   supervisor           = {},
 %     degree = [BSc|MEng|MSci|MSc|PhD]
       degree/.store in = \dissertation@degree,
-      degree           = {MEng},
+      degree           = {Masters of Science},
 %      title = string
        title/.store in = \dissertation@title@major,
        title           = {},
@@ -36,7 +36,7 @@
 
 % load base class, then general-purpose packages
 
-\LoadClass[10pt,a4paper,twoside]{book}
+\LoadClass[10pt,a4paper,oneside, openany]{book}
 
 % http://www.ctan.org/tex-archive/macros/latex/required/graphics
 \RequirePackage{graphicx}
@@ -151,40 +151,50 @@
   \begin{center}
                 \includegraphics[scale=0.3]{logo_uob_color}                \\
                               \vspace*{1.0cm}
-                          DEPARTMENT OF ENGINEERING MATHEMATICS                        \\
+                          \large DEPARTMENT OF ENGINEERING MATHEMATICS
+                          \\
                               \vspace*{2.0cm}
   \parbox{16cm}{\begin{center}\LARGE \dissertation@title@major \end{center}} \\
+                              \vspace*{1.0cm}
+  \mbox{\IfEq{\dissertation@title@minor}{}{}{\large \dissertation@title@minor}} \\
+                              \vspace*{1.5cm}
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+  \begin{flushleft}
+    {\large Author:}\\
+    {\Large\dissertation@author}
+  \end{flushleft}
+\end{minipage}%
+\begin{minipage}[t]{0.5\textwidth}
+  \begin{flushright}
+    {\large Supervisor:}\\
+    {\Large\dissertation@supervisor}
+  \end{flushright}
+\end{minipage}       \\
+
                               \vspace*{0.5cm}
-  \mbox{\IfEq{\dissertation@title@minor}{}{}{\Large \dissertation@title@minor}} \\
-                              \vspace*{1.0cm}
-                          {\Large \dissertation@author}                         \\
+                          \rule{1.0\textwidth}{0.5pt}
+                              \vspace*{0.75cm}
 
-                              \vspace*{1.0cm}
-                          \rule{0.5\textwidth}{0.5pt}
-                              \vspace*{1.0cm}
-
-            A dissertation submitted to the University of Bristol
-            in accordance with the requirements of the degree of
+            \large A dissertation submitted to the University of Bristol\\ in accordance with the requirements of the degree of
                     \IfEqCase*{\dissertation@degree}{
                       {BSc} {Bachelor of     Science}
                       {MEng}{Master   of Engineering}
                       {MSci}{Master   of     Science}
                       {MSc} {Master   of     Science}
                       {PhD} {Doctor   of Philosophy}
-                    }~in the Faculty of Engineering.                                
+                    }~in\\ the Faculty of Engineering.                                
 
-                              \vspace*{1.0cm}
-                          \rule{0.5\textwidth}{0.5pt}
+                              \vspace*{0.75cm}
+                          \rule{1.0\textwidth}{0.5pt}
                               \vspace*{1.0cm}
 
                                   \today
                                   
   \end{center}
-    \vspace*{5.0cm}
 
- \begin{flushright}
- { \large Supervisor: \dissertation@supervisor}
-\end{flushright}
+
+
   \vspace*{\fill}
 }
 
@@ -197,14 +207,15 @@
   \chapter*{Declaration}
 
   This dissertation is submitted to the University of Bristol in accordance 
-  with the requirements of the degree of {\dissertation@degree} in the Faculty 
+  with the requirements of the degree of Master in Science in the Faculty 
   of Engineering.  It has not been submitted for any other degree or diploma 
   of any examining body.  Except where specifically acknowledged, it is all 
   the work of the Author. 
-
-  \vspace{6cm}
-
-  \noindent {\dissertation@author}, \today
+  
+  \vspace{1.0cm}
+  
+  \noindent {\dissertation@author} \\
+  \today
 }
 
 % define macros to mark front, main and back matter
