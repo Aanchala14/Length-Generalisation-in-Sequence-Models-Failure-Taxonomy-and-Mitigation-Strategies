@@ -207,7 +207,7 @@
   \chapter*{Declaration}
 
   This dissertation is submitted to the University of Bristol in accordance 
-  with the requirements of the degree of Master in Science in the Faculty 
+  with the requirements of the degree of Master of Science in the Faculty 
   of Engineering.  It has not been submitted for any other degree or diploma 
   of any examining body.  Except where specifically acknowledged, it is all 
   the work of the Author. 
