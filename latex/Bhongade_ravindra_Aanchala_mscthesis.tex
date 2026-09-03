@@ -164,7 +164,7 @@ Finally, I am grateful to my family and friends for their encouragement and supp
     \item[$m_{n,j}$]
     Binary evaluation mask: one for an evaluated target position and zero for padding.
 
-    \item[{\(mathbb{I}[\cdot]\)}]
+    \item[{\(\mathbb{I}[\cdot]\)}]
     Indicator function, equal to one when its condition is true and zero otherwise.
 
     \item[$A_{\mathrm{tok}}(L)$]
@@ -289,7 +289,7 @@ This question is addressed through five supporting questions:
 \section{Scope and Contributions}
 \label{sec:scope_and_contributions}
 
-The main benchmark uses three deterministic synthetic tasks: addition, delayed copy, and reverse. These tasks test symbolic computation, long-range retention, and position-dependent transformation, respectively. Five positional encoding settings learned, sinusoidal, NoPE, ALiBi, and RoPE are evaluated across three random seeds. Associative recall was explored during development but excluded from the principal comparison because it was not learned reliably at the training length.
+The main benchmark uses three deterministic synthetic tasks: addition, delayed copy, and reverse. These tasks test symbolic computation, long-range retention, and position-dependent transformation, respectively. Five positional encoding settings are evaluated across three random seeds: learned, sinusoidal, NoPE, ALiBi, and RoPE. Associative recall was explored during development but excluded from the principal comparison because it was not learned reliably at the training length.
 
 The study evaluates exact-match degradation, token-error percentages, multi-seed stability, position-wise errors, attention behaviour, incoming-carry conditions for addition, and dependency distance for reverse. Mixed-length training, curriculum learning, and randomised padding are compared with matched original baselines. A limited SelfRegulationSCP2 time-series classification experiment is also included to contrast the synthetic sequence-generation results with a real-world long-sequence setting. This extension is exploratory and is not presented as a state-of-the-art time-series benchmark \cite{morenopino2024rough}.
 
@@ -350,41 +350,57 @@ The synthetic experiments in this dissertation use a compact, encoder-style Tran
 
 Self-attention compares token representations without inherently assigning meaning to their order. Positional information must therefore be introduced if the task depends on where a token occurs. This can be done by modifying the input representations or by changing the attention calculation itself.
 
-The five settings evaluated in this dissertation represent different
-approaches to this problem. Their principal distinctions are summarised in Table~\ref{tab:background_positional_encodings}.
+The closest empirical studies reach different conclusions because they use different architectures, objectives, task representations, and training distributions. Table \ref{tab:prior_length_studies} compares the evidence most directly relevant to the present experiments.
 
 \begin{table}[tbp]
 \centering
-\small
-\begin{tabular}{p{0.16\textwidth}p{0.34\textwidth}p{0.40\textwidth}}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{
+p{0.14\textwidth}
+p{0.21\textwidth}
+p{0.25\textwidth}
+p{0.30\textwidth}
+}
 \hline
-Method & How position is represented & Relevance to length generalisation \\
+\textbf{Study and setting} &
+\textbf{Training and evaluation} &
+\textbf{Reported evidence} &
+\textbf{Boundary relevant here} \\
 \hline
-Learned &
-A trainable vector is associated with each absolute position. &
-Positions not represented during training may remain untrained or be used differently from observed positions. \\
 
-Sinusoidal &
-Fixed sine and cosine functions are added to token embeddings. &
-Values can be computed beyond the training length, but this does not guarantee that the model learns a transferable task rule. \\
+Press et al.~\cite{press2022train};
+causal language modelling with ALiBi &
+Models trained at lengths 512 or 1024 and evaluated at 1024 or 2048 &
+ALiBi supported lower-perplexity evaluation at contexts longer than those used during training. &
+The objective, causal attention regime, model scale, and perplexity metric differ from the present compact bidirectional models and deterministic exact-output tasks. \\
 
-NoPE &
-No explicit positional representation is added. &
-Tests whether useful ordering behaviour can emerge without a separate position signal under the selected architecture and task. \\
+Kazemnejad et al.~\cite{kazemnejad2023impact};
+decoder-only Transformers on reasoning and mathematical tasks &
+Task-specific short training lengths followed by longer held-out instances &
+NoPE frequently outperformed explicit positional methods, while the effect of positional encoding and scratchpad format varied across tasks. &
+The causal architecture and task representations differ from those used here, so the result does not predict that NoPE must fit every controlled task. \\
 
-ALiBi &
-A head-specific linear distance penalty is added to attention scores. &
-Represents relative distance without a learned embedding for every absolute position. \\
+Ruoss et al.~\cite{ruoss2023randomized};
+15 algorithmic tasks and 6,000 trained models &
+Short sequences were assigned ordered indices sampled from a wider
+positional range before evaluation on longer sequences. &
+Randomised positional encoding improved unseen-length accuracy by 12.0\% on average. &
+The intervention directly randomised positional indices; the
+randomised-padded condition tested here changes token placement but does not implement that method. \\
 
-RoPE &
-Position-dependent rotations are applied to query and key vectors. &
-Encodes relative positional relationships through the attention dot product. \\
+Zhou et al.~\cite{zhou2024algorithms};
+decoder-only Transformers on algorithmic tasks &
+Task-specific short training instances followed by longer held-out
+instances &
+Length generalisation correlated with the existence of a comparatively simple length-independent computational description, and scratchpad format could help or hinder it. &
+The present dissertation diagnoses empirical failure behaviour but does not identify or prove the internal algorithm learned by a model. \\
 \hline
 \end{tabular}
-\caption{Conceptual comparison of the positional encoding settings evaluated
-in this dissertation. Exact implementation details are given in
-Chapter~\ref{chap:methodology}.}
-\label{tab:background_positional_encodings}
+\caption{Comparison of prior train-short/test-long evidence and the
+experimental differences that limit direct transfer of its conclusions to the present study.}
+\label{tab:prior_length_studies}
 \end{table}
 
 Learned absolute positional embeddings are flexible within the range
@@ -423,7 +439,7 @@ Chapter \ref{chap:methodology}.
 
 \begin{figure}[tbp]
     \centering
-    \includegraphics[width=0.70\textwidth]
+    \includegraphics[width=0.65\textwidth]
     {controlled_task_examples.pdf}
     \caption{Representative input--target mappings for the three controlled tasks. Addition combines digit-wise computation with carry propagation; delayed copy requires retrieval after a separator and padded delay; and reverse applies a length-dependent positional transformation. \texttt{PAD} and \texttt{SEP} denote padding and separator tokens.}
     \label{fig:controlled_task_examples}
@@ -952,19 +968,12 @@ Attention changes were retained as supporting observations but were not used alo
 underlying failure could not be mitigated. The resulting taxonomy is therefore an evidence-organising framework, not a claim that every category corresponds to a unique internal mechanism.
 
 \section{Exploratory Real-World Extension}
-\label{sec:real-world-extension}
+\label{sec:real-world-methodology}
 
-The synthetic tasks provide deterministic rules and complete control over sequence length. A separate experiment using SelfRegulationSCP2 from the UEA Multivariate Time Series Classification Archive examined length sensitivity in a real-world classification setting \cite{bagnall2018uea,zerveas2021timeseries}.
+The synthetic benchmark was supplemented by an exploratory experiment usingSelfRegulationSCP2 from the UEA Multivariate Time Series Classification Archive \cite{bagnall2018uea,zerveas2021timeseries}. This binary
+classification dataset contains seven-channel EEG recordings, with 200 training and 180 test examples of 1152 time points. Each channel was standardised using statistics calculated only from the training split.
 
-SelfRegulationSCP2 contains seven-channel EEG recordings from a binary cursor-control task. The predefined split contains 200 training and 180 test examples, each with 1152 time points. Each channel was standardised using its mean and standard deviation calculated exclusively from the training split; the same statistics were applied to the test data.
-
-Models were trained using the first 256 time points and evaluated using prefixes of 256, 512, 1024, and 1152 time points. Increasing prefix length introduces additional observations and can therefore add information or noise. This is not equivalent to applying a deterministic generation rule at a longer length.
-
-The classifier replaced the token-embedding layer with a linear projection from seven channels to the 128-dimensional model representation. It then used the same two Transformer blocks and five positional conditions as the synthetic models. Representations were mean-pooled across time and passed to a two-class linear classifier.
-
-
-Accuracy was calculated on the 180 predefined test examples at every prefix length and aggregated across seeds using the mean and standard error. The synthetic 90\% eligibility and 10\% exact-match collapse thresholds were not applied because the output is a single noisy class label rather than a deterministic token sequence. The experiment is therefore an exploratory contrast and not direct validation of the synthetic failure taxonomy.
-
+Models were trained on prefixes of length 256 and evaluated using prefixes of length 256, 512, 1024, and 1152. The same two-block Transformer, five positional conditions, and three seeds were used, with a linear input projection, mean pooling, and a two-class output layer. Mean accuracy and standard error were reported across seeds. Because longer prefixes may add useful, irrelevant, or noisy observations, this classification experiment is an exploratory contrast rather than a direct equivalent of deterministic synthetic length extrapolation. Consequently, the synthetic eligibility and collapse thresholds were not applied.
 
 \section{Implementation and Reproducibility}
 \label{sec:implementation-compute}
@@ -1357,43 +1366,22 @@ Attention change is not included as a separate category because the patterns wer
 \section{Exploratory Real-World Extension}
 \label{sec:real-world-extension}
 
-\noindent
-The controlled synthetic tasks allow exact analysis of length extrapolation, but they do not represent the full complexity of applied sequential data. This chapter therefore presents a limited real-world extension using the SelfRegulationSCP2 multivariate time-series classification dataset. The purpose is to examine whether the sharp failure pattern observed in the synthetic experiments is also visible in a sequence-level classification setting. It is not intended as a state-of-the-art time-series comparison or as validation of the synthetic findings.
+The SelfRegulationSCP2 experiment provides an exploratory contrast between the controlled synthetic tasks and a real-world sequence-classification setting. The experimental design is described in
+Section \ref{sec:real-world-methodology}.
 
-\subsection{Experimental Scope}
+Figure \ref{fig:selfregulationscp2-accuracy} shows mean classification accuracy of approximately 49--56\% across the evaluated prefix lengths. Unlike the eligible synthetic baselines, no sharp decline occurs when the input length increases. However, performance at the training prefix is already close to the 50\% uniform-prediction reference. The resulting curve is therefore flat but weak and cannot be interpreted as evidence of successful length generalisation.
 
-SelfRegulationSCP2 is a binary, seven-channel EEG classification dataset from the UEA archive~\cite{bagnall2018uea}. The predefined split contains 200 training and 180 test examples, each with 1152 time points. Models were trained on prefixes of length 256 and evaluated at lengths 256, 512, 1024, and 1152 using the same five positional encoding conditions and three seeds. Full architectural and training details are given in
-Chapter~\ref{chap:methodology}.
+The differences between positional encodings are small relative to the overall performance level and variation across seeds, and no formal significance test was conducted. Moreover, classification accuracy is not directly comparable with synthetic exact-match accuracy: the classifier predicts one sequence-level label, whereas the synthetic tasks require every output token to be correct. Conclusions are consequently limited to this dataset and experimental setting.
 
-\subsection{Results and Interpretation}
+This extension used one small dataset and a Transformer configuration chosen for comparability rather than task-specific optimisation. It did not include a specialised time-series model or a strong task-specific baseline. Accordingly, it demonstrates the importance of establishing an adequate real-world baseline before drawing conclusions about behaviour under changes in input length, rather than validating the synthetic failure taxonomy.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.74\textwidth]
+\includegraphics[width=0.68\textwidth]
 {selfregulationscp2_accuracy_mean_se.pdf}
-\caption{Mean SelfRegulationSCP2 classification accuracy across three seeds as the evaluation prefix length increases. Error bars show $\pm 1$ standard error. The horizontal dotted line denotes the 50\% uniform two-class prediction reference, while the vertical dashed line marks the training prefix length of 256. Markers are offset slightly to reveal coincident estimates.}
+\caption{Mean SelfRegulationSCP2 classification accuracy across three seeds. Error bars show $\pm 1$ standard error. The dotted line denotes the 50\% uniform two-class prediction reference, and the dashed line marks the training prefix length of 256.}
 \label{fig:selfregulationscp2-accuracy}
 \end{figure}
-
-Figure~\ref{fig:selfregulationscp2-accuracy} shows that mean classification accuracy remains within approximately 49--56\% across the evaluated prefix lengths. This differs descriptively from the eligible synthetic baselines, which fell from at least 90\% training-length exact-match accuracy to 0\% at the first unseen length.
-
-At the training prefix length of 256, mean accuracy ranges from 49.44\% for learned positional embeddings to 52.96\% for NoPE. At length 512, RoPE produces the largest individual mean of 55.56\%, but its accuracy subsequently decreases to 49.07\% at the full length. At length 1152, learned and sinusoidal encodings have the highest mean accuracy, both at 53.52\%.
-
-These differences are small relative to the overall performance level and variation across seeds. No formal significance test was conducted, so the experiment does not establish a reliable ranking among the positional encoding methods.
-
-More importantly, performance at the training prefix length is already close to the 50\% uniform two-class reference. The absence of a sharp decrease therefore cannot be interpreted as successful length generalisation. Unlike the eligible synthetic configurations, the real-world classifiers do not begin from a strong held-out baseline.
-
-Classification accuracy is also not directly comparable with synthetic exact-match accuracy. The real-world model predicts one label for an entire sequence and may use partial evidence from any part of the input. The synthetic models must instead produce every required output token correctly. Additional time points may introduce useful, irrelevant, or noisy evidence, whereas increasing synthetic sequence length directly increases the size of the required structured computation.
-
-The real-world result should consequently be described as a flat but weak classification curve. Catastrophic exact-match collapse is not visible, but the experiment does not demonstrate that the models learned a robust length-general classification rule.
-
-\subsection{Limitations}
-
-The extension is limited to one relatively small dataset, with only 200 training examples and 180 test examples. The architecture and hyperparameters were selected primarily for comparability with the synthetic experiments rather than optimised for SelfRegulationSCP2. No specialised time-series model, majority-class baseline, or state-of-the-art comparison was included.
-
-The three-seed evaluation provides only a limited estimate of variation, and no confidence-interval or statistical-significance analysis was performed. Furthermore, because training-prefix test accuracy remains close to the uniform reference, the experiment cannot cleanly separate failure to generalise across examples from failure to generalise across input length.
-
-A stronger real-world extension would first establish a competitive held-out baseline through task-specific model selection. It would then evaluate that baseline across controlled changes in input length using additional long-sequence datasets, specialised time-series baselines, and a larger number of random seeds.
 
 \section{Chapter Summary}
 
@@ -1445,13 +1433,15 @@ The task-specific diagnostics further constrain the interpretation. Addition err
 
 These findings show why exact-match accuracy should be accompanied by error-location diagnostics: concentrated errors may support task-specific analysis, whereas distributed near-reference error indicates that the whole longer output is unreliable. Addition retained limited positional structure, whereas Delayed Copy and Reverse exhibited distributed near-reference collapse.
 
+These distinctions also have a practical implication for evaluating models that produce structured outputs. If errors are concentrated in particular regions, targeted checks may help identify vulnerable output positions. By contrast, distributed near-reference failure means that inspecting only a small number of positions could give misleading reassurance about the reliability of the complete output. Models expected to process sequences longer than those used during training should therefore be evaluated across both length and output position, rather than through aggregate accuracy alone. This is an implication for evaluation practice, not evidence that the specific synthetic error patterns necessarily occur in every deployed system.
+
 \subsection{RQ4: How Does Positional Encoding Affect the Outcome?}
 
 Positional encoding strongly affected whether the training task was learned, but no encoding was uniformly successful across all three tasks. Learned positional embeddings were eligible for Addition and Reverse but unstable for Delayed Copy. Sinusoidal encoding was eligible for Addition and Delayed Copy but unstable for Reverse. RoPE was eligible for Delayed Copy but underfit or only partially fit the other tasks.
 
 The comparison identifies a boundary on what can be inferred from the positional mechanism alone. An encoding that can mathematically represent unseen positions did not necessarily enable reliable training fit or length extrapolation in the compact bidirectional encoder evaluated here. The experiments therefore do not support a universal ranking of positional encodings; they show that the observed outcome depends on the task, architecture, attention regime, representation, and optimisation procedure. This bounded interpretation is consistent with evidence that positional encoding does not determine length-generalisation behaviour independently of the surrounding experimental setting \cite{kazemnejad2023impact}.
 
-The underfitting observed for NoPE and ALiBi should not be interpreted as a general failure of those methods. NoPE has produced effective length-related behaviour in decoder-only Transformers~\cite{kazemnejad2023impact}, while ALiBi was originally developed for causal language modelling \cite{press2022train}. The model used here is a compact encoder-style Transformer with bidirectional attention, and its ALiBi implementation uses a symmetric distance bias. These differences prevent direct method-level generalisation from the present results.
+The comparison in Table~\ref{tab:prior_length_studies} clarifies why these results do not directly contradict earlier findings. Press et al. \cite{press2022train} demonstrated train-short/test-long behaviour for ALiBi in causal language modelling, whereas ALiBi did not satisfy the training-length eligibility criterion on any of the three tasks evaluated here. This identifies a boundary on transfer across attention regimes, objectives, model scales, and task representations; it does not refute the original ALiBi result. Similarly, the strong NoPE behaviour reported for decoder-only Transformers by Kazemnejad et al. \cite{kazemnejad2023impact} does not imply that NoPE must fit the compact bidirectional sequence-to-sequence models studied here. The apparent disagreement therefore supports a conditional conclusion: positional methods cannot be ranked independently of the architecture and experimental setting in which they are evaluated.
 
 Similarly, RoPE systematically incorporates position into query and key representations~\cite{su2021roformer}, but that representation does not guarantee that optimisation will discover a length-general task solution. Conversely, recent arithmetic studies show that task-aligned digit representations can substantially improve long-length addition \cite{lee2024teaching,mcleish2024arithmetic}. This reinforces the narrower interpretation that positional behaviour depends on task representation and architecture, rather than establishing a universal ranking of positional encoding methods.
 
@@ -1666,33 +1656,21 @@ Within the evaluated synthetic benchmark, every eligible configuration collapsed
 \label{app:supplementary-results}
 
 \noindent
-Chapter~\ref{chap:results-analysis} presents the figures required to support
-the principal findings. This appendix provides additional error profiles,
-task-specific diagnostics, and mitigation comparisons that support the main
-analysis without being necessary for its continuous argument.
+Chapter~\ref{chap:results-analysis} presents the figures required to support the principal findings. This appendix provides additional error profiles, task-specific diagnostics, and mitigation comparisons that support the main analysis without being necessary for its continuous argument.
 
-Unless otherwise stated, the detailed diagnostic figures use representative
-seed-42 checkpoints. They characterise selected eligible models and should
-not be interpreted as multi-seed estimates. Multi-seed baseline eligibility
-is established separately in Section~\ref{sec:synthetic-results}.
+Unless otherwise stated, the detailed diagnostic figures use representative seed-42 checkpoints. They characterise selected eligible models and should not be interpreted as multi-seed estimates. Multi-seed baseline eligibility is established separately in Section \ref{sec:synthetic-results}.
 
 \section{Position-Wise Error Across All Lengths}
 \label{app:complete-position-errors}
 
-The main chapter compares training-length and first-unseen-length error
-profiles. Figures~\ref{fig:appendix-addition-position-heatmap}--
-\ref{fig:appendix-reverse-position-heatmap} extend that comparison across
-every evaluated length. Target positions are divided into ten relative bins,
-and all heatmaps use a common 0--100\% token-error scale.
+The main chapter compares training-length and first-unseen-length error profiles. Figures \ref{fig:appendix-addition-position-heatmap} \ref{fig:appendix-reverse-position-heatmap} extend that comparison across every evaluated length. Target positions are divided into ten relative bins, and all heatmaps use a common 0--100\% token-error scale.
 
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=0.95\textwidth]
 {addition_position_error_heatmap.pdf}
-\caption{Position-wise Addition token-error rates across all evaluated digit
-lengths for the learned and sinusoidal seed-42 checkpoints. Target positions
-are divided into ten relative-position bins.}
+\caption{Position-wise Addition token-error rates across all evaluated digit lengths for the learned and sinusoidal seed-42 checkpoints. Target positions are divided into ten relative-position bins.}
 \label{fig:appendix-addition-position-heatmap}
 \end{figure}
 
@@ -1701,8 +1679,7 @@ are divided into ten relative-position bins.}
 \centering
 \includegraphics[width=0.95\textwidth]
 {copy_position_error_heatmap.pdf}
-\caption{Position-wise Delayed Copy token-error rates across all evaluated
-sequence lengths for the sinusoidal and RoPE seed-42 checkpoints. Target
+\caption{Position-wise Delayed Copy token-error rates across all evaluated sequence lengths for the sinusoidal and RoPE seed-42 checkpoints. Target
 positions are divided into ten relative-position bins.}
 \label{fig:appendix-copy-position-heatmap}
 \end{figure}
@@ -1712,9 +1689,7 @@ positions are divided into ten relative-position bins.}
 \centering
 \includegraphics[width=0.76\textwidth]
 {reverse_position_error_heatmap.pdf}
-\caption{Position-wise Reverse token-error rates across all evaluated
-sequence lengths for the learned seed-42 checkpoint. Target positions are
-divided into ten relative-position bins.}
+\caption{Position-wise Reverse token-error rates across all evaluated sequence lengths for the learned seed-42 checkpoint. Target positions are divided into ten relative-position bins.}
 \label{fig:appendix-reverse-position-heatmap}
 \end{figure}
 
@@ -1723,19 +1698,13 @@ divided into ten relative-position bins.}
 \section{Additional First-Unseen Position Profiles}
 \label{app:first-unseen-position-profiles}
 
-The Addition training-versus-first-unseen comparison is retained in the main
-chapter. Figures~\ref{fig:appendix-copy-position-profile} and
-\ref{fig:appendix-reverse-position-profile} provide the corresponding
-Delayed Copy and Reverse comparisons.
+The Addition training-versus-first-unseen comparison is retained in the main chapter. Figures~\ref{fig:appendix-copy-position-profile} and \ref{fig:appendix-reverse-position-profile} provide the corresponding Delayed Copy and Reverse comparisons.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]
 {copy_train_vs_first_ood_position_error.pdf}
-\caption{Delayed Copy position-wise token-error rates at the training length
-and first evaluated unseen length for the sinusoidal and RoPE seed-42
-checkpoints. The dotted line denotes the 99\% uniform valid-token error
-reference.}
+\caption{Delayed Copy position-wise token-error rates at the training length and first evaluated unseen length for the sinusoidal and RoPE seed-42 checkpoints. The dotted line denotes the 99\% uniform valid-token error reference.}
 \label{fig:appendix-copy-position-profile}
 \end{figure}
 
@@ -1743,9 +1712,7 @@ reference.}
 \centering
 \includegraphics[width=0.88\textwidth]
 {reverse_train_vs_first_ood_position_error.pdf}
-\caption{Reverse position-wise token-error rates at the training length and
-first evaluated unseen length for the learned seed-42 checkpoint. The dotted
-line denotes the 99\% uniform valid-token error reference.}
+\caption{Reverse position-wise token-error rates at the training length and first evaluated unseen length for the learned seed-42 checkpoint. The dotted line denotes the 99\% uniform valid-token error reference.}
 \label{fig:appendix-reverse-position-profile}
 \end{figure}
 
@@ -1754,20 +1721,14 @@ line denotes the 99\% uniform valid-token error reference.}
 \section{Task-Specific Failure Diagnostics}
 \label{app:task-specific-diagnostics}
 
-The position-wise profiles were supplemented by diagnostics specific to the
-computation required by Addition and Reverse. Figure~\ref{fig:appendix-carry}
-conditions Addition errors on the presence of an incoming carry.
-Figure~\ref{fig:appendix-reverse-distance} groups Reverse errors by normalised
-source--target dependency distance.
+The position-wise profiles were supplemented by diagnostics specific to the computation required by Addition and Reverse. Figure \ref{fig:appendix-carry} conditions Addition errors on the presence of an incoming carry. Figure \ref{fig:appendix-reverse-distance} groups Reverse errors by normalised
+source-target dependency distance.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]
 {addition_carry_condition_error.pdf}
-\caption{Addition error rates for ordinary target digits with and without an
-incoming carry. The learned and sinusoidal seed-42 checkpoints are shown
-across all evaluated lengths. The optional leading result digit is excluded,
-and the dotted line denotes the 90\% uniform digit-error reference.}
+\caption{Addition error rates for ordinary target digits with and without an incoming carry. The learned and sinusoidal seed-42 checkpoints are shown across all evaluated lengths. The optional leading result digit is excluded, and the dotted line denotes the 90\% uniform digit-error reference.}
 \label{fig:appendix-carry}
 \end{figure}
 
@@ -1775,10 +1736,7 @@ and the dotted line denotes the 90\% uniform digit-error reference.}
 \centering
 \includegraphics[width=0.72\textwidth]
 {reverse_dependency_distance_error.pdf}
-\caption{Reverse token-error rates grouped by normalised source--target
-dependency distance for the learned seed-42 checkpoint. The approximately
-uniform error at unseen lengths shows that failure was not confined to the
-longest dependencies.}
+\caption{Reverse token-error rates grouped by normalised source--target dependency distance for the learned seed-42 checkpoint. The approximately uniform error at unseen lengths shows that failure was not confined to the longest dependencies.}
 \label{fig:appendix-reverse-distance}
 \end{figure}
 
@@ -1787,10 +1745,7 @@ longest dependencies.}
 \section{Error Decomposition Across Evaluation Lengths}
 \label{app:error-decomposition}
 
-The following figures report exact-match error and token error across the
-complete length schedule. They complement the exact-match degradation curves
-in the main chapter by showing the magnitude of token-level failure as a
-percentage.
+The following figures report exact-match error and token error across the complete length schedule. They complement the exact-match degradation curves in the main chapter by showing the magnitude of token-level failure as a percentage.
 
 \begin{figure}[htbp]
 \centering
@@ -1805,8 +1760,7 @@ for eligible Addition baselines.}
 \centering
 \includegraphics[width=0.84\textwidth]
 {copy_eligible_baseline_error_decomposition.pdf}
-\caption{Exact-match and token-error percentages across evaluation lengths
-for eligible Delayed Copy baselines.}
+\caption{Exact-match and token-error percentages across evaluation lengths for eligible Delayed Copy baselines.}
 \label{fig:appendix-copy-error-decomposition}
 \end{figure}
 
@@ -1814,8 +1768,7 @@ for eligible Delayed Copy baselines.}
 \centering
 \includegraphics[width=0.84\textwidth]
 {reverse_eligible_baseline_error_decomposition.pdf}
-\caption{Exact-match and token-error percentages across evaluation lengths
-for the eligible Reverse baseline.}
+\caption{Exact-match and token-error percentages across evaluation lengths for the eligible Reverse baseline.}
 \label{fig:appendix-reverse-error-decomposition}
 \end{figure}
 
@@ -1825,19 +1778,13 @@ for the eligible Reverse baseline.}
 \section{Additional Mitigation Comparisons}
 \label{app:additional-mitigation-results}
 
-The main chapter retains the Delayed Copy sinusoidal comparison because it
-contains the original baseline, single-length control, mixed-length,
-curriculum, and randomised-padded conditions. The remaining mitigation plots
-are provided here.
+The main chapter retains the Delayed Copy sinusoidal comparison because it contains the original baseline, single-length control, mixed-length, curriculum, and randomised-padded conditions. The remaining mitigation plots are provided here.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.80\textwidth]
 {addition_learned_baseline_vs_mitigation.pdf}
-\caption{Original Addition learned baseline compared with two mixed-length
-variants. Both interventions underfit at the training length, so their
-unseen-length results are inconclusive as extrapolation tests. Results use
-seed 42.}
+\caption{Original Addition learned baseline compared with two mixed-length variants. Both interventions underfit at the training length, so their unseen-length results are inconclusive as extrapolation tests. Results use seed 42.}
 \label{fig:appendix-addition-mitigation}
 \end{figure}
 
@@ -1845,10 +1792,7 @@ seed 42.}
 \centering
 \includegraphics[width=0.80\textwidth]
 {copy_rope_baseline_vs_mitigation.pdf}
-\caption{Original Delayed Copy RoPE baseline compared with curriculum and
-randomised-padded training. Both interventions preserve training-length
-performance but produce no observed improvement at unseen lengths. Results
-use seed 42.}
+\caption{Original Delayed Copy RoPE baseline compared with curriculum and randomised-padded training. Both interventions preserve training length performance but produce no observed improvement at unseen lengths. Results use seed 42.}
 \label{fig:appendix-copy-rope-mitigation}
 \end{figure}
 
@@ -1856,10 +1800,7 @@ use seed 42.}
 \centering
 \includegraphics[width=0.80\textwidth]
 {reverse_learned_baseline_vs_mitigation.pdf}
-\caption{Original Reverse learned baseline compared with the exploratory
-curriculum condition. The curriculum vocabulary differed from the original
-baseline, so this is not treated as a fully matched intervention comparison.
-Results use seed 42.}
+\caption{Original Reverse learned baseline compared with the exploratory curriculum condition. The curriculum vocabulary differed from the original baseline, so this is not treated as a fully matched intervention comparison. Results use seed 42.}
 \label{fig:appendix-reverse-mitigation}
 \end{figure}
 
@@ -1867,16 +1808,10 @@ Results use seed 42.}
 
 \section{Interpretive Scope}
 
-The supplementary figures do not introduce additional statistical claims.
-They preserve the complete polished diagnostic record underlying the more
-focused comparisons in Chapter~\ref{chap:results-analysis}. The heatmaps and
-task-specific plots support the distinction between the modest positional
-gradient observed in Addition and the almost uniform near-reference failure
-observed in Delayed Copy and Reverse.
+The supplementary figures do not introduce additional statistical claims. They preserve the complete polished diagnostic record underlying the more focused comparisons in Chapter~\ref{chap:results-analysis}. The heatmaps and task-specific plots support the distinction between the modest positional gradient observed in Addition and the almost uniform near-reference failure observed in Delayed Copy and Reverse.
 
 The mitigation figures likewise preserve the distinction between
-training-length underfitting and a valid intervention that retains training
-fit but produces no observed improvement at unseen lengths.
+training-length underfitting and a valid intervention that retains training fit but produces no observed improvement at unseen lengths.
 
 
 % =============================================================================
@@ -2121,10 +2056,10 @@ Raw results &
 Preserves seed-level baseline, mitigation, and real-world measurements. \\
 
 Derived diagnostics &
-\texttt{outputs/analysis/} and
-\texttt{position\_diagnostics\_aws/final/} &
-Stores attention, position-wise, carry, dependency-distance, and mitigation
-summaries. \\
+\texttt{outputs/analysis/}; \newline
+\texttt{position\_diagnostics\_aws/} \newline
+\texttt{final} &
+Stores attention, position-wise, carry, dependency-distance, and mitigation summaries. \\
 
 Report figures &
 \texttt{outputs/plots/final/} &
@@ -2146,7 +2081,7 @@ The implementation, experiment configurations, tests, result-processing scripts,
 
 \begin{center}
 \href{https://github.com/Aanchala14/Length-Generalisation-in-Sequence-Models-Failure-Taxonomy-and-Mitigation-Strategies}
-{\large\textbf{Project Github Repository}}
+{\large\textbf{Project GitHub Repository}}
 \end{center}
 
 \section{Repository Contents}
