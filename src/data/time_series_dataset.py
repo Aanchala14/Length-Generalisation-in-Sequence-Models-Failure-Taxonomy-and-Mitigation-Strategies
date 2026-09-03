@@ -33,11 +33,11 @@ def prepare_uea_dataset(dataset_name, data_root):
         extract_path=dataset_dir
     )
 
-    # aeon returns: (n_samples, n_channels, n_timepoints)
+
     X_train = np.asarray(X_train, dtype=np.float32)
     X_test = np.asarray(X_test, dtype=np.float32)
 
-    # Convert to: (n_samples, n_timepoints, n_channels)
+
     X_train = np.transpose(X_train, (0, 2, 1))
     X_test = np.transpose(X_test, (0, 2, 1))
 

@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 
 class SyntheticDataset(Dataset):
     """
-    PyTorch Dataset for synthetic algorithmic tasks.
+    PyTorch Dataset for synthetic algorithmic tasks
     """
 
     def __init__(self, file_path):

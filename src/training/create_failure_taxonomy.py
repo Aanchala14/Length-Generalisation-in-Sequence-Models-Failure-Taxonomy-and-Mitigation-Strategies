@@ -10,7 +10,7 @@ ROWS = [
     {
         "Failure Type": "Extrapolation collapse",
         "Definition": "The model fits the training length but exact-match accuracy collapses outside the training range.",
-        "Evidence": "High Exact@Train but 0% Exact@Long in baseline and PE experiments.",
+        "Evidence": "High Exact@Train but 0\\% Exact@Long in baseline and PE experiments.",
         "Tasks Affected": "Addition, delayed copy, reverse",
         "Example": "Addition learned: Exact@16 = 94.1%, Exact@32 = 0%, Exact@1024 = 0%.",
         "Interpretation": "The model learns a length-specific solution rather than a length-general algorithm.",
@@ -18,7 +18,7 @@ ROWS = [
     {
         "Failure Type": "Training-length underfitting",
         "Definition": "The model fails even at the training length.",
-        "Evidence": "Exact@Train remains near 0% for some positional encodings and mitigation variants.",
+        "Evidence": "Exact@Train remains near 0\\% for some positional encodings and mitigation variants.",
         "Tasks Affected": "Addition, delayed copy, reverse",
         "Example": "NoPE and ALiBi often fail at the training length; mixed-length addition also gives Exact@16 = 0%.",
         "Interpretation": "Some configurations are not valid extrapolation tests because they do not learn the in-distribution task.",

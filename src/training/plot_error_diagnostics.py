@@ -56,7 +56,7 @@ ENCODING_ORDER = [
 ]
 
 
-# Same restrained palette as the other final figures.
+
 ENCODING_COLORS = {
     "learned": "#1F4E79",
     "sinusoidal": "#2E6F75",
@@ -82,11 +82,6 @@ ENCODING_LINESTYLES = {
 }
 
 
-# Uniform-error references use the number of valid target tokens.
-#
-# Addition target: 10 digit tokens -> 90% uniform error.
-# Copy target: 100 data tokens -> 99% uniform error.
-# Reverse target: 100 data tokens -> 99% uniform error.
 UNIFORM_TOKEN_ERROR_REFERENCE = {
     "addition": 90.0,
     "copy": 99.0,
@@ -95,9 +90,7 @@ UNIFORM_TOKEN_ERROR_REFERENCE = {
 
 
 def set_report_style():
-    """
-    Apply the same thesis-wide plotting style.
-    """
+
 
     plt.rcParams.update({
         "figure.dpi": 120,
@@ -125,9 +118,7 @@ def set_report_style():
 
 
 def style_axis(ax):
-    """
-    Apply consistent horizontal grid lines.
-    """
+   
 
     ax.set_axisbelow(True)
 
@@ -144,9 +135,7 @@ def save_figure(
     fig,
     output_stem
 ):
-    """
-    Save high-resolution PNG and vector PDF versions.
-    """
+   
 
     fig.savefig(
         OUTPUT_DIR / f"{output_stem}.png",
@@ -162,9 +151,6 @@ def save_figure(
 
 
 def load_results():
-    """
-    Load all multi-seed baseline results.
-    """
 
     files = sorted(
         RESULTS_DIR.glob("*.csv")
@@ -215,9 +201,6 @@ def load_results():
 
 
 def load_eligibility():
-    """
-    Load baseline eligibility classifications.
-    """
 
     if not ELIGIBILITY_PATH.exists():
         raise FileNotFoundError(
@@ -249,9 +232,6 @@ def load_eligibility():
 
 
 def length_positions(lengths):
-    """
-    Map sequence lengths to equally spaced positions.
-    """
 
     return {
         length: index
@@ -265,9 +245,6 @@ def aggregate_metric(
     frame,
     metric
 ):
-    """
-    Calculate mean and SD for one error metric.
-    """
 
     aggregate = frame.groupby(
         "Test Length",
@@ -308,9 +285,6 @@ def get_eligible_encodings(
     eligibility,
     task
 ):
-    """
-    Return eligible encodings in the fixed report order.
-    """
 
     task_eligibility = eligibility[
         (
@@ -340,10 +314,6 @@ def add_training_marker(
     train_position,
     show_label
 ):
-    """
-    Mark the training length on both panels.
-    """
-
     ax.axvline(
         train_position,
         color="#3F3F3F",
@@ -378,10 +348,6 @@ def add_training_marker(
 
 
 def add_sequence_error_threshold(ax):
-    """
-    Show that 90% sequence error corresponds to
-    exact-match accuracy below 10%.
-    """
 
     ax.axhline(
         SEQUENCE_ERROR_COLLAPSE_THRESHOLD,
@@ -416,12 +382,6 @@ def add_uniform_token_reference(
     ax,
     task
 ):
-    """
-    Show the uniform valid-token error reference.
-
-    The annotation is offset below the reference line so it
-    does not overlap the mean error curves.
-    """
 
     reference = (
         UNIFORM_TOKEN_ERROR_REFERENCE[task]
@@ -478,9 +438,6 @@ def plot_metric(
     marker_offsets,
     output_rows
 ):
-    """
-    Plot one error metric for every eligible encoding.
-    """
 
     for encoding in eligible_encodings:
         frame = results[
@@ -532,7 +489,7 @@ def plot_metric(
             100.0
         )
 
-        # Faint curves show each seed separately.
+
         for seed in sorted(
             frame["Seed"].unique()
         ):
@@ -642,9 +599,6 @@ def save_task_error_plot(
     eligibility,
     task
 ):
-    """
-    Save sequence-error and token-error panels for one task.
-    """
 
     eligible_encodings = (
         get_eligible_encodings(
@@ -890,9 +844,6 @@ def save_task_error_plot(
 
 
 def main():
-    """
-    Generate final error-decomposition plots.
-    """
 
     set_report_style()
 

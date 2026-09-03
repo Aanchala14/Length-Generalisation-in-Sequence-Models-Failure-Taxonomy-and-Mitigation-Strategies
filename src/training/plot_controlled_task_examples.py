@@ -8,7 +8,7 @@ OUTPUT_DIR = Path("outputs/plots/final")
 OUTPUT_STEM = "controlled_task_examples"
 
 
-# Same restrained palette used in the final thesis figures.
+
 TEXT_COLOR = "#222222"
 MUTED_TEXT = "#58616A"
 
@@ -27,9 +27,6 @@ ARROW_COLOR = "#4A4A4A"
 
 
 def set_report_style():
-    """
-    Apply the same typography used by the final thesis figures.
-    """
 
     plt.rcParams.update({
         "figure.dpi": 120,
@@ -48,9 +45,6 @@ def set_report_style():
 
 
 def token_style(token, is_target):
-    """
-    Return coherent colours for a token cell.
-    """
 
     if token in {"PAD", "SEP", "+"}:
         return SPECIAL_FILL, SPECIAL_EDGE
@@ -70,9 +64,6 @@ def draw_token(
     width=0.043,
     height=0.100,
 ):
-    """
-    Draw one labelled token cell.
-    """
 
     facecolor, edgecolor = token_style(
         token=token,
@@ -114,9 +105,6 @@ def draw_sequence(
     width=0.043,
     gap=0.005,
 ):
-    """
-    Draw a centred sequence and return its horizontal boundaries.
-    """
 
     total_width = (
         len(tokens) * width
@@ -149,9 +137,7 @@ def draw_panel(
     input_tokens,
     target_tokens,
 ):
-    """
-    Draw one complete task row.
-    """
+    
 
     panel_height = 0.225
     panel_bottom = y - panel_height / 2
@@ -169,7 +155,6 @@ def draw_panel(
 
     ax.add_patch(panel)
 
-    # Dedicated task-label column.
     ax.text(
         0.045,
         y + 0.038,
@@ -208,8 +193,6 @@ def draw_panel(
         is_target=True,
     )
 
-    # Calculate the arrow from the sequence boundaries.
-    # This prevents overlap for sequences of different lengths.
     arrow_start = input_right + 0.015
     arrow_end = target_left - 0.015
 
@@ -283,9 +266,7 @@ def add_legend(ax):
 
 
 def create_figure():
-    """
-    Create the controlled-task schematic.
-    """
+    
 
     set_report_style()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

@@ -6,9 +6,8 @@ import torch.nn as nn
 
 def get_alibi_slopes(num_heads):
     """
-    Create ALiBi slopes for each attention head.
-
-    This follows the standard ALiBi slope construction.
+    Create ALiBi slopes for each attention head
+    this follows the standard ALiBi slope construction
     """
 
     def get_slopes_power_of_2(n):
@@ -52,14 +51,6 @@ def get_alibi_slopes(num_heads):
 
 
 def build_alibi_bias(num_heads, sequence_length, device):
-    """
-    Build ALiBi bias tensor.
-
-    Shape:
-        (1, num_heads, sequence_length, sequence_length)
-
-    Larger negative values are assigned to distant positions.
-    """
 
     slopes = get_alibi_slopes(num_heads).to(device)
 
@@ -87,12 +78,6 @@ def build_alibi_bias(num_heads, sequence_length, device):
     return slopes * bias
 
 def apply_rope(x):
-    """
-    Apply rotary positional embeddings to query/key tensors.
-
-    Shape:
-        x: (batch_size, num_heads, sequence_length, head_dim)
-    """
 
     batch_size, num_heads, sequence_length, head_dim = x.shape
 
@@ -264,9 +249,6 @@ class MultiHeadSelfAttention(nn.Module):
 
 
 class TransformerBlock(nn.Module):
-    """
-    Transformer encoder block using custom self-attention.
-    """
 
     def __init__(
         self,

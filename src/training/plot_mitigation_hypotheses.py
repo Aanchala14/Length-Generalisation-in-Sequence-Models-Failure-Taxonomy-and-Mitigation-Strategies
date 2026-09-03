@@ -305,9 +305,6 @@ MITIGATION_COMPARISONS = [
 
 
 def set_report_style():
-    """
-    Apply the same visual style used by the final report figures.
-    """
 
     plt.rcParams.update({
         "figure.dpi": 120,
@@ -335,9 +332,6 @@ def set_report_style():
 
 
 def style_line_axis(ax):
-    """
-    Add restrained horizontal grid lines.
-    """
 
     ax.set_axisbelow(True)
 
@@ -354,9 +348,6 @@ def save_figure(
     fig,
     output_stem
 ):
-    """
-    Save a high-resolution PNG and vector PDF.
-    """
 
     fig.savefig(
         OUTPUT_DIR / f"{output_stem}.png",
@@ -372,9 +363,6 @@ def save_figure(
 
 
 def length_positions(lengths):
-    """
-    Map sequence lengths to equally spaced plot positions.
-    """
 
     return {
         int(length): index
@@ -388,9 +376,6 @@ def add_training_length_marker(
     ax,
     train_position
 ):
-    """
-    Mark the training length without covering the data point.
-    """
 
     ax.axvline(
         train_position,
@@ -425,9 +410,6 @@ def add_training_length_marker(
 
 
 def add_collapse_threshold(ax):
-    """
-    Show the operational exact-match collapse threshold.
-    """
 
     ax.axhline(
         COLLAPSE_THRESHOLD,
@@ -467,9 +449,6 @@ def load_raw_experiment(
     expected_encoding,
     expected_seed
 ):
-    """
-    Load and validate one complete raw experiment CSV.
-    """
 
     if not path.exists():
         raise FileNotFoundError(
@@ -586,9 +565,6 @@ def get_exact_match_at_length(
     test_length,
     series_label
 ):
-    """
-    Return exact-match accuracy at one required test length.
-    """
 
     row = frame[
         frame["Test Length"] == test_length
@@ -613,12 +589,6 @@ def analyse_condition(
     longest_test_length,
     baseline_first_unseen_exact
 ):
-    """
-    Determine the outcome and defensible interpretation.
-
-    Training-underfit mitigations are marked inconclusive.
-    They are not described as failed extrapolation methods.
-    """
 
     frame = item["frame"]
 
@@ -784,9 +754,6 @@ def build_legend_label(
     label,
     training_status
 ):
-    """
-    Make training underfit explicit in the figure legend.
-    """
 
     if training_status == "Training underfit":
         return (
@@ -801,9 +768,6 @@ def plot_comparison(
     plot_series,
     train_length
 ):
-    """
-    Draw one baseline-versus-mitigation comparison.
-    """
 
     task = comparison["task"]
     encoding = comparison["encoding"]
@@ -981,9 +945,6 @@ def plot_comparison(
 def process_comparison(
     comparison
 ):
-    """
-    Load, analyse and plot one matched comparison.
-    """
 
     task = comparison["task"]
     encoding = comparison["encoding"]
@@ -1218,9 +1179,6 @@ def process_comparison(
 
 
 def main():
-    """
-    Generate mitigation plots and hypothesis/outcome tables.
-    """
 
     set_report_style()
 

@@ -15,12 +15,9 @@ class BaseTask(ABC):
         self.vocab_size = vocab_size
         self.sequence_length = sequence_length
 
-
+#Create a standardized dataset sample.
     def create_sample(
         self, input_sequence, target_sequence):
-        """
-        Create a standardized dataset sample.
-        """
 
         return {
             "input": input_sequence,

@@ -54,9 +54,6 @@ ENCODING_ORDER = [
 ]
 
 
-# Restrained thesis palette.
-# The same encoding always uses the same colour,
-# marker and line style in every figure.
 ENCODING_COLORS = {
     "learned": "#1F4E79",
     "sinusoidal": "#2E6F75",
@@ -89,9 +86,6 @@ ENCODING_MARKER_OFFSETS = {
     "rope": 0.10,
 }
 
-
-# The mitigation colours belong to the same muted visual family.
-# Marker and line-style differences preserve readability in grayscale.
 MITIGATION_STYLES = {
     "baseline": {
         "color": "#1F4E79",
@@ -125,9 +119,6 @@ MITIGATION_STYLES = {
     },
 }
 
-
-# Every comparison points directly to the full raw result CSV.
-# This prevents intermediate lengths from being discarded.
 MITIGATION_COMPARISONS = [
     {
         "task": "addition",
@@ -298,10 +289,6 @@ MITIGATION_COMPARISONS = [
 
 
 def set_report_style():
-    """
-    Apply one consistent thesis-wide visual style.
-    """
-
     plt.rcParams.update({
         "figure.dpi": 120,
         "savefig.dpi": 300,
@@ -328,9 +315,6 @@ def set_report_style():
 
 
 def style_line_axis(ax):
-    """
-    Apply consistent grid and axis styling to line plots.
-    """
 
     ax.set_axisbelow(True)
 
@@ -347,11 +331,6 @@ def save_figure(
     fig,
     output_stem
 ):
-    """
-    Save a high-resolution PNG and a vector PDF.
-
-    PDF is preferred when inserting the plot into LaTeX.
-    """
 
     png_path = OUTPUT_DIR / f"{output_stem}.png"
     pdf_path = OUTPUT_DIR / f"{output_stem}.pdf"
@@ -370,10 +349,6 @@ def save_figure(
 
 
 def load_multiseed_results():
-    """
-    Load and combine all multi-seed baseline result files.
-    """
-
     files = sorted(
         MULTISEED_DIR.glob("*.csv")
     )
@@ -423,9 +398,6 @@ def load_multiseed_results():
 
 
 def aggregate_multiseed(results):
-    """
-    Calculate summary statistics across random seeds.
-    """
 
     aggregate = results.groupby(
         [
@@ -494,9 +466,6 @@ def aggregate_multiseed(results):
 
 
 def length_positions(lengths):
-    """
-    Map sequence lengths to equally spaced categorical positions.
-    """
 
     return {
         length: index
@@ -511,10 +480,6 @@ def get_failure_length(
     train_length,
     threshold=COLLAPSE_THRESHOLD
 ):
-    """
-    Return the first unseen length where mean exact-match
-    accuracy falls below the collapse threshold.
-    """
 
     extrapolation = frame[
         frame["Test Length"] > train_length
@@ -538,9 +503,6 @@ def add_train_marker(
     ax,
     train_position
 ):
-    """
-    Mark the exact training length.
-    """
 
     ax.axvline(
         train_position,
@@ -575,9 +537,6 @@ def add_train_marker(
 
 
 def add_collapse_threshold(ax):
-    """
-    Add the operational collapse threshold.
-    """
 
     ax.axhline(
         COLLAPSE_THRESHOLD,
@@ -615,9 +574,6 @@ def save_failure_behaviour_plot(
     aggregate,
     task
 ):
-    """
-    Plot exact-match accuracy across test lengths.
-    """
 
     task_frame = aggregate[
         aggregate["Task"] == task
@@ -775,11 +731,6 @@ def save_error_rate_heatmap(
     aggregate,
     task
 ):
-    """
-    Plot exact-match error percentages.
-
-    A common red scale is used for every error heatmap.
-    """
 
     task_frame = aggregate[
         aggregate["Task"] == task
@@ -930,9 +881,6 @@ def save_error_rate_heatmap(
 def save_train_performance_heatmap(
     aggregate
 ):
-    """
-    Plot training-length exact-match accuracy.
-    """
 
     matrix = []
 
@@ -1092,9 +1040,6 @@ def save_train_performance_heatmap(
 def save_generalisation_gap_heatmap(
     aggregate
 ):
-    """
-    Plot the exact-match generalisation gap.
-    """
 
     matrix = []
 
@@ -1266,9 +1211,6 @@ def load_raw_experiment(
     expected_encoding,
     expected_seed
 ):
-    """
-    Load and validate one complete raw experiment CSV.
-    """
 
     if not path.exists():
         raise FileNotFoundError(
@@ -1346,12 +1288,6 @@ def load_raw_experiment(
 
 
 def save_baseline_vs_mitigation_plots():
-    """
-    Plot matched mitigation comparisons using complete raw CSVs.
-
-    Lines remain at the true x positions. Only markers are
-    horizontally offset to reveal coincident observations.
-    """
 
     for comparison in MITIGATION_COMPARISONS:
         task = comparison["task"]
@@ -1527,7 +1463,7 @@ def save_baseline_vs_mitigation_plots():
                 "Exact Match Accuracy"
             ].to_numpy()
 
-            # Lines remain at the exact test-length positions.
+
             ax.plot(
                 true_x_values,
                 y_values,
@@ -1538,7 +1474,7 @@ def save_baseline_vs_mitigation_plots():
                 zorder=2 + series_index,
             )
 
-            # Only markers are offset for visibility.
+
             ax.scatter(
                 marker_x_values,
                 y_values,
@@ -1645,9 +1581,6 @@ def save_failure_summary_table(
     results,
     aggregate
 ):
-    """
-    Create a baseline-validity and failure-behaviour table.
-    """
 
     rows = []
 
@@ -1888,10 +1821,7 @@ def save_failure_summary_table(
 
 
 def main():
-    """
-    Generate all final report plots, vector figures,
-    and plot-data CSV files.
-    """
+
 
     set_report_style()
 

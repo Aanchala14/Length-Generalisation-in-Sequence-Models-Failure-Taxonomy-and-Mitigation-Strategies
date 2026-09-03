@@ -2,19 +2,9 @@ import random
 
 from .base_task import BaseTask
 
-
+#Associative recall task, key/value pairs + QUERY token + query key
 class AssociativeRecallTask(BaseTask):
-    """
-    Associative recall task.
-
-    Input:
-        key/value pairs + QUERY token + query key
-
-    Target:
-        PAD tokens everywhere except the final two positions,
-        where the model must output the value associated with the query key.
-    """
-
+    
     def __init__(
         self,
         vocab_size,

@@ -36,7 +36,7 @@ ENCODING_LABELS = {
     "rope": "RoPE",
 }
 
-# Same muted palette used by the other final-report figures.
+
 ENCODING_COLORS = {
     "learned": "#1F4E79",
     "sinusoidal": "#2E6F75",
@@ -61,8 +61,6 @@ ENCODING_LINESTYLES = {
     "rope": (0, (4, 1, 1, 1)),
 }
 
-# Small horizontal offsets reveal coincident markers and error bars.
-# X-axis ticks still show the nominal evaluation lengths.
 ENCODING_OFFSETS = {
     "learned": -8.0,
     "sinusoidal": -4.0,
@@ -85,10 +83,6 @@ EXPECTED_TEST_LENGTHS = [
 
 
 def set_report_style():
-    """
-    Apply the restrained style used by the final thesis figures.
-    """
-
     plt.rcParams.update({
         "figure.dpi": 120,
         "savefig.dpi": 300,
@@ -115,9 +109,6 @@ def set_report_style():
 
 
 def style_axis(axis):
-    """
-    Apply the same horizontal grid styling used elsewhere.
-    """
 
     axis.set_axisbelow(True)
 
@@ -131,12 +122,6 @@ def style_axis(axis):
 
 
 def load_summary():
-    """
-    Load and validate the existing real-world summary.
-
-    This script only replots existing results. It does not retrain
-    models or modify the source results.
-    """
 
     if not INPUT_CSV.exists():
         raise FileNotFoundError(
@@ -302,11 +287,8 @@ def load_summary():
 
 
 def add_reference_lines(axis):
-    """
-    Add the training-length and uniform-prediction references.
-    """
 
-    # Lightly shade the out-of-distribution region.
+
     axis.axvspan(
         TRAIN_LENGTH,
         1200,
@@ -368,9 +350,6 @@ def add_reference_lines(axis):
 
 
 def plot_results(frame):
-    """
-    Create the final-report real-world accuracy figure.
-    """
 
     set_report_style()
 
@@ -456,7 +435,7 @@ def plot_results(frame):
         1200,
     )
 
-    # The upper bound leaves space above the largest error bar.
+
     axis.set_ylim(
         45,
         59,

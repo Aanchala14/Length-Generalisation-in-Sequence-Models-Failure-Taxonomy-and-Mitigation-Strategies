@@ -155,9 +155,6 @@ CARRY_STYLES = {
 
 
 def set_report_style():
-    """
-    Apply the same style used by the other final thesis figures.
-    """
 
     plt.rcParams.update({
         "figure.dpi": 120,
@@ -185,9 +182,6 @@ def set_report_style():
 
 
 def style_axis(axis):
-    """
-    Add restrained horizontal grid lines.
-    """
 
     axis.set_axisbelow(True)
 
@@ -204,10 +198,6 @@ def save_figure(
     figure,
     output_stem,
 ):
-    """
-    Save high-resolution PNG and vector PDF versions.
-    """
-
     figure.savefig(
         OUTPUT_DIR / f"{output_stem}.png",
         bbox_inches="tight",
@@ -224,9 +214,6 @@ def save_figure(
 
 
 def choose_device():
-    """
-    Prefer CUDA on AWS, followed by Apple MPS and CPU.
-    """
 
     return torch.device(
         "cuda"
@@ -241,9 +228,6 @@ def build_model(
     config,
     device,
 ):
-    """
-    Construct the model exactly as it was constructed for training.
-    """
 
     model = TransformerModel(
         vocab_size=config["vocab_size"],
@@ -294,9 +278,6 @@ def build_model(
 
 
 def expected_results_path(config):
-    """
-    Return the separate rerun result CSV used for validation.
-    """
 
     return (
         RERUN_RESULTS_DIR
@@ -309,9 +290,6 @@ def expected_results_path(config):
 
 
 def load_expected_results(config):
-    """
-    Load the independently generated aggregate evaluation.
-    """
 
     path = expected_results_path(config)
 
@@ -324,12 +302,6 @@ def load_expected_results(config):
 
 
 def normalised_position_bins(number_of_tokens):
-    """
-    Assign valid target tokens to ten relative-position bins.
-
-    Bin 0 represents the beginning of the valid target.
-    Bin 9 represents the end of the valid target.
-    """
 
     relative_positions = np.arange(number_of_tokens)
 
@@ -350,11 +322,6 @@ def addition_carry_labels(
     digit_length,
     valid_target_length,
 ):
-    """
-    Label each valid addition target digit by its carry condition.
-
-    The optional leading result digit is treated separately.
-    """
 
     first_operand = input_tokens[:digit_length]
 
@@ -410,12 +377,6 @@ def addition_carry_labels(
 
 
 def reverse_dependency_bins(number_of_tokens):
-    """
-    Bin reverse-task outputs by normalised input-output distance.
-
-    A value near zero is a short dependency.
-    A value near one is a maximum-length dependency.
-    """
 
     output_positions = np.arange(
         number_of_tokens
@@ -458,10 +419,6 @@ def validate_aggregate_metrics(
     exact_accuracy,
     config,
 ):
-    """
-    Confirm that this prediction pass reproduces the separate
-    aggregate evaluation before using its positional errors.
-    """
 
     expected_row = expected_results[
         expected_results["Test Length"]
@@ -517,10 +474,6 @@ def evaluate_experiment(
     config_path,
     device,
 ):
-    """
-    Run one checkpoint and collect aggregate, positional,
-    carry-conditioned and dependency-distance errors.
-    """
 
     config = load_config(config_path)
 
@@ -931,9 +884,6 @@ def evaluate_experiment(
 
 
 def task_encodings(position_data, task):
-    """
-    Return encodings in the thesis-wide order.
-    """
 
     available = set(
         position_data.loc[
@@ -957,9 +907,6 @@ def save_position_heatmap(
     position_data,
     task,
 ):
-    """
-    Plot token error by test length and relative target position.
-    """
 
     encodings = task_encodings(
         position_data,
@@ -1123,9 +1070,6 @@ def save_train_vs_first_ood_plot(
     position_data,
     task,
 ):
-    """
-    Compare spatial error at the training length and first unseen length.
-    """
 
     encodings = task_encodings(
         position_data,
@@ -1305,9 +1249,6 @@ def save_train_vs_first_ood_plot(
 
 
 def save_addition_carry_plot(carry_data):
-    """
-    Plot addition errors conditioned on carry behaviour.
-    """
 
     encodings = [
         encoding
@@ -1445,10 +1386,6 @@ def save_addition_carry_plot(carry_data):
 def save_reverse_dependency_heatmap(
     dependency_data
 ):
-    """
-    Show whether reverse errors concentrate at longer dependencies.
-    """
-
     matrix = (
         dependency_data.pivot(
             index="Test Length",
@@ -1583,9 +1520,6 @@ def classify_position_pattern(
     error_range,
     uniform_reference,
 ):
-    """
-    Convert the positional profile into an interpretable failure label.
-    """
 
     reference_difference = abs(
         overall_error
@@ -1624,9 +1558,6 @@ def create_failure_summary(
     position_data,
     overall_data,
 ):
-    """
-    Summarise the spatial pattern at the first unseen length.
-    """
 
     rows = []
 

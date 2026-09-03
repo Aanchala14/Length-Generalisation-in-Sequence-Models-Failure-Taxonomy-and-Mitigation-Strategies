@@ -2,17 +2,8 @@ import random
 
 from .base_task import BaseTask
 
-
+#Long digit-wise addition task.
 class AdditionTask(BaseTask):
-    """
-    Long digit-wise addition task.
-
-    Input:
-        digits_a + PLUS + digits_b
-
-    Target:
-        PAD tokens followed by the sum digits, aligned to input length.
-    """
 
     PLUS_TOKEN = 10
     PAD_TOKEN = 11
@@ -37,7 +28,7 @@ class AdditionTask(BaseTask):
             for _ in range(self.sequence_length)
         ]
 
-        # Avoid leading zero so the logical length is always fixed.
+
         digits[0] = random.randint(1, 9)
 
         return digits

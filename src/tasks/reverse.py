@@ -2,17 +2,8 @@ import random
 
 from .base_task import BaseTask
 
-
+#    Reverse task -----> [x1, x2, ..., xL]-----> [xL, ..., x2, x1]
 class ReverseTask(BaseTask):
-    """
-    Reverse task.
-
-    Input:
-        [x1, x2, ..., xL]
-
-    Target:
-        [xL, ..., x2, x1]
-    """
 
     def __init__(
         self,

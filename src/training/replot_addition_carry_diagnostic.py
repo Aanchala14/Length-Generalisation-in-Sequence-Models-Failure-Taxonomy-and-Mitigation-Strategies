@@ -50,9 +50,6 @@ UNIFORM_DIGIT_ERROR_REFERENCE = 90.0
 
 
 def set_report_style():
-    """
-    Apply the same restrained style used by the final figures.
-    """
 
     plt.rcParams.update({
         "figure.dpi": 120,
@@ -80,9 +77,6 @@ def set_report_style():
 
 
 def style_axis(axis):
-    """
-    Apply consistent horizontal grid styling.
-    """
 
     axis.set_axisbelow(True)
 
@@ -96,9 +90,6 @@ def style_axis(axis):
 
 
 def load_carry_data():
-    """
-    Load and validate the downloaded carry diagnostic.
-    """
 
     if not INPUT_CSV.exists():
         raise FileNotFoundError(
@@ -163,10 +154,6 @@ def load_carry_data():
 def create_comparison_summary(
     carry_data
 ):
-    """
-    Create a transparent numerical comparison between
-    ordinary digits with and without an incoming carry.
-    """
 
     ordinary_digits = carry_data[
         carry_data["Carry Condition"].isin(
@@ -261,9 +248,6 @@ def add_training_marker(
     axis,
     train_position
 ):
-    """
-    Mark the training length and leave space above 100%.
-    """
 
     axis.axvline(
         train_position,
@@ -301,9 +285,6 @@ def add_training_marker(
 def add_uniform_reference(
     axis
 ):
-    """
-    Show the uniform ten-digit error reference.
-    """
 
     axis.axhline(
         UNIFORM_DIGIT_ERROR_REFERENCE,
@@ -346,13 +327,6 @@ def add_uniform_reference(
 def save_carry_comparison_plot(
     carry_data
 ):
-    """
-    Plot ordinary digit error with and without incoming carry.
-
-    The leading overflow digit is intentionally excluded because
-    it is a distinct output role rather than an ordinary digit
-    conditioned on carry propagation.
-    """
 
     ordinary_digits = carry_data[
         carry_data["Carry Condition"].isin(
@@ -609,10 +583,6 @@ def save_carry_comparison_plot(
 
 
 def main():
-    """
-    Regenerate the scientifically corrected carry plot
-    from the downloaded diagnostic CSV.
-    """
 
     set_report_style()
 

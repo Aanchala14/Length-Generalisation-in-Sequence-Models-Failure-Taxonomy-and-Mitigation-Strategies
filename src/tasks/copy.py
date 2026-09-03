@@ -2,17 +2,8 @@ import random
 
 from .base_task import BaseTask
 
-
+#Delayed copy task ---> sequence + SEP + PADs ----> PADs + PAD + sequence
 class CopyTask(BaseTask):
-    """
-    Delayed copy task.
-
-    Input:
-        sequence + SEP + PADs
-
-    Target:
-        PADs + PAD + sequence
-    """
 
     def __init__(
         self,

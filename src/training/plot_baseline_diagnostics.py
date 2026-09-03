@@ -50,7 +50,7 @@ ENCODING_ORDER = [
 ]
 
 
-# Same restrained palette used in the final-report script.
+
 ENCODING_COLORS = {
     "learned": "#1F4E79",
     "sinusoidal": "#2E6F75",
@@ -77,9 +77,6 @@ ENCODING_LINESTYLES = {
 
 
 def set_report_style():
-    """
-    Apply the same style used by all final thesis figures.
-    """
 
     plt.rcParams.update({
         "figure.dpi": 120,
@@ -107,9 +104,6 @@ def set_report_style():
 
 
 def style_axis(ax):
-    """
-    Apply consistent horizontal grid lines.
-    """
 
     ax.set_axisbelow(True)
 
@@ -126,9 +120,6 @@ def save_figure(
     fig,
     output_stem
 ):
-    """
-    Save both a PNG and a vector PDF.
-    """
 
     png_path = OUTPUT_DIR / f"{output_stem}.png"
 
@@ -148,9 +139,6 @@ def save_figure(
 
 
 def load_results():
-    """
-    Load all baseline result files.
-    """
 
     files = sorted(
         RESULTS_DIR.glob("*.csv")
@@ -201,10 +189,6 @@ def load_results():
 
 
 def build_baseline_eligibility(results):
-    """
-    Determine whether each task and encoding learns the
-    training-length task consistently across all seeds.
-    """
 
     rows = []
 
@@ -349,9 +333,6 @@ def build_baseline_eligibility(results):
 
 
 def length_positions(lengths):
-    """
-    Map lengths to equally spaced display positions.
-    """
 
     return {
         length: index
@@ -365,10 +346,6 @@ def first_collapse_length(
     aggregate,
     train_length
 ):
-    """
-    Find the first unseen length with mean exact-match
-    accuracy below the collapse threshold.
-    """
 
     extrapolation = aggregate[
         aggregate["Test Length"]
@@ -391,10 +368,7 @@ def first_collapse_length(
 
 
 def aggregate_encoding(frame):
-    """
-    Aggregate one task and encoding across seeds.
-    """
-
+    
     aggregate = frame.groupby(
         "Test Length",
         as_index=False
@@ -466,9 +440,6 @@ def add_training_length_marker(
     ax,
     train_position
 ):
-    """
-    Mark the exact training length.
-    """
 
     ax.axvline(
         train_position,
@@ -503,9 +474,6 @@ def add_training_length_marker(
 
 
 def add_collapse_threshold(ax):
-    """
-    Add the operational collapse threshold.
-    """
 
     ax.axhline(
         COLLAPSE_THRESHOLD,
@@ -543,12 +511,6 @@ def save_training_fit_by_seed(
     results,
     eligibility
 ):
-    """
-    Show every seed at the training length.
-
-    This makes underfitting and seed instability visible
-    instead of hiding them inside a mean and error bar.
-    """
 
     fig, axes = plt.subplots(
         nrows=1,
@@ -848,10 +810,6 @@ def save_eligible_baseline_plot(
     eligibility,
     task
 ):
-    """
-    Plot only baselines that learned the training task
-    consistently across every seed.
-    """
 
     eligible_rows = eligibility[
         (
@@ -1021,7 +979,7 @@ def save_eligible_baseline_plot(
             100.0
         )
 
-        # Faint curves show individual seeds.
+
         for seed in sorted(
             frame["Seed"].unique()
         ):
@@ -1053,7 +1011,7 @@ def save_eligible_baseline_plot(
                 zorder=2
             )
 
-        # The shaded band represents ±1 standard deviation.
+
         ax.fill_between(
             true_x_values,
             lower_bound,
@@ -1066,7 +1024,7 @@ def save_eligible_baseline_plot(
             zorder=1
         )
 
-        # Bold line shows the mean.
+
         ax.plot(
             true_x_values,
             mean_values,
@@ -1081,7 +1039,7 @@ def save_eligible_baseline_plot(
             zorder=3
         )
 
-        # Mean markers and SD bars are slightly offset.
+
         ax.errorbar(
             marker_x_values,
             mean_values,
@@ -1211,9 +1169,6 @@ def save_eligible_baseline_plot(
 
 
 def main():
-    """
-    Generate corrected baseline diagnostic figures.
-    """
 
     set_report_style()
 

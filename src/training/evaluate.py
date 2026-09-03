@@ -1,15 +1,15 @@
 '''Load trained model
-        ↓
+        |
 Load test dataset
-        ↓
+        |
 Run inference
-        ↓
+        |
 Compare predictions with targets
-        ↓
+        |
 Compute accuracy
-        ↓
+        |
 Repeat for every sequence length
-        ↓
+        |
 Save results'''
 
 import csv
