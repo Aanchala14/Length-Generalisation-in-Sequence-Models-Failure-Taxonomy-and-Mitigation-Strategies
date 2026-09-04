@@ -25,7 +25,7 @@
     degree={MSc},
     title={Length Generalisation in Transformer-Based Sequence Models: Failure Taxonomy and Mitigation Strategies},
     subtitle={},
-    type={Research},
+    type={},
     year={2026}
 ]{dissertation}
 
@@ -312,7 +312,8 @@ The principal contributions are:
 \label{sec:dissertation_structure}
 
 Chapter~2 reviews the technical background and related literature, and Chapter~3 describes the experimental methodology and controls.
-Chapter~4 combines the synthetic benchmark results, failure diagnostics, mitigation experiments, taxonomy, and exploratory real-world extension. Chapter~5 interprets these findings in relation to the research questions and discusses their implications and limitations. Chapter~6 summarises the conclusions, contributions, stage reached relative to the project aim, and directions for future work. Supplementary results and methodological documentation are provided in Appendices~A and~B.
+Chapter~4 combines the synthetic benchmark results, failure diagnostics, mitigation experiments, taxonomy, and exploratory real-world extension. Chapter~5 interprets these findings in relation to the research questions and discusses their implications and limitations. Chapter~6 summarises the conclusions, contributions, stage reached relative to the project aim, and directions for future work. Supplementary experimental results are provided in
+Appendix \ref{app:supplementary-results}, methodological documentation and experimental controls in Appendix \ref{app:supplementary-methodology}, and repository and reproduction guidance in Appendix \ref{app:software-repository}.
 % -----------------------------------------------------------------------------
 
 \chapter{Background and Related Work}
@@ -416,17 +417,16 @@ The comparison therefore separates two questions: whether a positional condition
 
 \section{Length Generalisation}
 
-Length generalisation concerns performance when
+Length generalisation evaluates whether a model trained at sequence length
+\(L_{\mathrm{train}}\) can apply the same task rule when
 
 \[
 L_{\mathrm{test}} > L_{\mathrm{train}},
 \]
 
-\noindent
-while the underlying task rule remains unchanged. The change is therefore in the size of the problem instance rather than in the rule being applied. A model demonstrates length generalisation only if it first learns the task within the training distribution and then applies that solution successfully at unseen lengths.
+where \(L_{\mathrm{test}}\) is the evaluation length. Success requires the model first to learn the training-length task and then transfer that solution to unseen lengths.
 
-Strong interpolation performance can coexist with failure under compositional or length shifts \cite{lake2018generalization,varis2021lengthdomain}.
-Formal-language and algorithmic studies similarly show that Transformer generalisation depends on task structure, representation, training distribution, and architectural assumptions \cite{bhattamishra2020formal,deletang2023neural,
+Strong interpolation performance can coexist with failure under compositional or length shifts \cite{lake2018generalization,varis2021lengthdomain}. Formal-language and algorithmic studies similarly show that Transformer generalisation depends on task structure, representation, training distribution, and architectural assumptions \cite{bhattamishra2020formal,deletang2023neural,
 strobl2024formal,zhou2024algorithms}.
 
 Controlled tasks keep the underlying rule fixed while sequence length changes. Addition tests digit computation and carry propagation, Delayed Copy tests retrieval after a delay, and Reverse tests position-dependent remapping. Together, they sample computation, retention, and positional transformation. Prior arithmetic and compositional studies show that representation, task formulation, and architectural choices can substantially alter extrapolation behaviour~\cite{lee2024teaching,mcleish2024arithmetic,
@@ -437,6 +437,9 @@ Figure \ref{fig:controlled_task_examples} illustrates representative
 input-target mappings. These short examples show the structure of each task; the experimental sequence lengths are specified in
 Chapter \ref{chap:methodology}.
 
+Length generalisation should also be distinguished from long-context
+modelling. Architectures such as Transformer-XL extend the amount of context that can be processed or reused \cite{dai2019transformerxl}, while benchmarks such as Long Range Arena compare efficiency and performance on tasks containing long-range dependencies \cite{tay2021longrange}. These are important related problems, but a model may technically accept a long input without applying a rule learned at shorter lengths. The present study focuses on this latter behavioural question.
+
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.65\textwidth]
@@ -444,9 +447,6 @@ Chapter \ref{chap:methodology}.
     \caption{Representative input--target mappings for the three controlled tasks. Addition combines digit-wise computation with carry propagation; delayed copy requires retrieval after a separator and padded delay; and reverse applies a length-dependent positional transformation. \texttt{PAD} and \texttt{SEP} denote padding and separator tokens.}
     \label{fig:controlled_task_examples}
 \end{figure}
-
-Length generalisation should also be distinguished from long-context
-modelling. Architectures such as Transformer-XL extend the amount of context that can be processed or reused \cite{dai2019transformerxl}, while benchmarks such as Long Range Arena compare efficiency and performance on tasks containing long-range dependencies \cite{tay2021longrange}. These are important related problems, but a model may technically accept a long input without applying a rule learned at shorter lengths. The present study focuses on this latter behavioural question.
 
 \section{Evaluating Length-Generalisation Failure}
 
@@ -489,7 +489,7 @@ aggregate result cannot distinguish a model that underfits the training task fro
 
 Mitigation experiments introduce a related problem. Mixed-length exposure, curriculum learning, and randomised positional exposure test different hypotheses about failure. An intervention cannot be interpreted as improving length generalisation if it does not preserve training-length performance, and its result should be compared with the corresponding original baseline.
 
-This dissertation addresses this evaluation gap rather than proposing a new Transformer architecture. It combines multi-seed baseline eligibility, length-wise degradation curves, exact-match and token-error measures, position-wise and task-specific diagnostics, descriptive attention statistics, and matched baseline--intervention comparisons. The resulting framework distinguishes training underfitting, seed instability, immediate extrapolation collapse, spatial error structure, and no observed improvement under tested mitigation. It therefore describes not only whether performance fails at longer lengths, but what form that failure takes and which intervention hypothesis was evaluated.
+This dissertation addresses this evaluation gap rather than proposing a new Transformer architecture. It combines multi-seed baseline eligibility, length-wise degradation curves, exact-match and token-error measures, position-wise and task-specific diagnostics, descriptive attention statistics, and matched baseline-intervention comparisons. The resulting framework distinguishes training underfitting, seed instability, immediate extrapolation collapse, spatial error structure, and no observed improvement under tested mitigation. It therefore describes not only whether performance fails at longer lengths, but what form that failure takes and which intervention hypothesis was evaluated.
 % -----------------------------------------------------------------------------
 
 \chapter{Methodology and Experimental Design}
@@ -525,7 +525,7 @@ Appendix~\ref{app:experiment-matrix}. Each checkpoint was evaluated at every tes
 
 
 
-The experiment proceeded in stages. Training-length results were first used to determine whether a task--encoding configuration provided an eligible baseline. Eligible configurations were then examined across longer lengths using exact-match accuracy, token error, position-wise error profiles, task-specific diagnostics, and attention statistics. Finally, targeted training interventions were compared with their corresponding original baselines.
+The experiment proceeded in stages. Training-length results were first used to determine whether a task-encoding configuration provided an eligible baseline. Eligible configurations were then examined across longer lengths using exact-match accuracy, token error, position-wise error profiles, task-specific diagnostics, and attention statistics. Finally, targeted training interventions were compared with their corresponding original baselines.
 
 This ordering prevents different experimental outcomes from being conflated. A configuration that never learns the training task represents underfitting. A configuration that succeeds for some seeds but not others represents seed instability. Extrapolation collapse is considered only after stable training-length performance has been established.
 
@@ -688,7 +688,7 @@ B^{(h)}_{ij}=-m_h |i-j|
 to the attention score between positions \(i\) and \(j\) in head \(h\), where \(m_h\) is the fixed head-specific slope. The absolute distance makes this a symmetric adaptation of the original causal ALiBi formulation \cite{press2022train}.
 
 RoPE was applied to queries and keys, but not values, using an even
-per-head dimension of 32 and the standard frequency base of \(10\,000\) \cite{su2021roformer}.
+per-head dimension of 32 and the standard frequency base of 10,000 \cite{su2021roformer}.
 
 \section{Training and Evaluation}
 \label{sec:training-procedure}
@@ -1016,7 +1016,7 @@ Figure~\ref{fig:baseline-training-fit} reports training-length exact-match accur
     \label{fig:baseline-training-fit}
 \end{figure}
 
-Five of the 15 task--encoding configurations were eligible:
+Five of the 15 task-encoding configurations were eligible:
 
 \begin{itemize}
     \item Addition with learned positional embeddings;
@@ -1229,13 +1229,16 @@ At the first unseen Addition length, the learned model produced 88.14\% error on
 
 The Addition collapse was therefore not concentrated on digits receiving an incoming carry. This does not demonstrate that a length-general carry procedure was learned. Instead, it shows that once extrapolation failed, ordinary digits were predicted poorly under both carry conditions.
 
-For Reverse, the source position associated with output position $i$ is
-$L-1-i$. The normalised dependency distance was calculated as
+For Reverse, the source position associated with output position \(i\) is
+\(L-1-i\). The normalised dependency distance was calculated as
 
-\[
+\begin{equation}
 d_i =
-\frac{\left|(L-1-i)-i\right|}{L-1}.
-\]
+\frac{\left|(L-1-i)-i\right|}{L-1},
+\label{eq:reverse-dependency-distance}
+\end{equation}
+
+where \(L\) is the sequence length and \(i\) is the zero-indexed output position. Equation \ref{eq:reverse-dependency-distance} normalises the source-target separation by the maximum possible separation. At the training length, error was zero across all dependency-distance bins.
 
 At the training length, error was zero across all dependency-distance bins. At length 256, error varied only from approximately 98.54\% to 98.92\%. Shorter and longer reversal dependencies therefore failed at comparable rates. The failure was not restricted to positions requiring the longest input-output dependencies.
 
@@ -1429,7 +1432,7 @@ The position-wise analysis showed that 0\% exact-match accuracy does not corresp
 
 Delayed Copy and Reverse instead produced token-error rates close to the 99\% uniform valid-token reference throughout the output. These models changed from nearly uniform correctness at the training length to nearly uniform incorrectness at the first unseen length. Their failures were therefore more spatially distributed than the Addition failure.
 
-The task-specific diagnostics further constrain the interpretation. Addition errors differed by less than one percentage point between ordinary digits with and without an incoming carry. The failure was therefore not primarily concentrated on carry-dependent digits. Similarly, Reverse error remained almost constant across dependency-distance bins, showing that the collapse was not restricted to output positions requiring the longest input--output mapping.
+The task-specific diagnostics further constrain the interpretation. Addition errors differed by less than one percentage point between ordinary digits with and without an incoming carry. The failure was therefore not primarily concentrated on carry-dependent digits. Similarly, Reverse error remained almost constant across dependency-distance bins, showing that the collapse was not restricted to output positions requiring the longest input-output mapping.
 
 These findings show why exact-match accuracy should be accompanied by error-location diagnostics: concentrated errors may support task-specific analysis, whereas distributed near-reference error indicates that the whole longer output is unreliable. Addition retained limited positional structure, whereas Delayed Copy and Reverse exhibited distributed near-reference collapse.
 
